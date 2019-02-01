@@ -9,6 +9,7 @@
         not the right spot for it, but I'm not sure with vue the best place for it to go.
 
     Notes: Working towards StandardJS.
+  
 ============================================================================================ -->
 
 <template>
