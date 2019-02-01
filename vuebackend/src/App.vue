@@ -1,0 +1,364 @@
+<!-- ===========================================================================================
+
+    File: App.vue
+
+    Authors: Drew Spencer
+
+    Description: App.vue handles the login actions, and pulls in the slide component (also passses
+        the login variables to this component.  The CSS also is contained here.  This is probably
+        not the right spot for it, but I'm not sure with vue the best place for it to go.
+
+    Notes: Working towards StandardJS.
+============================================================================================ -->
+
+<template>
+  <div id="app">
+
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+      <a class="navbar-brand" href="#">
+          MAWD Slide Tracking / Printing
+      </a>
+
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+        <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
+      </li>
+          <form  v-on:submit.prevent="scanbadge()" class="form-inline my-2 my-lg-0">
+          <b-input id="InputBadge" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=badgeInputTextBoxDisabled v-model="scannedbadgeinput" placeholder="Touch here then scan badge" />
+           <button class="btn btn-sm btn-outline-secondary" type="submit">{{scannedbadgebuttontext}}</button>
+         </form>
+      </ul>
+    </nav>
+
+
+    <div class="container">
+
+      <br>
+      <div class="row">
+          <slides :username="username" :background="background" :firstname="firstname" :validuser="validuser"></slides>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+export default {
+}
+</script>
+
+<style lang="css">
+
+html,
+body {
+  background-image: url("./assets/background.jpg");
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+body {
+  margin: 0;
+
+  font-family: Roboto, sans-serif;
+
+}
+.customheadertext {
+ text-rendering: optimizeLegibility;
+      color: #e0dfdc;
+      letter-spacing: .1em;
+      }
+
+.glassslide {
+  background: rgba(255, 255, 255, 1);
+  height: 400px;
+
+  background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0)));
+  background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  border: 1px solid #DDDBD7;
+  -webkit-box-shadow: 3px 3px 10px rgba(0,0,0,0.4),	inset 0 0 10px rgba(255,255,255, 0.8);
+  -moz-box-shadow: 	3px 3px 10px rgba(0,0,0,0.4),	inset 0 0 10px rgba(255,255,255, 0.8);
+  box-shadow: 		3px 3px 10px rgba(0,0,0,0.4),	inset 0 0 10px rgba(255,255,255, 0.8);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 10px;
+  border-bottom-radius: 10px;
+  background: rgba(255, 255, 255, .35);
+
+}
+.slidelabel {
+  margin:1px 1px 1px 1px;
+  height: 160px;
+  border: 1px solid silver;
+  background-color: white;
+}
+
+.slideheader{
+  display: block;
+font-size: 1.30em;
+margin-block-start: 1em;
+margin-block-end: 1em;
+margin-inline-start: 0px;
+margin-inline-end: 0px;
+font-weight: bold;
+text-align: center;
+margin-top:0px;
+margin-bottom:-10px;
+padding: 0px;
+padding-top: 0px;
+padding-right: -5px;
+padding-bottom: 0px;
+padding-left: -5px;
+color: black;
+    line-height: normal !important;
+}
+.slidebody{
+  display: block;
+margin-block-start: 1em;
+margin-block-end: 1em;
+margin-inline-start: 0px;
+margin-inline-end: 0px;
+text-align: left;
+margin-bottom:-10px;
+color: black;
+  line-height: normal !important;
+}
+.slidefooter{
+  display: block;
+margin-block-start: 1em;
+margin-block-end: 1em;
+margin-inline-start: 0px;
+margin-inline-end: 0px;
+text-align: center;
+margin-top:-7px;
+margin-bottom:-10px;
+color: black;
+    line-height: normal !important;
+}
+
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+  height: 450px;
+}
+
+/* vertical spacing between columns */
+
+[class*="col-"] {
+  margin-bottom: 30px;
+}
+
+.content {
+  height: 100%;
+  padding: 20px 20px 10px;
+  color: #fff;
+}
+
+
+
+/*
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+*/
+
+
+table {
+  width: 1100px;
+  border-collapse: separate;
+  border-spacing: 10px 2px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+th,
+td {
+  padding: 15px;
+    padding-top: 15px;
+    padding-right: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: solid thin;
+}
+
+th {
+  text-align: left;
+}
+
+thead {
+  th {
+    background-color: #55608f;
+  }
+}
+
+tbody {
+  tr {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+  td {
+    position: relative;
+    &:hover {
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -9999px;
+        bottom: -9999px;
+        background-color: rgba(255, 255, 255, 0.2);
+        z-index: -1;
+      }
+    }
+  }
+}
+
+</style>
+
+
+
+<script>
+
+//import Slides from './components/Slides'
+//import Slides from './components/SlidesV2'
+import Slides from './components/SlidesV3';
+import axios from 'axios';
+
+export default
+{
+  name: 'app',
+  components:
+      {
+        Slides
+      },
+data() {
+return {
+
+  userinfo: {},
+  username: "usernameinitialvalue",
+  firstname: "firstnameinitialvalue",
+  lastname: "lastnameinitialvalue",
+  userid: "useridinitialvalue",
+  background: "backgroundinitialvalue",
+  scannedbadgeinput: "Touch here then scan badge",
+  validuser: false,
+  scannedbadgebuttontext: "Scan Badge",
+  userstate: "no active user",
+  badgeInputTextBoxDisabled: false
+
+}
+},
+methods: {
+  scanbadge()
+  {
+  console.log("helloscan");
+
+  //If someone is signed in, log out
+  if ( this.scannedbadgebuttontext == "Log Out"){
+
+    this.validuser = false;
+    this.userinfo = "";
+    this.firstname = ""
+    this.lastname = ""
+    this.background = ""
+    this.username = ""
+    this.scannedbadgeinput = "Touch here then scan badge"
+    this.scannedbadgebuttontext = "Scan Badge"
+    this.badgeInputTextBoxDisabled = false
+
+  } else {
+    //validate scanned Badge
+    if (this.scannedbadgeinput.substring(0,4)=="SBDG") {
+            this.userid = this.scannedbadgeinput.substring(4);
+
+            console.log("valid badge prefix");
+              axios.post('http://localhost:3000/getuserinfo', {
+              userid: this.userid
+              //userid: 'mwd2954'
+            })
+            .then(userinfodata => {
+              this.loading = false;
+              this.error_message = '';
+              if (userinfodata.errorcode) {
+                this.error_message = `Error looking up badge.`
+                console.log('error')
+                return
+              }
+
+              console.log("Made it to this.userinfo=data");
+              console.log(userinfodata);
+              this.userinfo = userinfodata.data;
+              this.firstname = this.userinfo[0].fname;
+              this.lastname = this.userinfo[0].lname;
+              this.background = this.userinfo[0].background;
+              this.username = this.userinfo[0].username;
+
+              //Validate user
+               if (this.username.length > 0  ) {
+                 this.userstate = "valid user";
+                 this.validuser = true;
+                 this.scannedbadgebuttontext = "Log Out";
+                 this.scannedbadgeinput = this.username;
+                 this.badgeInputTextBoxDisabled = true
+               }
+
+            }).catch((e) => {
+              console.log(e)
+            })
+            .catch(function (error) {
+              console.log("error:");
+              console.log(error);
+            });
+          //Verify userid
+
+    } else {
+        //Invalid badge
+        console.log("invalid badge prefix or badge error");
+    }
+  }
+    console.log("end scanbadge");
+  }
+},
+
+computed:{
+  scanBadgeButtonDisabled(){
+    //if (this.validuser=='f' || !blockID ) {
+    if (this.validuser && this.blockID) {
+      return false
+    } else {
+      return true
+    }
+  },
+  inputTextBoxDisabled(){
+    //Disable input text if no valid user
+    if (this.userstate=="no active user") {
+      return false
+    } else {
+      return true
+    }
+  }
+}
+}
+</script>
+
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
