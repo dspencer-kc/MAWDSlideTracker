@@ -4,7 +4,7 @@ MAWD Slide Tracker is designed to track slides and blocks for a histology lab an
 
 ## Contributers
 
-MAWD IT is writing most of the code, but this would never have started without Sid's help and continued support.
+MAWD IT is writing most of the code, myself, Drew Spencer and Jami Shelton contributing  but this would never have started without Sid's help and continued support.
 
 ## Table Description and Data Sources
 
