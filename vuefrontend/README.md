@@ -32,3 +32,11 @@ npm run build
 ```
 npm run lint
 ```
+
+##Environment File:
+
+To set environment variables, add a .env file with the following entries:
+strMYSQLHost=x
+strMYSQLUser=x
+strMYSQLPassword=x
+strMYSQLDB=x
