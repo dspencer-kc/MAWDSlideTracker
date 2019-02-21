@@ -8,8 +8,8 @@
         the login variables to this component.  The CSS also is contained here.  This is probably
         not the right spot for it, but I'm not sure with vue the best place for it to go.
 
-    Notes: Working towards StandardJS.
-  
+    Notes: Working towards StandardJS.ew
+
 ============================================================================================ -->
 
 <template>
@@ -231,8 +231,6 @@ tbody {
 
 <script>
 
-//import Slides from './components/Slides'
-//import Slides from './components/SlidesV2'
 import Slides from './components/SlidesV3';
 import axios from 'axios';
 
@@ -256,7 +254,8 @@ return {
   validuser: false,
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",
-  badgeInputTextBoxDisabled: false
+  badgeInputTextBoxDisabled: false,
+  strAPIUrl: "http://10.24.4.223:3000/"
 
 }
 },
@@ -284,7 +283,7 @@ methods: {
             this.userid = this.scannedbadgeinput.substring(4);
 
             console.log("valid badge prefix");
-              axios.post('http://localhost:3000/getuserinfo', {
+              axios.post(this.strAPIUrl & 'getuserinfo', {
               userid: this.userid
               //userid: 'mwd2954'
             })

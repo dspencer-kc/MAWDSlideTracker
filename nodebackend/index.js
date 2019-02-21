@@ -33,7 +33,7 @@ var strMYSQLDB = process.env.strMYSQLDB
 var strSQL = ''
 var arSlideCount = []
 
-// Connect to the database
+//Connect to the database
 var con = mysql.createConnection({
   host: strMYSQLHost,
   user: strMYSQLUser,
