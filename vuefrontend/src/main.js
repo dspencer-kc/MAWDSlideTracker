@@ -4,14 +4,13 @@ import App from './App.vue'
 import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import BootstrapVue from "bootstrap-vue"
+import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false
-Vue.use(BootstrapVue);
-Vue.use(VueAxios, axios);
-
+Vue.use(BootstrapVue)
+Vue.use(VueAxios, axios)
 
 new Vue({
   store,
