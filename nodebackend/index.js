@@ -19,7 +19,7 @@ var bodyParser = require('body-parser')
 const strSlideQueuePath = '\\\\mawd-data01\\slideprinters\\slidequeue\\histo1\\'
 var dateFormat = require('dateformat')
 var strFileWriteData = ''
-var strSlideFlatFileName = ''
+// var strSlideFlatFileName = ''
 const express = require('express')
 var mysql = require('mysql')
 const app = express()
@@ -31,9 +31,9 @@ var strMYSQLUser = process.env.strMYSQLUser
 var strMYSQLPassword = process.env.strMYSQLPassword
 var strMYSQLDB = process.env.strMYSQLDB
 var strSQL = ''
-var arSlideCount = []
+// var arSlideCount = []
 
-//Connect to the database
+// Connect to the database
 var con = mysql.createConnection({
   host: strMYSQLHost,
   user: strMYSQLUser,
@@ -87,10 +87,9 @@ app.post('/updateslidetoprint', function (request, response) {
   var strAction = request.body.action
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
-  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` \
-              SET \
-                  `ToBePrinted` = ' + blToPrintStatus + " \
-              WHERE `SlideID` = '" + strSlideID + "';"
+  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
+              'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
+              'WHERE `SlideID` = \'' + strSlideID + '\';'
 
   // con.connect(function(err)
   // {
