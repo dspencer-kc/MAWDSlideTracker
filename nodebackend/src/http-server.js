@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 var bodyParser = require('body-parser')
 
-var slideTracker = require('./slide-stracking/slide-tracker')
+var slideTracker = require('./slide-tracking/slide-tracker')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
