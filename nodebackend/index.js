@@ -3,6 +3,8 @@
 //
 //    File: index.js
 //
+//    **This file will go away once src\index.js is used
+//
 //    Authors: Drew Spencer, Jami Shelton
 //
 //    Description: This is our main node file which runs all the API's for the vue frontend to call.
