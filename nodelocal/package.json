@@ -1,0 +1,15 @@
+{
+  "name": "nodelocal",
+  "version": "1.0.0",
+  "description": "Used to access local resources ie barcode scanner",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^7.1.4",
+    "socket.io": "^2.2.0"
+  }
+}

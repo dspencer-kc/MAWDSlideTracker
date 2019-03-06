@@ -32,6 +32,8 @@ var strMYSQLPassword = process.env.strMYSQLPassword
 var strMYSQLDB = process.env.strMYSQLDB
 var strSQL = ''
 // var arSlideCount = []
+//var barcodeScan = require('./src/barcode/barcode-scan.js')
+//barcodeScan.init('COM4', io)
 
 // Connect to the database
 var con = mysql.createConnection({
@@ -348,7 +350,7 @@ router.get('/', (request, response) => {
 })
 
 // set the server to listen on port 3000
-app.listen(port, () => console.log(`Listening on port ${port}`))
+server = app.listen(port, () => console.log(`Listening on port ${port}`))
 
 const url = require('url')
 
@@ -419,4 +421,7 @@ router.get('/slideparameters', (request, response) => {
   // });
   // con.end();
   console.log(`${strBlockID}`)
+
+
+
 })

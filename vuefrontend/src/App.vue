@@ -234,8 +234,9 @@ tbody {
 
 //import Slides from './components/Slides'
 //import Slides from './components/SlidesV2'
-import Slides from './components/SlidesV3';
-import axios from 'axios';
+import Slides from './components/SlidesV3'
+import axios from 'axios'
+//import io from 'socket.io-client' //Not sure if this needs done here or just in main.js
 
 export default
 {
@@ -258,8 +259,20 @@ return {
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",
   badgeInputTextBoxDisabled: false
-
 }
+},
+
+sockets: {
+    connect: function () {
+        console.log('socket connected')
+    },
+    customEmit: function (data) {
+        console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
+    },
+    stream: function(data) {
+        console.log('socket on')
+        this.forwardBarcodeScan(data.data) //Received value should be json object matched on data
+    }
 },
 methods: {
   scanbadge()
@@ -330,7 +343,12 @@ methods: {
     }
   }
     console.log("end scanbadge");
+  },
+  forwardBarcodeScan(strBarcode){
+    this.scannedbadgeinput = strBarcode
+    this.scanbadge()
   }
+
 },
 
 computed:{
@@ -352,6 +370,9 @@ computed:{
   }
 }
 }
+
+console.log('io on localhost:8001')
+
 </script>
 
 <style>
