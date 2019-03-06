@@ -258,7 +258,9 @@ return {
   validuser: false,
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",
-  badgeInputTextBoxDisabled: false
+  badgeInputTextBoxDisabled: false,
+  slidequeuepath: '',
+  stationname: ''
 }
 },
 
@@ -271,10 +273,19 @@ sockets: {
     },
     stream: function(data) {
         console.log('socket on')
-        this.forwardBarcodeScan(data.data) //Received value should be json object matched on data
+
+        //validate scan data
+        this.validateScanData(data)
+
     }
 },
 methods: {
+  validateScanData(data){
+    this.slidequeuepath = data.slideQueuePath
+    this.stationname = data.stationName
+    this.forwardBarcodeScan(data.barcodeScanData) //Received value should be json object matched on data
+
+  },
   scanbadge()
   {
   console.log("helloscan");

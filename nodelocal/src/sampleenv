@@ -1,0 +1,3 @@
+**Change this filename to .env and remove this line to set local environment variables.
+SlideQueuePath=\\\\mawd-data01\\slideprinters\\slidequeue\\micronomy02\\
+StationName=micronomy02

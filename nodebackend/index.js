@@ -18,7 +18,7 @@
 require('dotenv').load()
 var fs = require('fs')
 var bodyParser = require('body-parser')
-const strSlideQueuePath = '\\\\mawd-data01\\slideprinters\\slidequeue\\histo1\\'
+var strSlideQueuePath = '\\\\mawd-data01\\slideprinters\\slidequeue\\histo1\\'  //DefaultPath if not assigned when passed
 var dateFormat = require('dateformat')
 var strFileWriteData = ''
 // var strSlideFlatFileName = ''

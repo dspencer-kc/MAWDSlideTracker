@@ -1,7 +1,12 @@
+require('dotenv').load()
 var barcodeScan = require('./barcode/barcode-scan')
 var httpServer = require('./http-server')
 barcodeScan.init('COM4')
 const socketport = '8001'
+
+var strSlideQueuePath = process.env.SlideQueuePath
+var strStationName = process.env.StationName
+
 
 //Start http server
 server = httpServer.start(function (err, message) {
@@ -25,6 +30,14 @@ io.sockets.on('connection', function(socket){
       console.log('Barcode scan detected')
       console.log('Data:  ', data)
       //socket.emit('stream', {'title': data})
-      socket.emit('stream', {data})
+      var oStreamData ={
+        barcodeScanData: data,
+        stationName: strStationName,
+        slideQueuePath: strSlideQueuePath
+
+      }
+      socket.emit('stream', oStreamData)
+      //socket.emit('stream', {'barcodescan': data})
+
     })
 });
