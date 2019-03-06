@@ -37,7 +37,7 @@
 
       <br>
       <div class="row">
-          <slides :username="username" :background="background" :firstname="firstname" :validuser="validuser"></slides>
+          <slides :username="username" :background="background" :firstname="firstname" :validuser="validuser" :blockID="blockid"></slides>
       </div>
     </div>
   </div>
@@ -260,7 +260,8 @@ return {
   userstate: "no active user",
   badgeInputTextBoxDisabled: false,
   slidequeuepath: '',
-  stationname: ''
+  stationname: '',
+  blockid:''
 }
 },
 
@@ -283,7 +284,26 @@ methods: {
   validateScanData(data){
     this.slidequeuepath = data.slideQueuePath
     this.stationname = data.stationName
-    this.forwardBarcodeScan(data.barcodeScanData) //Received value should be json object matched on data
+
+    //Depending on prefix, send to correct placeholder
+    console.log('barcodescan', data.barcodeScanData)
+    console.log('prefix', data.barcodeScanData.substring(0,4))
+
+    switch(data.barcodeScanData.substring(0,4)) {
+      case 'HBLK':
+        this.blockid = data.barcodeScanData
+        break
+      case 'SBDG':
+      this.scannedbadgeinput = data.barcodeScanData
+      this.scanbadge()
+        break
+      default:
+        // code block
+    }
+
+
+
+    //this.forwardBarcodeScan(data.barcodeScanData) //Received value should be json object matched on data
 
   },
   scanbadge()
@@ -354,10 +374,6 @@ methods: {
     }
   }
     console.log("end scanbadge");
-  },
-  forwardBarcodeScan(strBarcode){
-    this.scannedbadgeinput = strBarcode
-    this.scanbadge()
   }
 
 },

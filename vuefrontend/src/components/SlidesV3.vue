@@ -107,11 +107,12 @@ export default {
     lastname: String,
     userid: String,
     background: String,
-    validuser: Boolean
+    validuser: Boolean,
+    blockID: String
     },
     data() {
     return {
-      blockID: '',
+      //blockID: '',
       error_message: '',
       loading: false, // to track when app is retrieving data
       slides: {},
