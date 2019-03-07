@@ -26,7 +26,7 @@
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
       </li>
           <form  v-on:submit.prevent="scanbadge()" class="form-inline my-2 my-lg-0">
-          <b-input id="InputBadge" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=badgeInputTextBoxDisabled v-model="scannedbadgeinput" placeholder="Touch here then scan badge" />
+          <b-input id="InputBadge" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=true v-model="scannedbadgeinput" placeholder="Scan Badge" />
            <button class="btn btn-sm btn-outline-secondary" type="submit">{{scannedbadgebuttontext}}</button>
          </form>
       </ul>
@@ -254,13 +254,12 @@ return {
   lastname: "lastnameinitialvalue",
   userid: "useridinitialvalue",
   background: "backgroundinitialvalue",
-  scannedbadgeinput: "Touch here then scan badge",
+  scannedbadgeinput: "Scan Badge To Start",
   validuser: false,
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",
-  badgeInputTextBoxDisabled: false,
-  slidequeuepath: '',
-  stationname: ''
+  badgeInputTextBoxDisabled: false
+  //stationname: ''
   //blockid:''
 }
 },
@@ -282,8 +281,7 @@ sockets: {
 },
 methods: {
   validateScanData(data){
-    this.slidequeuepath = data.slideQueuePath
-    this.stationname = data.stationName
+    //this.stationname = data.stationName
     //Depending on prefix, send to correct placeholder
     console.log('barcodescan', data.barcodeScanData)
     console.log('prefix', data.barcodeScanData.substring(0,4))
@@ -386,19 +384,20 @@ computed:{
     } else {
       return true
     }
-  },
-  inputTextBoxDisabled(){
-    //Disable input text if no valid user
-    if (this.userstate=="no active user") {
-      return false
-    } else {
-      return true
-    }
   }
+  //,
+  //inputTextBoxDisabled(){
+  //  //Disable input text if no valid user
+  //  if (this.userstate=="no active user") {
+  //    return false
+  //  } else {
+  //    return true
+  //  }
+  //}
 }
 }
 
-console.log('io on localhost:8001')
+
 
 </script>
 

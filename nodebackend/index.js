@@ -91,9 +91,10 @@ app.post('/updateslidetoprint', function (request, response) {
   var strAction = request.body.action
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
-  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
-              'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
-              'WHERE `SlideID` = \'' + strSlideID + '\';'
+  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` \
+              SET \
+                  `ToBePrinted` = ' + blToPrintStatus + " \
+              WHERE `SlideID` = '" + strSlideID + "';"
 
   // con.connect(function(err)
   // {
@@ -199,6 +200,8 @@ app.post('/getuserinfo', function (request, response) {
 
 app.post('/printslides', function (request, response) {
 // var strPrintRequestBy = "unknown";
+
+console.log(request)
   var strLocationID = 'unknown'
   var strSQLUpdateStatement = ''
 
@@ -208,23 +211,17 @@ app.post('/printslides', function (request, response) {
   var strAction = request.body.action
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
+  strSlideQueuePath = request.body.slideQueuePath
 
   console.log('Hello PrintSlides')
   console.log(strBlockID)
   console.log(strAction) // strAction is not used
   console.log(strPrintRequestBy)
   console.log(strDate)
+  console.log('Slidequeuepath:', strSlideQueuePath)
 
-  // Connect to database
-  // var con = mysql.createConnection({
-  //  host: strMYSQLHost,
-  //  user: strMYSQLUser,
-  //  password: strMYSQLPassword,
-  //  database: strMYSQLDB
-  // });
 
   // Get all required information from blockID, only include slides that are marked 'to be printed'
-
   strSQL = `SELECT tblSlides.*, \
                      tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
                      copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
@@ -250,14 +247,10 @@ app.post('/printslides', function (request, response) {
                    LEFT JOIN copath_c_d_department \
                           ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
-  console.log(strSQL)
 
-  // con.connect(function(err)
-  // {
-  //  if (err) throw err;
+  console.log(strSQL)
   console.log('Connected!')
 
-  //
   con.query(strSQL, function (err, result) {
     if (err) throw err
     // if there is no error, you have the result
@@ -278,6 +271,7 @@ app.post('/printslides', function (request, response) {
       strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + row.OrderingPath + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
       strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
+      console.log(strSlideFlatFileFullName)
       fs.writeFile(strSlideFlatFileFullName, strFileWriteData,
         // callback function that is called after writing file is done
         function (err) {
@@ -305,16 +299,13 @@ app.post('/printslides', function (request, response) {
         if (updateerr) throw updateerr
 
         console.log(strSQLUpdateStatement)
-
         console.log(updateresult.affectedRows + ' record(s) updated')
       })
     })
 
     console.log(result)
   })
-  // });  //end .connect
 
-  // con.end();
   console.log(`${strBlockID}`)
   response.send('Slides have been sent to Slide Printer')
 })

@@ -107,7 +107,7 @@ export default {
     lastname: String,
     userid: String,
     background: String,
-    validuser: Boolean,
+    validuser: Boolean
     //blockID: String
     },
     data() {
@@ -118,7 +118,9 @@ export default {
       slides: {},
       formstatus: 'loadslides',
       formstatuslabel: 'Load Slides',
-      info: null
+      info: null,
+      slideQueuePath: '',
+      stationName: ''
     }
   },
 
@@ -132,7 +134,7 @@ export default {
       },
       stream: function(data) {
           console.log('socket on within slide')
-
+          console.log('within slide:',data)
           //validate scan data
           this.validateScanData(data)
       }
@@ -140,8 +142,10 @@ export default {
   methods: {
     validateScanData(data){
       if (this.validuser) {
-        this.slidequeuepath = data.slideQueuePath
-        this.stationname = data.stationName
+        console.log('Slide Queue Path: ', data.slideQueuePath)
+        this.slideQueuePath = data.slideQueuePath
+        console.log('slide station name:', data.stationName)
+        this.stationName = data.stationName
         //Depending on prefix, send to correct placeholder
         console.log('slide: barcodescan', data.barcodeScanData)
         console.log('slide: prefix', data.barcodeScanData.substring(0,4))
@@ -190,11 +194,13 @@ export default {
 
     //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
     //Add printRequestedBy
+    console.log(this.slideQueuePath)
 
       axios.post('http://localhost:3000/printslides', {
       action: 'PrintSlides',
       blockID: this.blockID,
-      printRequestedBy: this.username
+      printRequestedBy: this.username,
+      slideQueuePath: this.slideQueuePath
 
       })
       .then(function (response) {
