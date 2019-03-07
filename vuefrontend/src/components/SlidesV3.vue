@@ -157,6 +157,9 @@ export default {
           //this.scannedbadgeinput = data.barcodeScanData
           //this.scanbadge()
             break
+          case 'HSLD':
+          this.blockID = 'Scan block not slide'
+            break
           default:
             // code block
         }
