@@ -37,7 +37,7 @@
 
       <br>
       <div class="row">
-          <slides :username="username" :background="background" :firstname="firstname" :validuser="validuser" :blockID="blockid"></slides>
+          <slides :username="username" :background="background" :firstname="firstname" :validuser="validuser"></slides>
       </div>
     </div>
   </div>
@@ -260,8 +260,8 @@ return {
   userstate: "no active user",
   badgeInputTextBoxDisabled: false,
   slidequeuepath: '',
-  stationname: '',
-  blockid:''
+  stationname: ''
+  //blockid:''
 }
 },
 
@@ -284,14 +284,14 @@ methods: {
   validateScanData(data){
     this.slidequeuepath = data.slideQueuePath
     this.stationname = data.stationName
-
     //Depending on prefix, send to correct placeholder
     console.log('barcodescan', data.barcodeScanData)
     console.log('prefix', data.barcodeScanData.substring(0,4))
 
     switch(data.barcodeScanData.substring(0,4)) {
       case 'HBLK':
-        this.blockid = data.barcodeScanData
+        //Handled within Slides Component
+        //this.blockid = data.barcodeScanData
         break
       case 'SBDG':
       this.scannedbadgeinput = data.barcodeScanData

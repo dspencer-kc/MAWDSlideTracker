@@ -19,7 +19,7 @@
     <div class="customheadertext">
         <h3>Scan BlockID:  </h3>
     </div>
-      <b-input id="InputBlockID" class="mb-2 mr-sm-2 mb-sm-0" v-model="blockID" :disabled=inputTextBoxDisabled placeholder="Touch Here then Scan Block" />
+      <b-input id="InputBlockID" class="mb-2 mr-sm-2 mb-sm-0" v-model="blockID" :disabled=inputTextBoxDisabled placeholder="Scan Block to Proceed" />
       <b-button type="submit" variant="primary lg" :disabled=inputButtonDisabled>{{formstatuslabel}}</b-button>
        <b-button variant="secondary sm" @click="clearCurrentSlide()">Cancel</b-button>
     </b-form>
@@ -108,11 +108,11 @@ export default {
     userid: String,
     background: String,
     validuser: Boolean,
-    blockID: String
+    //blockID: String
     },
     data() {
     return {
-      //blockID: '',
+      blockID: '',
       error_message: '',
       loading: false, // to track when app is retrieving data
       slides: {},
@@ -121,7 +121,50 @@ export default {
       info: null
     }
   },
+
+
+  sockets: {
+      connect: function () {
+          console.log('socket connected within slide')
+      },
+      customEmit: function (data) {
+          console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
+      },
+      stream: function(data) {
+          console.log('socket on within slide')
+
+          //validate scan data
+          this.validateScanData(data)
+      }
+  },
   methods: {
+    validateScanData(data){
+      if (this.validuser) {
+        this.slidequeuepath = data.slideQueuePath
+        this.stationname = data.stationName
+        //Depending on prefix, send to correct placeholder
+        console.log('slide: barcodescan', data.barcodeScanData)
+        console.log('slide: prefix', data.barcodeScanData.substring(0,4))
+
+        switch(data.barcodeScanData.substring(0,4)) {
+          case 'HBLK':
+            //BlockScan Detected Pull Slides
+            this.blockID = data.barcodeScanData
+            this.pullSlides();
+            break
+          case 'SBDG':
+          //Handled within App.vue
+          //this.scannedbadgeinput = data.barcodeScanData
+          //this.scanbadge()
+            break
+          default:
+            // code block
+        }
+      } else {
+        this.blockID = 'Invalid User'
+      }
+
+    },
     pullOrPrintSlides()
     {
 
@@ -217,7 +260,8 @@ export default {
       this.blockID ="";
       this.formstatus = 'loadslides';
       this.formstatuslabel = 'Load Slides';
-      document.getElementById("InputBlockID").disabled = false;
+      //Always disable input textbox now that we're scanning
+      //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}
       this.setFocusToInputBlockID()
     },
@@ -236,11 +280,13 @@ export default {
     },
     inputTextBoxDisabled(){
       //if (this.validuser=='f' || !blockID ) {
-      if (this.validuser) {
-        return false;
-      } else {
-        return true;
-      }
+      //if (this.validuser) {
+      //  return false;
+      //} else {
+      //  return true;
+      //}
+      //always disable input text box now that values are being scanned
+      return true
     }
   }
 }
