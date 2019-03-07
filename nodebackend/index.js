@@ -92,8 +92,14 @@ app.post('/updateslidetoprint', function (request, response) {
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
   var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
-              'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
-              'WHERE `SlideID` = \'' + strSlideID + '\';'
+            'SET ' +
+                ' `ToBePrinted` = ' + blToPrintStatus +
+            ' WHERE `SlideID` = \'' + strSlideID + '\';'
+console.log(strSQL)
+  //Updaate caused error
+  //var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
+  //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
+  //            'WHERE `SlideID` = \'' + strSlideID + '\';'
 
   // con.connect(function(err)
   // {
