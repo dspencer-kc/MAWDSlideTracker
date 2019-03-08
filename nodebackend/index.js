@@ -91,10 +91,17 @@ app.post('/updateslidetoprint', function (request, response) {
   var strAction = request.body.action
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
-  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` \
-              SET \
-                  `ToBePrinted` = ' + blToPrintStatus + " \
-              WHERE `SlideID` = '" + strSlideID + "';"
+
+  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
+            'SET ' +
+                ' `ToBePrinted` = ' + blToPrintStatus +
+            ' WHERE `SlideID` = \'' + strSlideID + '\';'
+console.log(strSQL)
+  //Update caused error
+  //var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
+  //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
+  //            'WHERE `SlideID` = \'' + strSlideID + '\';'
+ 
 
   // con.connect(function(err)
   // {
