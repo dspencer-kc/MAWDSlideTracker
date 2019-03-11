@@ -317,7 +317,7 @@ methods: {
     this.lastname = ""
     this.background = ""
     this.username = ""
-    this.scannedbadgeinput = "Touch here then scan badge"
+    this.scannedbadgeinput = "Please Scan Badge"
     this.scannedbadgebuttontext = "Scan Badge"
     this.badgeInputTextBoxDisabled = false
 
@@ -327,7 +327,7 @@ methods: {
             this.userid = this.scannedbadgeinput.substring(4);
 
             console.log("valid badge prefix");
-              axios.post('http://localhost:3000/getuserinfo', {
+              axios.post('http://10.24.4.9:2081/getuserinfo', {
               userid: this.userid
               //userid: 'mwd2954'
             })

@@ -312,6 +312,80 @@ console.log(request)
 
 //= ==========================================================================================
 //
+//    app.post pullslides
+//      Pull Slides Info by blockid - converted to post from get
+//
+//    Author: Drew Spencer
+//
+//    Last edited: 3/11/2019
+//
+//    When to call:
+//      AFter block is scanned
+//= ===========================================================================================
+app.post('/pullslides', function (request, response) {
+
+    var strResponse = ''
+    var strUserID = request.body.userID
+    var strBlockID = request.body.blockID
+
+    console.log('pullslides api call start')
+
+    // Connect to database
+    // var con = mysql.createConnection({
+    //  host: strMYSQLHost,
+    //  user: strMYSQLUser,
+    //  password: strMYSQLPassword,
+    //  database: strMYSQLDB
+    // });
+
+    // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
+    // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
+    strSQL = `SELECT tblSlides.*, \
+                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
+                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
+                       copath_c_d_person_1.initials         AS OrderPathInitials, \
+                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, \
+                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, \
+                       copath_c_d_department.name           AS StainDept  \
+                  FROM   ((((((tblSlides \
+                           INNER JOIN copath_p_stainprocess \
+                                   ON tblSlides.BlockStainInstID = \
+                                      copath_p_stainprocess._blockstaininstid) \
+                          INNER JOIN tblBlock  \
+                                  ON tblSlides.BlockID = tblBlock.BlockID)  \
+                         LEFT JOIN tblCassetteColorHopperLookup  \
+                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) \
+                        LEFT JOIN copath_c_d_stainstatus \
+                               ON copath_p_stainprocess.stainstatus_id = \
+                                  copath_c_d_stainstatus.id) \
+                       LEFT JOIN copath_c_d_person \
+                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) \
+                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 \
+                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) \
+                     LEFT JOIN copath_c_d_department \
+                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
+                  WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
+    console.log(strSQL)
+    con.query(strSQL, function (err, result) {
+      if (err) throw err
+      // if there is no error, you have the result
+      // iterate for all the rows in result
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+        row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
+        if (row.OrderingPath = 'null') {
+          row.OrderingPath = ''
+        }
+      })
+
+      console.log(result)
+      response.json(result)
+    })
+  })
+
+//= ==========================================================================================
+//
 //    app.get slidetracker
 //
 //    Used to lookup slides by BlockID
@@ -389,11 +463,6 @@ router.get('/slideparameters', (request, response) => {
                           ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
   console.log(strSQL)
-
-  // con.connect(function(err)
-  // {
-  //  if (err) throw err;
-  //  console.log("Connected!");
 
   con.query(strSQL, function (err, result) {
     if (err) throw err

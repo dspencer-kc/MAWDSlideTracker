@@ -90,11 +90,14 @@
 
 <!--components/Slides.vue -->
 <script>
-import axios from 'axios';
+import axios from 'axios'
+
+const strApiUrl = 'http://10.24.4.9:2081'
 
 
 // define the external API URL
-const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
+//const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
+const API_URL = 'http://10.24.4.9:2081/slidetracker/slideparameters?blockid='  //To be replaced
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
   return `${API_URL}${blockID}`
@@ -248,6 +251,27 @@ export default {
           console.log(e)
         })
     },
+    pullSlidesViaPost(){
+      axios.post(strApiUrl + '/pullslides', {
+        blockID: this.blockID,
+        printRequestedBy: this.username
+    })
+    .then(function (response) {
+      console.log(response)
+      this.loading = false
+      this.error_message = ''
+      this.slides = response
+      this.formstatus = 'readytoprint'
+      document.getElementById("InputBlockID").disabled = true
+      this.formstatuslabel = 'Print Slides'
+      console.log('completed pull slides=post')
+    })
+    .catch(function (error) {
+      this.error_message = `Sorry, block with blockID '${blockID}' not found.`
+      console.log(error)
+    })
+
+  },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
         //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
