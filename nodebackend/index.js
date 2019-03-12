@@ -26,7 +26,7 @@ const express = require('express')
 var mysql = require('mysql')
 const app = express()
 const router = express.Router()
-const port = 3000
+const port = 2081
 
 var strMYSQLHost = process.env.strMYSQLHost
 var strMYSQLUser = process.env.strMYSQLUser
@@ -101,7 +101,7 @@ console.log(strSQL)
   //var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
   //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
   //            'WHERE `SlideID` = \'' + strSlideID + '\';'
- 
+
 
   // con.connect(function(err)
   // {
@@ -186,6 +186,7 @@ app.post('/getuserinfo', function (request, response) {
 //
 //    app.post printslides
 //      Prints Slides and updates tracking info
+//
 //
 //    Author: Drew Spencer
 //
