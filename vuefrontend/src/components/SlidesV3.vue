@@ -97,7 +97,7 @@ const strApiUrl = 'http://10.24.4.9:2081'
 
 // define the external API URL
 //const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
-const API_URL = 'http://10.24.4.9:2081/slidetracker/slideparameters?blockid='  //To be replaced
+const API_URL = 'http://10.24.4.9:2081/slidetracker/slideparameters?blockid='  //For Get Call
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
   return `${API_URL}${blockID}`
@@ -157,6 +157,7 @@ export default {
           case 'HBLK':
             //BlockScan Detected Pull Slides
             this.blockID = data.barcodeScanData
+            //this.pullSlidesViaPost();
             this.pullSlides();
             break
           case 'SBDG':
@@ -180,7 +181,6 @@ export default {
 
       if (this.formstatus == 'loadslides') {
         this.pullSlides();
-
       }
     else if (this.formstatus == 'readytoprint') {
       console.log('goto print slides');
@@ -199,7 +199,7 @@ export default {
     //Add printRequestedBy
     console.log(this.slideQueuePath)
 
-      axios.post('http://localhost:3000/printslides', {
+      axios.post(strApiUrl + '/printslides', {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: this.username,
@@ -231,16 +231,19 @@ export default {
 
       //uses fetch as opposed to Axios
       fetch(buildUrl(blockID))
-        .then(response => response.json())
+        //.then(response => response.json())
+        .then(function(response){
+          return response.json()
+        })
         .then(data => {
           this.loading = false
           this.error_message = ''
-
           if (data.errorcode) {
             this.error_message = `Sorry, block with blockID '${blockID}' not found.`
             console.log('error')
             return
           }
+
           this.slides = data;
           this.formstatus = 'readytoprint';
           document.getElementById("InputBlockID").disabled = true;
@@ -251,31 +254,10 @@ export default {
           console.log(e)
         })
     },
-    pullSlidesViaPost(){
-      axios.post(strApiUrl + '/pullslides', {
-        blockID: this.blockID,
-        printRequestedBy: this.username
-    })
-    .then(function (response) {
-      console.log(response)
-      this.loading = false
-      this.error_message = ''
-      this.slides = response
-      this.formstatus = 'readytoprint'
-      document.getElementById("InputBlockID").disabled = true
-      this.formstatuslabel = 'Print Slides'
-      console.log('completed pull slides=post')
-    })
-    .catch(function (error) {
-      this.error_message = `Sorry, block with blockID '${blockID}' not found.`
-      console.log(error)
-    })
-
-  },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
         //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-    axios.post('http://localhost:3000/updateslidetoprint', {
+    axios.post(strApiUrl + '/updateslidetoprint', {
     action: 'UpdateSlideToPrintValue',
     slideId: strSlideID,
     toPrintStatus: blChecked
