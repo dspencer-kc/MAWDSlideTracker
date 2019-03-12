@@ -1,12 +1,17 @@
 require('dotenv').load()
 var barcodeScan = require('./barcode/barcode-scan')
 var httpServer = require('./http-server')
-barcodeScan.init('COM4')
-const socketport = '8001'
+//barcodeScan.init('COM4')
+//const socketport = '8001'
 
 var strSlideQueuePath = process.env.SlideQueuePath
 var strStationName = process.env.StationName
+var strBarcodeScannerPort = process.env.BarcodeScannerPort
+var socketport = process.env.WebSocketPort
 
+barcodeScan.init(strBarcodeScannerPort)
+
+console.log(socketport)
 
 //Start http server
 server = httpServer.start(function (err, message) {
