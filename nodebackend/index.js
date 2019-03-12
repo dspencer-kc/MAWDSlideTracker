@@ -26,13 +26,14 @@ const express = require('express')
 var mysql = require('mysql')
 const app = express()
 const router = express.Router()
-const port = 2081
+//const port = 2081
 
 var strMYSQLHost = process.env.strMYSQLHost
 var strMYSQLUser = process.env.strMYSQLUser
 var strMYSQLPassword = process.env.strMYSQLPassword
 var strMYSQLDB = process.env.strMYSQLDB
 var strSQL = ''
+var port = process.env.HttpPort
 // var arSlideCount = []
 //var barcodeScan = require('./src/barcode/barcode-scan.js')
 //barcodeScan.init('COM4', io)

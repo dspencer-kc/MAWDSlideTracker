@@ -1,0 +1,5 @@
+strMYSQLHost=x.x.x.x
+strMYSQLUser=someuser
+strMYSQLPassword=somepass
+strMYSQLDB=MYDB
+HttpPort=2081
