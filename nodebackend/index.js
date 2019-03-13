@@ -18,7 +18,7 @@
 require('dotenv').load()
 var fs = require('fs')
 var bodyParser = require('body-parser')
-const strSlideQueuePath = '\\\\mawd-data01\\slideprinters\\slidequeue\\histo1\\'
+var strSlideQueuePath = '/media/slideprinters/slidequeue/test/'  //DefaultPath if not assigned when passed
 var dateFormat = require('dateformat')
 var strFileWriteData = ''
 // var strSlideFlatFileName = ''
@@ -26,13 +26,14 @@ const express = require('express')
 var mysql = require('mysql')
 const app = express()
 const router = express.Router()
-const port = 3000
+//const port = 2081
 
 var strMYSQLHost = process.env.strMYSQLHost
 var strMYSQLUser = process.env.strMYSQLUser
 var strMYSQLPassword = process.env.strMYSQLPassword
 var strMYSQLDB = process.env.strMYSQLDB
 var strSQL = ''
+var port = process.env.HttpPort
 // var arSlideCount = []
 //var barcodeScan = require('./src/barcode/barcode-scan.js')
 //barcodeScan.init('COM4', io)
@@ -91,15 +92,17 @@ app.post('/updateslidetoprint', function (request, response) {
   var strAction = request.body.action
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
+
   var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
             'SET ' +
                 ' `ToBePrinted` = ' + blToPrintStatus +
             ' WHERE `SlideID` = \'' + strSlideID + '\';'
 console.log(strSQL)
-  //Updaate caused error
+  //Update caused error
   //var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
   //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
   //            'WHERE `SlideID` = \'' + strSlideID + '\';'
+
 
   // con.connect(function(err)
   // {
@@ -185,6 +188,7 @@ app.post('/getuserinfo', function (request, response) {
 //    app.post printslides
 //      Prints Slides and updates tracking info
 //
+//
 //    Author: Drew Spencer
 //
 //    Last edited: 12/21/2018 ds
@@ -205,6 +209,8 @@ app.post('/getuserinfo', function (request, response) {
 
 app.post('/printslides', function (request, response) {
 // var strPrintRequestBy = "unknown";
+
+console.log(request)
   var strLocationID = 'unknown'
   var strSQLUpdateStatement = ''
 
@@ -214,23 +220,17 @@ app.post('/printslides', function (request, response) {
   var strAction = request.body.action
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
+  strSlideQueuePath = request.body.slideQueuePath
 
   console.log('Hello PrintSlides')
   console.log(strBlockID)
   console.log(strAction) // strAction is not used
   console.log(strPrintRequestBy)
   console.log(strDate)
+  console.log('Slidequeuepath:', strSlideQueuePath)
 
-  // Connect to database
-  // var con = mysql.createConnection({
-  //  host: strMYSQLHost,
-  //  user: strMYSQLUser,
-  //  password: strMYSQLPassword,
-  //  database: strMYSQLDB
-  // });
 
   // Get all required information from blockID, only include slides that are marked 'to be printed'
-
   strSQL = `SELECT tblSlides.*, \
                      tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
                      copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
@@ -256,14 +256,10 @@ app.post('/printslides', function (request, response) {
                    LEFT JOIN copath_c_d_department \
                           ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
-  console.log(strSQL)
 
-  // con.connect(function(err)
-  // {
-  //  if (err) throw err;
+  console.log(strSQL)
   console.log('Connected!')
 
-  //
   con.query(strSQL, function (err, result) {
     if (err) throw err
     // if there is no error, you have the result
@@ -284,6 +280,7 @@ app.post('/printslides', function (request, response) {
       strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + row.OrderingPath + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
       strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
+      console.log(strSlideFlatFileFullName)
       fs.writeFile(strSlideFlatFileFullName, strFileWriteData,
         // callback function that is called after writing file is done
         function (err) {
@@ -311,19 +308,90 @@ app.post('/printslides', function (request, response) {
         if (updateerr) throw updateerr
 
         console.log(strSQLUpdateStatement)
-
         console.log(updateresult.affectedRows + ' record(s) updated')
       })
     })
 
     console.log(result)
   })
-  // });  //end .connect
 
-  // con.end();
   console.log(`${strBlockID}`)
   response.send('Slides have been sent to Slide Printer')
 })
+
+//= ==========================================================================================
+//
+//    app.post pullslides
+//      Pull Slides Info by blockid - converted to post from get
+//
+//    Author: Drew Spencer
+//
+//    Last edited: 3/11/2019
+//
+//    When to call:
+//      AFter block is scanned
+//= ===========================================================================================
+app.post('/pullslides', function (request, response) {
+
+    var strResponse = ''
+    var strUserID = request.body.userID
+    var strBlockID = request.body.blockID
+
+    console.log('pullslides api call start')
+
+    // Connect to database
+    // var con = mysql.createConnection({
+    //  host: strMYSQLHost,
+    //  user: strMYSQLUser,
+    //  password: strMYSQLPassword,
+    //  database: strMYSQLDB
+    // });
+
+    // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
+    // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
+    strSQL = `SELECT tblSlides.*, \
+                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
+                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
+                       copath_c_d_person_1.initials         AS OrderPathInitials, \
+                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, \
+                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, \
+                       copath_c_d_department.name           AS StainDept  \
+                  FROM   ((((((tblSlides \
+                           INNER JOIN copath_p_stainprocess \
+                                   ON tblSlides.BlockStainInstID = \
+                                      copath_p_stainprocess._blockstaininstid) \
+                          INNER JOIN tblBlock  \
+                                  ON tblSlides.BlockID = tblBlock.BlockID)  \
+                         LEFT JOIN tblCassetteColorHopperLookup  \
+                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) \
+                        LEFT JOIN copath_c_d_stainstatus \
+                               ON copath_p_stainprocess.stainstatus_id = \
+                                  copath_c_d_stainstatus.id) \
+                       LEFT JOIN copath_c_d_person \
+                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) \
+                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 \
+                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) \
+                     LEFT JOIN copath_c_d_department \
+                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
+                  WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
+    console.log(strSQL)
+    con.query(strSQL, function (err, result) {
+      if (err) throw err
+      // if there is no error, you have the result
+      // iterate for all the rows in result
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+        row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
+        if (row.OrderingPath = 'null') {
+          row.OrderingPath = ''
+        }
+      })
+
+      console.log(result)
+      response.json(result)
+    })
+  })
 
 //= ==========================================================================================
 //
@@ -404,11 +472,6 @@ router.get('/slideparameters', (request, response) => {
                           ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
   console.log(strSQL)
-
-  // con.connect(function(err)
-  // {
-  //  if (err) throw err;
-  //  console.log("Connected!");
 
   con.query(strSQL, function (err, result) {
     if (err) throw err

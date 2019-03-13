@@ -19,7 +19,7 @@
     <div class="customheadertext">
         <h3>Scan BlockID:  </h3>
     </div>
-      <b-input id="InputBlockID" class="mb-2 mr-sm-2 mb-sm-0" v-model="blockID" :disabled=inputTextBoxDisabled placeholder="Touch Here then Scan Block" />
+      <b-input id="InputBlockID" class="mb-2 mr-sm-2 mb-sm-0" v-model="blockID" :disabled=inputTextBoxDisabled placeholder="Scan Block to Proceed" />
       <b-button type="submit" variant="primary lg" :disabled=inputButtonDisabled>{{formstatuslabel}}</b-button>
        <b-button variant="secondary sm" @click="clearCurrentSlide()">Cancel</b-button>
     </b-form>
@@ -90,11 +90,14 @@
 
 <!--components/Slides.vue -->
 <script>
-import axios from 'axios';
+import axios from 'axios'
+
+const strApiUrl = 'http://10.24.4.9:2081'
 
 
 // define the external API URL
-const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
+//const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
+const API_URL = 'http://10.24.4.9:2081/slidetracker/slideparameters?blockid='  //For Get Call
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
   return `${API_URL}${blockID}`
@@ -108,6 +111,7 @@ export default {
     userid: String,
     background: String,
     validuser: Boolean
+    //blockID: String
     },
     data() {
     return {
@@ -117,16 +121,66 @@ export default {
       slides: {},
       formstatus: 'loadslides',
       formstatuslabel: 'Load Slides',
-      info: null
+      info: null,
+      slideQueuePath: '',
+      stationName: ''
     }
   },
+
+
+  sockets: {
+      connect: function () {
+          console.log('socket connected within slide')
+      },
+      customEmit: function (data) {
+          console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
+      },
+      stream: function(data) {
+          console.log('socket on within slide')
+          console.log('within slide:',data)
+          //validate scan data
+          this.validateScanData(data)
+      }
+  },
   methods: {
+    validateScanData(data){
+      if (this.validuser) {
+        console.log('Slide Queue Path: ', data.slideQueuePath)
+        this.slideQueuePath = data.slideQueuePath
+        console.log('slide station name:', data.stationName)
+        this.stationName = data.stationName
+        //Depending on prefix, send to correct placeholder
+        console.log('slide: barcodescan', data.barcodeScanData)
+        console.log('slide: prefix', data.barcodeScanData.substring(0,4))
+
+        switch(data.barcodeScanData.substring(0,4)) {
+          case 'HBLK':
+            //BlockScan Detected Pull Slides
+            this.blockID = data.barcodeScanData
+            //this.pullSlidesViaPost();
+            this.pullSlides();
+            break
+          case 'SBDG':
+          //Handled within App.vue
+          //this.scannedbadgeinput = data.barcodeScanData
+          //this.scanbadge()
+            break
+          case 'HSLD':
+          this.blockID = 'Scan block not slide'
+            break
+          default:
+            // code block
+        }
+      } else {
+        this.blockID = 'Invalid User'
+      }
+
+    },
     pullOrPrintSlides()
     {
 
       if (this.formstatus == 'loadslides') {
         this.pullSlides();
-
       }
     else if (this.formstatus == 'readytoprint') {
       console.log('goto print slides');
@@ -143,11 +197,13 @@ export default {
 
     //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
     //Add printRequestedBy
+    console.log(this.slideQueuePath)
 
-      axios.post('http://localhost:3000/printslides', {
+      axios.post(strApiUrl + '/printslides', {
       action: 'PrintSlides',
       blockID: this.blockID,
-      printRequestedBy: this.username
+      printRequestedBy: this.username,
+      slideQueuePath: this.slideQueuePath
 
       })
       .then(function (response) {
@@ -175,16 +231,19 @@ export default {
 
       //uses fetch as opposed to Axios
       fetch(buildUrl(blockID))
-        .then(response => response.json())
+        //.then(response => response.json())
+        .then(function(response){
+          return response.json()
+        })
         .then(data => {
           this.loading = false
           this.error_message = ''
-
           if (data.errorcode) {
             this.error_message = `Sorry, block with blockID '${blockID}' not found.`
             console.log('error')
             return
           }
+
           this.slides = data;
           this.formstatus = 'readytoprint';
           document.getElementById("InputBlockID").disabled = true;
@@ -198,7 +257,7 @@ export default {
     updateSlideToPrintValue(strSlideID, blChecked)
     {
         //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-    axios.post('http://localhost:3000/updateslidetoprint', {
+    axios.post(strApiUrl + '/updateslidetoprint', {
     action: 'UpdateSlideToPrintValue',
     slideId: strSlideID,
     toPrintStatus: blChecked
@@ -216,7 +275,8 @@ export default {
       this.blockID ="";
       this.formstatus = 'loadslides';
       this.formstatuslabel = 'Load Slides';
-      document.getElementById("InputBlockID").disabled = false;
+      //Always disable input textbox now that we're scanning
+      //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}
       this.setFocusToInputBlockID()
     },
@@ -235,11 +295,13 @@ export default {
     },
     inputTextBoxDisabled(){
       //if (this.validuser=='f' || !blockID ) {
-      if (this.validuser) {
-        return false;
-      } else {
-        return true;
-      }
+      //if (this.validuser) {
+      //  return false;
+      //} else {
+      //  return true;
+      //}
+      //always disable input text box now that values are being scanned
+      return true
     }
   }
 }

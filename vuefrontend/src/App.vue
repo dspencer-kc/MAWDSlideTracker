@@ -26,7 +26,7 @@
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
       </li>
           <form  v-on:submit.prevent="scanbadge()" class="form-inline my-2 my-lg-0">
-          <b-input id="InputBadge" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=badgeInputTextBoxDisabled v-model="scannedbadgeinput" placeholder="Touch here then scan badge" />
+          <b-input id="InputBadge" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=true v-model="scannedbadgeinput" placeholder="Scan Badge" />
            <button class="btn btn-sm btn-outline-secondary" type="submit">{{scannedbadgebuttontext}}</button>
          </form>
       </ul>
@@ -254,11 +254,13 @@ return {
   lastname: "lastnameinitialvalue",
   userid: "useridinitialvalue",
   background: "backgroundinitialvalue",
-  scannedbadgeinput: "Touch here then scan badge",
+  scannedbadgeinput: "Scan Badge To Start",
   validuser: false,
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",
   badgeInputTextBoxDisabled: false
+  //stationname: ''
+  //blockid:''
 }
 },
 
@@ -271,10 +273,37 @@ sockets: {
     },
     stream: function(data) {
         console.log('socket on')
-        this.forwardBarcodeScan(data.data) //Received value should be json object matched on data
+
+        //validate scan data
+        this.validateScanData(data)
+
     }
 },
 methods: {
+  validateScanData(data){
+    //this.stationname = data.stationName
+    //Depending on prefix, send to correct placeholder
+    console.log('barcodescan', data.barcodeScanData)
+    console.log('prefix', data.barcodeScanData.substring(0,4))
+
+    switch(data.barcodeScanData.substring(0,4)) {
+      case 'HBLK':
+        //Handled within Slides Component
+        //this.blockid = data.barcodeScanData
+        break
+      case 'SBDG':
+      this.scannedbadgeinput = data.barcodeScanData
+      this.scanbadge()
+        break
+      default:
+        // code block
+    }
+
+
+
+    //this.forwardBarcodeScan(data.barcodeScanData) //Received value should be json object matched on data
+
+  },
   scanbadge()
   {
   console.log("helloscan");
@@ -288,7 +317,7 @@ methods: {
     this.lastname = ""
     this.background = ""
     this.username = ""
-    this.scannedbadgeinput = "Touch here then scan badge"
+    this.scannedbadgeinput = "Please Scan Badge"
     this.scannedbadgebuttontext = "Scan Badge"
     this.badgeInputTextBoxDisabled = false
 
@@ -298,7 +327,7 @@ methods: {
             this.userid = this.scannedbadgeinput.substring(4);
 
             console.log("valid badge prefix");
-              axios.post('http://localhost:3000/getuserinfo', {
+              axios.post('http://10.24.4.9:2081/getuserinfo', {
               userid: this.userid
               //userid: 'mwd2954'
             })
@@ -343,10 +372,6 @@ methods: {
     }
   }
     console.log("end scanbadge");
-  },
-  forwardBarcodeScan(strBarcode){
-    this.scannedbadgeinput = strBarcode
-    this.scanbadge()
   }
 
 },
@@ -359,19 +384,20 @@ computed:{
     } else {
       return true
     }
-  },
-  inputTextBoxDisabled(){
-    //Disable input text if no valid user
-    if (this.userstate=="no active user") {
-      return false
-    } else {
-      return true
-    }
   }
+  //,
+  //inputTextBoxDisabled(){
+  //  //Disable input text if no valid user
+  //  if (this.userstate=="no active user") {
+  //    return false
+  //  } else {
+  //    return true
+  //  }
+  //}
 }
 }
 
-console.log('io on localhost:8001')
+
 
 </script>
 

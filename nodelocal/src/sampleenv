@@ -1,0 +1,5 @@
+**Change this filename to .env and remove this line to set local environment variables.
+SlideQueuePath=/media/slideprinters/slidequeue/test/
+StationName=micronomy02
+BarcodeScannerPort=COM4
+WebSocketPort=8001
