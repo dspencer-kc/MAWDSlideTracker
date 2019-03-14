@@ -38,20 +38,14 @@ var port = process.env.HttpPort
 //var barcodeScan = require('./src/barcode/barcode-scan.js')
 //barcodeScan.init('COM4', io)
 
-// Connect to the database
-var con = mysql.createConnection({
-  host: strMYSQLHost,
-  user: strMYSQLUser,
-  password: strMYSQLPassword,
-  database: strMYSQLDB
-})
 
-con.connect(function (err) {
-  if (err) {
-    response.send(err)
-    throw err
-  }
-})
+
+//con.connect(function (err) {
+//  if (err) {
+//    response.send(err)
+//    throw err
+//  }
+//})
 
 // bodyParser
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -111,19 +105,27 @@ console.log(strSQL)
   //    response.send(err);
   //    throw err;
   //  }
-  console.log('Connected!')
 
-  //
+  // Connect to the database
+  var con = mysql.createConnection({
+    host: strMYSQLHost,
+    user: strMYSQLUser,
+    password: strMYSQLPassword,
+    database: strMYSQLDB,
+    multipleStatements: true
+  })
+
   con.query(strSQL, function (err, result) {
     if (err) {
       response.send(err)
       console.log(err)
-      throw err
       // On Error, close connection
+    } else {
+      // if there is no error, you have the result
+      strResponse = result.affectedRows + ' record(s) updated'
+      console.log(strResponse)
     }
-    // if there is no error, you have the result
-    strResponse = result.affectedRows + ' record(s) updated'
-    console.log(strResponse)
+    con.end()
   })
   // });
 
@@ -153,34 +155,32 @@ app.post('/getuserinfo', function (request, response) {
               WHERE `id` = '" + strUserID + "';"
 
   console.log(strSQL)
-  // Connect to database
-  // var con = mysql.createConnection({
-  //  host: strMYSQLHost,
-  //  user: strMYSQLUser,
-  //  password: strMYSQLPassword,
-  //  database: strMYSQLDB
-  // });
 
-  // con.connect(function(err)
-  // {
-  //  if (err) throw err;
+  // Connect to the database
+  var con = mysql.createConnection({
+    host: strMYSQLHost,
+    user: strMYSQLUser,
+    password: strMYSQLPassword,
+    database: strMYSQLDB,
+    multipleStatements: true
+  })
   console.log('Connected!')
 
   con.query(strSQL, function (err, result) {
-    if (err) throw err
-    // if there is no error, you have the result
-    // iterate for all the rows in result
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+      })
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) //End query
 
-    console.log('Completed query.')
-    Object.keys(result).forEach(function (key) {
-      var row = result[key]
-      // Format Date
-    })
-
-    console.log(result)
-    response.json(result)
-  })
-  // });
 })
 
 //= ==========================================================================================
@@ -258,11 +258,23 @@ console.log(request)
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
 
   console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection({
+    host: strMYSQLHost,
+    user: strMYSQLUser,
+    password: strMYSQLPassword,
+    database: strMYSQLDB,
+    multipleStatements: true
+  })
   console.log('Connected!')
 
   con.query(strSQL, function (err, result) {
-    if (err) throw err
-    // if there is no error, you have the result
+    if (err) {
+      console.log(err)
+  } else {
+
+    console.log(result)
     // iterate for all the rows in result
     Object.keys(result).forEach(function (key) {
       var row = result[key]
@@ -305,15 +317,22 @@ console.log(request)
                                                       `SlideID` = '" + row.SlideID + "';"
 
       con.query(strSQLUpdateStatement, function (updateerr, updateresult) {
-        if (updateerr) throw updateerr
-
-        console.log(strSQLUpdateStatement)
-        console.log(updateresult.affectedRows + ' record(s) updated')
-      })
+        if (updateerr) {
+          console.log('updateerror:',updateerr)
+        }
+        else{
+                  console.log(strSQLUpdateStatement)
+                  console.log(updateresult.affectedRows + ' record(s) updated')
+        }
+        //Do not end connection, as you need to go through the entire loop
+      }) //end update query
     })
 
-    console.log(result)
-  })
+
+  }
+    con.end()
+
+  }) //end qury
 
   console.log(`${strBlockID}`)
   response.send('Slides have been sent to Slide Printer')
@@ -375,21 +394,37 @@ app.post('/pullslides', function (request, response) {
                             ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
     console.log(strSQL)
-    con.query(strSQL, function (err, result) {
-      if (err) throw err
-      // if there is no error, you have the result
-      // iterate for all the rows in result
-      Object.keys(result).forEach(function (key) {
-        var row = result[key]
-        // Format Date
-        row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        if (row.OrderingPath = 'null') {
-          row.OrderingPath = ''
-        }
-      })
+    // Connect to the database
+    var con = mysql.createConnection({
+      host: strMYSQLHost,
+      user: strMYSQLUser,
+      password: strMYSQLPassword,
+      database: strMYSQLDB,
+      multipleStatements: true
+    })
 
-      console.log(result)
-      response.json(result)
+    con.query(strSQL, function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+
+        // if there is no error, you have the result
+        // iterate for all the rows in result
+        Object.keys(result).forEach(function (key) {
+          var row = result[key]
+          // Format Date
+          row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
+          if (row.OrderingPath = 'null') {
+            row.OrderingPath = ''
+          }
+        })
+
+        console.log(result)
+        response.json(result)
+
+      }
+      con.end()
+
     })
   })
 
@@ -471,23 +506,35 @@ router.get('/slideparameters', (request, response) => {
                    LEFT JOIN copath_c_d_department \
                           ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
-  console.log(strSQL)
+  //console.log(strSQL)
+
+  var con = mysql.createConnection({
+    host: strMYSQLHost,
+    user: strMYSQLUser,
+    password: strMYSQLPassword,
+    database: strMYSQLDB,
+    multipleStatements: true
+  })
 
   con.query(strSQL, function (err, result) {
-    if (err) throw err
-    // if there is no error, you have the result
-    // iterate for all the rows in result
-    Object.keys(result).forEach(function (key) {
-      var row = result[key]
-      // Format Date
-      row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-      if (row.OrderingPath = 'null') {
-        row.OrderingPath = ''
-      }
-    })
+    if (err) {
+      console.log(err)
+    } else {
+      // if there is no error, you have the result
+      // iterate for all the rows in result
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+        row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
+        if (row.OrderingPath = 'null') {
+          row.OrderingPath = ''
+        }
+      })
 
-    console.log(result)
-    response.json(result)
+      //console.log(result)
+      response.json(result)
+    }
+    con.end()
   })
   // });
   // con.end();
