@@ -8,7 +8,6 @@
 //= ===========================================================================================
 require('dotenv').load()
 var httpServer = require('./http-server')
-var mysqlConfig = require('./mysqlConfig')
 var port = process.env.HttpPort
 
 
