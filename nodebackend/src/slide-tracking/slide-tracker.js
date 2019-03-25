@@ -1,3 +1,8 @@
+var mysql = require('mysql')
+var mysqlConfig = require('../mysqlConfig')
+
+
+
 module.exports = {
   printSlides: printSlides,
   getSlideParameters: getSlideParameters,
@@ -21,22 +26,25 @@ function getUserInfo (request, response, callback) {
               WHERE `id` = '" + strUserID + "';"
 
   console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
   console.log('Connected!')
 
   con.query(strSQL, function (err, result) {
-    if (err) throw err
-    // if there is no error, you have the result
-    // iterate for all the rows in result
-
-    console.log('Completed query.')
-    Object.keys(result).forEach(function (key) {
-      var row = result[key]
-      // Format Date
-    })
-
-    console.log(result)
-    response.json(result)
-  })
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+      })
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) //End query
 }
 
 function updateSlideToPrint (request, response, callback) {

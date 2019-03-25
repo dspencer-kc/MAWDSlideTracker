@@ -24,28 +24,11 @@ var strFileWriteData = ''
 // var strSlideFlatFileName = ''
 const express = require('express')
 var mysql = require('mysql')
+var mysqlConfig = require('./src/mysqlConfig')
 const app = express()
 const router = express.Router()
-//const port = 2081
-
-var strMYSQLHost = process.env.strMYSQLHost
-var strMYSQLUser = process.env.strMYSQLUser
-var strMYSQLPassword = process.env.strMYSQLPassword
-var strMYSQLDB = process.env.strMYSQLDB
 var strSQL = ''
 var port = process.env.HttpPort
-// var arSlideCount = []
-//var barcodeScan = require('./src/barcode/barcode-scan.js')
-//barcodeScan.init('COM4', io)
-
-
-
-//con.connect(function (err) {
-//  if (err) {
-//    response.send(err)
-//    throw err
-//  }
-//})
 
 // bodyParser
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -54,7 +37,6 @@ app.use(bodyParser.json())
 // Add headers
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-
   res.setHeader('Access-Control-Allow-Origin', '*')
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
@@ -97,24 +79,8 @@ console.log(strSQL)
   //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
   //            'WHERE `SlideID` = \'' + strSlideID + '\';'
 
-
-  // con.connect(function(err)
-  // {
-  //  if (err)
-  //  {
-  //    response.send(err);
-  //    throw err;
-  //  }
-
   // Connect to the database
-  var con = mysql.createConnection({
-    host: strMYSQLHost,
-    user: strMYSQLUser,
-    password: strMYSQLPassword,
-    database: strMYSQLDB,
-    multipleStatements: true
-  })
-
+  var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
       response.send(err)
@@ -157,13 +123,7 @@ app.post('/getuserinfo', function (request, response) {
   console.log(strSQL)
 
   // Connect to the database
-  var con = mysql.createConnection({
-    host: strMYSQLHost,
-    user: strMYSQLUser,
-    password: strMYSQLPassword,
-    database: strMYSQLDB,
-    multipleStatements: true
-  })
+  var con = mysql.createConnection(mysqlConfig)
   console.log('Connected!')
 
   con.query(strSQL, function (err, result) {
@@ -260,13 +220,8 @@ console.log(request)
   console.log(strSQL)
 
   // Connect to the database
-  var con = mysql.createConnection({
-    host: strMYSQLHost,
-    user: strMYSQLUser,
-    password: strMYSQLPassword,
-    database: strMYSQLDB,
-    multipleStatements: true
-  })
+var con = mysql.createConnection(mysqlConfig)
+
   console.log('Connected!')
 
   con.query(strSQL, function (err, result) {
@@ -395,13 +350,7 @@ app.post('/pullslides', function (request, response) {
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
     console.log(strSQL)
     // Connect to the database
-    var con = mysql.createConnection({
-      host: strMYSQLHost,
-      user: strMYSQLUser,
-      password: strMYSQLPassword,
-      database: strMYSQLDB,
-      multipleStatements: true
-    })
+    var con = mysql.createConnection(mysqlConfig)
 
     con.query(strSQL, function (err, result) {
       if (err) {
@@ -460,7 +409,7 @@ router.get('/', (request, response) => {
   response.json({ message: 'Hello from the API' })
 })
 
-// set the server to listen on port 3000
+// set the  to listen on port 3000
 server = app.listen(port, () => console.log(`Listening on port ${port}`))
 
 const url = require('url')
@@ -508,13 +457,7 @@ router.get('/slideparameters', (request, response) => {
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
   //console.log(strSQL)
 
-  var con = mysql.createConnection({
-    host: strMYSQLHost,
-    user: strMYSQLUser,
-    password: strMYSQLPassword,
-    database: strMYSQLDB,
-    multipleStatements: true
-  })
+var con = mysql.createConnection(mysqlConfig)
 
   con.query(strSQL, function (err, result) {
     if (err) {

@@ -27,5 +27,6 @@ module.exports = {
 }
 
 function start (port, callback) {
-  // start the express server up here
+  // set the server to listen on port XXXX
+  server = app.listen(port, () => console.log(`Listening on port ${port}`))
 }
