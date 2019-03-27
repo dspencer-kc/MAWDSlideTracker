@@ -25,7 +25,7 @@ function printSlides (request, response, callback) {
     var strAction = request.body.action
     var strBlockID = request.body.blockID
     var strPrintRequestBy = request.body.printRequestedBy
-    strSlideQueuePath = request.body.slideQueuePath
+    var strSlideQueuePath = request.body.slideQueuePath
 
     console.log('Hello PrintSlides')
     console.log(strBlockID)
@@ -68,7 +68,6 @@ function printSlides (request, response, callback) {
   var con = mysql.createConnection(mysqlConfig)
 
     console.log('Connected!')
-
     con.query(strSQL, function (err, result) {
       if (err) {
         console.log(err)
@@ -217,13 +216,6 @@ function pullSlides (request, response, callback) {
   var parameters = urlParts.query
   var strBlockID = parameters.blockid
 
-  // Connect to database
-  // var con = mysql.createConnection({
-  //  host: strMYSQLHost,
-  //  user: strMYSQLUser,
-  //  password: strMYSQLPassword,
-  //  database: strMYSQLDB
-  // });
 
   // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
   // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
