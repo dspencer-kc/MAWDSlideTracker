@@ -18,7 +18,7 @@
 require('dotenv').load()
 var fs = require('fs')
 var bodyParser = require('body-parser')
-var strSlideQueuePath = '/media/slideprinters/slidequeue/test/'  //DefaultPath if not assigned when passed
+//var strSlideQueuePath = '/media/slideprinters/slidequeue/test/'  //DefaultPath if not assigned when passed
 var dateFormat = require('dateformat')
 var strFileWriteData = ''
 // var strSlideFlatFileName = ''
@@ -220,7 +220,7 @@ console.log(request)
   var strAction = request.body.action
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
-  strSlideQueuePath = request.body.slideQueuePath
+  var strSlideQueuePath = request.body.slideQueuePath
 
   console.log('Hello PrintSlides')
   console.log(strBlockID)
