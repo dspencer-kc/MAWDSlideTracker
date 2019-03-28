@@ -14,6 +14,29 @@ module.exports = {
 }
 
 function printSlides (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    app.post printslides
+  //      Prints Slides and updates tracking info
+  //
+  //
+  //    Author: Drew Spencer
+  //
+  //    Last edited: 12/21/2018 ds
+  //
+  //    When to call:
+  //      AFter you know the blockid and you are ready to print a slide
+  //    Purpose:
+  //      Looks up all of the slide information from database and generates flat file to specific
+  //      folder to print slide.
+  //
+  //    Paremeters:
+  //        strBLockID:  id of block to print Slides
+  //        strPrintRequestBy:  id of person printing slided - **Not Implemented Yet**
+  //        strAction:  Not used, needs to be removed
+  //
+  //
+  //= ===========================================================================================
   // print the slides here
   console.log(request)
     var strLocationID = 'unknown'
@@ -143,6 +166,17 @@ function printSlides (request, response, callback) {
 //}
 
 function getUserInfo (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function getUserInfo
+  //      Get User Info
+  //
+  //    Author: Drew Spencer
+  //
+  //
+  //    When to call:
+  //      To get userinfo based on badge barcode
+  //= ===========================================================================================
   var strResponse = ''
   var strUserID = request.body.userid
 
@@ -172,7 +206,20 @@ function getUserInfo (request, response, callback) {
 }
 
 function updateSlideToPrint (request, response, callback) {
-
+  //= ==========================================================================================
+  //
+  //    Function updateslidetoprint
+  //      Update Slide To Print
+  //
+  //    Author: Drew Spencer
+  //
+  //    Last edited: 12/21/2018 ds
+  //
+  //    When to call:
+  //      Anytime a slide is checked or uncheck to print
+  //    Purpose:
+  //      Updated the database that a slide needs to be printed, or does not need to be printed.
+  //= ===========================================================================================
   var strResponse = ''
   var strAction = request.body.action
   var strSlideID = request.body.slideId
@@ -211,7 +258,28 @@ console.log(strSQL)
 }
 
 function pullSlides (request, response, callback) {
-  // get some slide parameters here
+  //= ==========================================================================================
+  //
+  //    app.get slidetracker
+  //
+  //    Used to lookup slides by BlockID
+  //
+  //    Author: Drew Spencer
+  //
+  //    Last edited: 12/21/2018 ds
+  //
+  //    When to call:
+  //      After tech scans blockID
+  //
+  //    Purpose:
+  //      Pulls all pending slides for block
+  //
+  //    Paremeters:  **Paremeters are in URL through get
+  //        strBLockID:  id of block to print Slides
+  //
+  //    Returns:    JSON with all slide information
+  //
+  //= ===========================================================================================
   var urlParts = url.parse(request.url, true)
   var parameters = urlParts.query
   var strBlockID = parameters.blockid
