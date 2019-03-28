@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const router = express.Router()
 var bodyParser = require('body-parser')
 
 var slideTracker = require('./slide-tracking/slide-tracker')
@@ -22,10 +23,44 @@ app.post('/getuserinfo', function (request, response) {
   })
 })
 
+app.post('/updateslidetoprint', function (request, response) {
+  slideTracker.updateSlideToPrint(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/printslides', function (request, response) {
+  slideTracker.printSlides(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+// all routes prefixed with /slidetracker
+app.use('/slidetracker', router)
+console.log('slideTrackerDefault')
+// using router.get() to prefix our path
+// url: http://localhost:3000/slidetracker/
+router.get('/', (request, response) => {
+  console.log('router.get')
+  response.json({ message: 'Hello from the API' })
+})
+
+router.get('/slideparameters', (request, response) => {
+  slideTracker.pullSlides(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+
+
 module.exports = {
   start: start
 }
 
 function start (port, callback) {
-  // start the express server up here
+  // set the server to listen on port XXXX
+  server = app.listen(port, () => console.log(`Listening on port ${port}`))
 }

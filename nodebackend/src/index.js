@@ -6,10 +6,12 @@
 //      here.
 //
 //= ===========================================================================================
-
+require('dotenv').load()
 var httpServer = require('./http-server')
+var port = process.env.HttpPort
 
-httpServer.start(3000, function (err, message) {
+
+httpServer.start(port, function (err, message) {
   if (err) console.log(err)
   console.log(message)
   // server sends some data in the callback to display maybe
