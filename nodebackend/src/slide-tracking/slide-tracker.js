@@ -102,9 +102,10 @@ function printSlides (request, response, callback) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        if (row.OrderingPath = 'null') {
-          row.OrderingPath = ''
+        if (row.OrderPathInitials = 'null') {
+          row.OrderPathInitials = ''
         }
+
 
         var d = new Date().toLocaleDateString()
         fileDate = d.replace(/-|\//g, '')
