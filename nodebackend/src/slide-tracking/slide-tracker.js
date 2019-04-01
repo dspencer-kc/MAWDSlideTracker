@@ -49,6 +49,7 @@ function printSlides (request, response, callback) {
     var strBlockID = request.body.blockID
     var strPrintRequestBy = request.body.printRequestedBy
     var strSlideQueuePath = request.body.slideQueuePath
+    var strOrderPathInitials =''
 
     console.log('Hello PrintSlides')
     console.log(strBlockID)
@@ -102,9 +103,15 @@ function printSlides (request, response, callback) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
+
         if (row.OrderPathInitials = 'null') {
-          row.OrderPathInitials = ''
+          strOrderPathInitials = ''
         }
+        else{
+          strOrderPathInitials = row.OrderPathInitials
+        }
+        strOrderPathInitials = strOrderPathInitials.substring(0, 3)
+
 
 
         var d = new Date().toLocaleDateString()
@@ -112,7 +119,7 @@ function printSlides (request, response, callback) {
 
         // WriteSlideData
         // SlideID|AccessionID|SlideInst|PartDesignator|BlockDesignator|StainOrderDate|OrderingPath|Patient|SiteLabel|SlideDistributionKeyword|StainLabel
-        strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + row.OrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
+        strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
         strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
         console.log(strSlideFlatFileFullName)
