@@ -92,15 +92,15 @@
 <script>
 import axios from 'axios'
 
-const strApiUrl = 'http://10.24.4.9:2081'
+const strApiUrl = process.env.VUE_APP_API_URL
 
 
 // define the external API URL
 //const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
-const API_URL = 'http://10.24.4.9:2081/slidetracker/slideparameters?blockid='  //For Get Call
+const API_URLWithSlideParameters = strApiUrl + '/slidetracker/slideparameters?blockid='  //For Get Call
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
-  return `${API_URL}${blockID}`
+  return `${API_URLWithSlideParameters}${blockID}`
 }
 export default {
   name: 'slides', // component name
@@ -172,7 +172,7 @@ export default {
             // code block
         }
       } else {
-        this.blockID = 'Invalid User'
+        this.blockID = ''
       }
 
     },
