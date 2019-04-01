@@ -205,6 +205,46 @@ function getUserInfo (request, response, callback) {
   }) //End query
 }
 
+function getBlockInfo (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function getBlockInfo
+  //      Get Block Info
+  //
+  //    Author: Drew Spencer
+  //
+  //
+  //    When to call:
+  //      To get block info when scanning blocks
+  //= ===========================================================================================
+  var strResponse = ''
+  var strSQL = request.body.userid
+
+  //var strSQL = "SELECT * FROM OPENLIS.tblUsers \
+  //            WHERE `id` = '" + strUserID + "';"
+
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+      })
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) //End query
+}
+
 function updateSlideToPrint (request, response, callback) {
   //= ==========================================================================================
   //
