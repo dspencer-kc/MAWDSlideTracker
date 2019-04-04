@@ -25,7 +25,7 @@ strSpecimenID = channelMap.get("strSpecimenID");
 try {
   dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection,strMYSQLUserName,strMYSQLPassword);
 
-	strSQL = "INSERT INTO `tblBlock` \
+  strSQL = "INSERT INTO `tblBlock` \
 			(`BlockID`, \
 			`Hopper`, \
 			`WorkstationID`, \
@@ -52,6 +52,9 @@ try {
 			`RequestClass`, \
 			`BlockDesignator`, \
 			`PartDesignator`, \
+			`TimesEngraved`, \
+			`LastTimeEngraved`, \
+			`Audit`, \
 			`BlockComment`) \
 		VALUES \
 			('" + $('strBlockID') + "', \
@@ -80,6 +83,9 @@ try {
 			'" + $('strRequestClass') + "', \
 			'" + $('strBlockLabel') + "', \
 			'" + $('strSpecLabel') + "', \
+			1, \
+			'" + strDateTime + "', \
+               '" + strDateTime + " cassette printed by: " + $('strWhoEngraved')+ " at "+ $('strWorkstationID') + " on hopper "+ $('strHopper') +".', \
 			'" + $('strBlockComment') + "') \
 			ON DUPLICATE KEY UPDATE \
 			`Hopper`= '" + $('strHopper') + "', \
@@ -108,6 +114,10 @@ try {
 			`BlockDesignator` = '" + $('strBlockLabel') + "', \
 			`PartDesignator` = '" + $('strSpecLabel') + "', \
 			`BlockComment` = '" + $('strBlockComment')  + "', \
+			`TimesEngraved` = `TimesEngraved`+1, \
+			`LastTimeEngraved` = '" + strDateTime  + "', \
+			`BlockInstUpdatedCancelOldSlides` = IF(`BlockInst`=" + $('intBlockInst') + ", 'N', 'Y'), \
+			`Audit` = CONCAT(`Audit`, ' #', '" + strDateTime + "', ' ', 'Cassette printed by: " + $('strWhoEngraved')+ " at "+ $('strWorkstationID') + " on hopper "+ $('strHopper') +".'), \
 			`Notes` = \"Cassette printed more than once.  Printed again on: '" + strDateTime + "'.  Initial DateTime Engraved kept, other values have been updated.\";";
 
 		//logger.debug("Insert Block SQL:" + strSQL);
