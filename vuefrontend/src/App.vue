@@ -236,7 +236,10 @@ tbody {
 //import Slides from './components/SlidesV2'
 import Slides from './components/SlidesV3'
 import axios from 'axios'
-const strApiUrl = process.env.VUE_APP_API_URL
+//const strApiUrl = process.env.VUE_APP_API_URL
+//Live
+const strApiUrl = 'http://10.24.4.9:2081'
+console.log('APIURL: ', strApiUrl)
 //import io from 'socket.io-client' //Not sure if this needs done here or just in main.js
 
 export default
@@ -328,6 +331,7 @@ methods: {
             this.userid = this.scannedbadgeinput.substring(4);
 
             console.log("valid badge prefix");
+            console.log(strApiUrl)
               axios.post(strApiUrl + '/getuserinfo', {
               userid: this.userid
               //userid: 'mwd2954'
