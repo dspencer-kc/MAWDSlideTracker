@@ -205,10 +205,10 @@ function getUserInfo (request, response, callback) {
   }) //End query
 }
 
-function getBlockInfo (request, response, callback) {
+function dbQuery (request, response, callback) {
   //= ==========================================================================================
   //
-  //    Function getBlockInfo
+  //    Function dbQuery
   //      Get Block Info
   //
   //    Author: Drew Spencer
@@ -218,7 +218,7 @@ function getBlockInfo (request, response, callback) {
   //      To get block info when scanning blocks
   //= ===========================================================================================
   var strResponse = ''
-  var strSQL = request.body.userid
+  var strSQL = request.body.sql
 
   //var strSQL = "SELECT * FROM OPENLIS.tblUsers \
   //            WHERE `id` = '" + strUserID + "';"

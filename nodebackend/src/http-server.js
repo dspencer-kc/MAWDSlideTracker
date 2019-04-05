@@ -24,7 +24,7 @@ app.post('/getuserinfo', function (request, response) {
 })
 
 app.post('/dbquery', function (request, response) {
-  slideTracker.getBlockInfo(request, response, function (err, message) {
+  slideTracker.dbQuery(request, response, function (err, message) {
     if (err) return console.log(err)
     console.log(message)
   })
