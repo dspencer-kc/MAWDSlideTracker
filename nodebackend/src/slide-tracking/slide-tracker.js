@@ -52,11 +52,11 @@ function printSlides (request, response, callback) {
     var strOrderPathInitials =''
 
     console.log('Hello PrintSlides')
-    console.log(strBlockID)
-    console.log(strAction) // strAction is not used
-    console.log(strPrintRequestBy)
-    console.log(strDate)
-    console.log('Slidequeuepath:', strSlideQueuePath)
+    //console.log(strBlockID)
+    //console.log(strAction) // strAction is not used
+    //console.log(strPrintRequestBy)
+    //console.log(strDate)
+    //console.log('Slidequeuepath:', strSlideQueuePath)
 
 
     // Get all required information from blockID, only include slides that are marked 'to be printed'
@@ -86,30 +86,37 @@ function printSlides (request, response, callback) {
                             ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
 
-    console.log(strSQL)
+    //console.log(strSQL)
 
     // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
 
-    console.log('Connected!')
+    //console.log('Connected!')
     con.query(strSQL, function (err, result) {
       if (err) {
         console.log(err)
     } else {
 
-      console.log(result)
+      //console.log(result)
       // iterate for all the rows in result
       Object.keys(result).forEach(function (key) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-
-        if (row.OrderPathInitials = 'null') {
+        console.log('OrderingPathInitials1:',row.OrderPathInitials)
+        if (row.OrderPathInitials == null) {
           strOrderPathInitials = ''
+          console.log('Matched null')
+        }
+        else if (row.OrderPathInitials === 'null') {
+          strOrderPathInitials = ''
+          console.log('Matched the word null')
         }
         else{
           strOrderPathInitials = row.OrderPathInitials
+          console.log('OrderingPathInitials2:',strOrderPathInitials)
         }
+        console.log('OrderingPathInitials3:',strOrderPathInitials)
         strOrderPathInitials = strOrderPathInitials.substring(0, 3)
 
 
@@ -151,8 +158,8 @@ function printSlides (request, response, callback) {
             console.log('updateerror:',updateerr)
           }
           else{
-                    console.log(strSQLUpdateStatement)
-                    console.log(updateresult.affectedRows + ' record(s) updated')
+                    //console.log(strSQLUpdateStatement)
+                    //console.log(updateresult.affectedRows + ' record(s) updated')
           }
           //Do not end connection, as you need to go through the entire loop
         }) //end update query
