@@ -38,7 +38,6 @@ const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver');
 		//logger.debug("JS Writer:" + strSQL1);
 try {
 	dbConnCoPath = DatabaseConnectionFactory.createDatabaseConnection(strSybaseJDBCDriver,strSybaseJDBCConnection,strSybaseUserName,strSybasePassword)
-	//dbConnCoPath = DatabaseConnectionFactory.createDatabaseConnection(strJDBCDriver, strJDBCPath,'report','report');
 	result = dbConnCoPath.executeCachedQuery(strSQL1);
 
 	//Loop set result size for loop.  Loop after dbconn established.
