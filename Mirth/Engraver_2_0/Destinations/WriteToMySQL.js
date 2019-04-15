@@ -22,11 +22,12 @@ strSpecimenID = channelMap.get("strSpecimenID");
 //}
 
 //Sanitize variables
-var strBlockComment = EscapeApostrophe($('strBlockComment'))
-var strPartComment = EscapeApostrophe($('strPartComment'))
-var strPatientName = EscapeApostrophe($('strPatientName'))
-var strPartDesc = EscapeApostrophe($('strPartDesc'))
-var strPartType = EscapeApostrophe($('strPartType'))
+var strBlockComment = SanitizeVariableAddLeadingAndTrailingApostrophies($('strBlockComment'))
+var strPartComment = SanitizeVariableAddLeadingAndTrailingApostrophies($('strPartComment'))
+var strPatientName = SanitizeVariableAddLeadingAndTrailingApostrophies($('strPatientName'))
+var strPartDesc = SanitizeVariableAddLeadingAndTrailingApostrophies($('strPartDesc'))
+var strPartType = SanitizeVariableAddLeadingAndTrailingApostrophies($('strPartType'))
+var strDateTaken = SanitizeVariableAddLeadingAndTrailingApostrophies($('strDateTaken'))
 //Date Of Service Handle Null
 
 try {
@@ -68,7 +69,7 @@ try {
   			'" + $('strHopper') + "', \
   			'" + $('strWorkstationID') + "', \
   			'" + $('strSpecNumFormatted') + "', \
-  			'" + $strPatientName + "', \
+  			" + $strPatientName + ", \
   			'" + $('strSpecYear') + "', \
   			'" + $('strSpecNum') + "', \
   			'" + $('strTemplate') + "', \
@@ -77,14 +78,14 @@ try {
   			'" + $('intPartInst') + "', \
   			'" + $('intBlockInst') + "', \
   			'" + $('strWhoEngraved') + "', \
-  			'" + strPartType + "', \
-  			'" + strPartDesc + "', \
-  			'" + $('strDateTaken') + "', \
+  			" + strPartType + ", \
+  			" + strPartDesc + ", \
+  			" + strDateTaken + ", \
   			'" + $('strDateReceived') + "', \
   			'" + $('strProtocolID') + "', \
   			'" + $('intBlockSequence') + "', \
   			'" + $('intPartSequence') + "', \
-  			'" + $strPartComment  + "', \
+  			" + $strPartComment  + ", \
   			'" + $('intBlockPieces') + "', \
   			'" + $('strBlockDept') + "', \
   			'" + $('strRequestClass') + "', \
@@ -98,7 +99,7 @@ try {
   			`Hopper`= '" + $('strHopper') + "', \
   			`WorkstationID`= '" + ('strWorkstationID') + "', \
   			`SpecNumFormatted`= '" + $('strSpecNumFormatted') + "', \
-  			`PatientName`= '" + $strPatientName + "', \
+  			`PatientName`= " + $strPatientName + ", \
   			`SpecimenYear`= '" + $('strSpecYear') + "', \
   			`SpecimenNumber`= '" + $('strSpecNum')+ "', \
   			`Template`= '" + $('strTemplate') + "', \
@@ -107,20 +108,20 @@ try {
   			`PartInst` = '" + $('intPartInst') + "', \
   			`BlockInst` = '" + $('intBlockInst') + "', \
   			`WhoEngraved` = '" + $('strWhoEngraved') + "', \
-  			`PartType` = '" + strPartType + "', \
-  			`PartDescription` = '" + strPartDesc + "', \
-  			`DateOfService` = '" + $('strDateTaken') + "', \
+  			`PartType` = " + strPartType + ", \
+  			`PartDescription` = " + strPartDesc + ", \
+  			`DateOfService` = " + strDateTaken + ", \
   			`DateReceived` = '" + $('strDateReceived') + "', \
   			`Protocol` = '" + $('strProtocolID') + "', \
   			`Sequence` = '" + $('intBlockSequence') + "', \
   			`PartSequence` = '" + $('intPartSequence') + "', \
-  			`PartComment` = '" + $strPartComment + "', \
+  			`PartComment` = " + $strPartComment + ", \
   			`Pieces` = '" + $('intBlockPieces') + "', \
   			`BlockDept` = '" + $('strBlockDept') + "', \
   			`RequestClass` = '" + $('strRequestClass') + "', \
   			`BlockDesignator` = '" + $('strBlockLabel') + "', \
   			`PartDesignator` = '" + $('strSpecLabel') + "', \
-  			`BlockComment` = '" + strBlockComment  + "', \
+  			`BlockComment` = " + strBlockComment  + ", \
   			`TimesEngraved` = `TimesEngraved`+1, \
   			`LastTimeEngraved` = '" + strDateTime  + "', \
   			`Audit` = CONCAT(`Audit`, ' #', '" + strDateTime + "', ' ', 'Cassette printed by: " + $('strWhoEngraved')+ " at "+ $('strWorkstationID') + " on hopper "+ $('strHopper') +".'), \
@@ -143,7 +144,13 @@ finally {
 		dbConnMYSQL.close();
 	}
 }
-
+function SanitizeVariableAddLeadingAndTrailingApostrophies(txt)  {
+  if (txt == null) {
+      return "null"
+  } else {
+      return "'" + EscapeApostrophe(txt) + "'"
+  }
+}
 function EscapeApostrophe(txt)  {
   return txt.replace(/\'/g, "''")
 }
