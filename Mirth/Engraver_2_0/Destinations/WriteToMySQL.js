@@ -69,7 +69,7 @@ try {
   			'" + $('strHopper') + "', \
   			'" + $('strWorkstationID') + "', \
   			'" + $('strSpecNumFormatted') + "', \
-  			" + $strPatientName + ", \
+  			" + strPatientName + ", \
   			'" + $('strSpecYear') + "', \
   			'" + $('strSpecNum') + "', \
   			'" + $('strTemplate') + "', \
@@ -85,7 +85,7 @@ try {
   			'" + $('strProtocolID') + "', \
   			'" + $('intBlockSequence') + "', \
   			'" + $('intPartSequence') + "', \
-  			" + $strPartComment  + ", \
+  			" + strPartComment  + ", \
   			'" + $('intBlockPieces') + "', \
   			'" + $('strBlockDept') + "', \
   			'" + $('strRequestClass') + "', \
@@ -94,12 +94,12 @@ try {
   			1, \
   			'" + strDateTime + "', \
                  '" + strDateTime + " cassette printed by: " + $('strWhoEngraved')+ " at "+ $('strWorkstationID') + " on hopper "+ $('strHopper') +".', \
-  			'" + strBlockComment + "') \
+  			" + strBlockComment + ") \
   			ON DUPLICATE KEY UPDATE \
   			`Hopper`= '" + $('strHopper') + "', \
   			`WorkstationID`= '" + ('strWorkstationID') + "', \
   			`SpecNumFormatted`= '" + $('strSpecNumFormatted') + "', \
-  			`PatientName`= " + $strPatientName + ", \
+  			`PatientName`= " + strPatientName + ", \
   			`SpecimenYear`= '" + $('strSpecYear') + "', \
   			`SpecimenNumber`= '" + $('strSpecNum')+ "', \
   			`Template`= '" + $('strTemplate') + "', \
@@ -115,7 +115,7 @@ try {
   			`Protocol` = '" + $('strProtocolID') + "', \
   			`Sequence` = '" + $('intBlockSequence') + "', \
   			`PartSequence` = '" + $('intPartSequence') + "', \
-  			`PartComment` = " + $strPartComment + ", \
+  			`PartComment` = " + strPartComment + ", \
   			`Pieces` = '" + $('intBlockPieces') + "', \
   			`BlockDept` = '" + $('strBlockDept') + "', \
   			`RequestClass` = '" + $('strRequestClass') + "', \
@@ -152,5 +152,5 @@ function SanitizeVariableAddLeadingAndTrailingApostrophies(txt)  {
   }
 }
 function EscapeApostrophe(txt)  {
-  return txt.replace(/\'/g, "''")
+  return (txt + "").replace(/\'/g, "''")
 }
