@@ -21,6 +21,13 @@ strSpecimenID = channelMap.get("strSpecimenID");
 //strDateOfService = "";
 //}
 
+//Sanitize variables
+var strBlockComment = EscapeApostrophe($('strBlockComment'))
+var strPartComment = EscapeApostrophe($('strPartComment'))
+var strPatientName = EscapeApostrophe($('strPatientName'))
+var strPartDesc = EscapeApostrophe($('strPartDesc'))
+var strPartType = EscapeApostrophe($('strPartType'))
+//Date Of Service Handle Null
 
 try {
   dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection,strMYSQLUserName,strMYSQLPassword);
@@ -61,7 +68,7 @@ try {
   			'" + $('strHopper') + "', \
   			'" + $('strWorkstationID') + "', \
   			'" + $('strSpecNumFormatted') + "', \
-  			'" + $('strPatientName') + "', \
+  			'" + $strPatientName + "', \
   			'" + $('strSpecYear') + "', \
   			'" + $('strSpecNum') + "', \
   			'" + $('strTemplate') + "', \
@@ -70,14 +77,14 @@ try {
   			'" + $('intPartInst') + "', \
   			'" + $('intBlockInst') + "', \
   			'" + $('strWhoEngraved') + "', \
-  			'" + $('strPartType') + "', \
-  			'" + $('strPartDesc') + "', \
+  			'" + strPartType + "', \
+  			'" + strPartDesc + "', \
   			'" + $('strDateTaken') + "', \
   			'" + $('strDateReceived') + "', \
   			'" + $('strProtocolID') + "', \
   			'" + $('intBlockSequence') + "', \
   			'" + $('intPartSequence') + "', \
-  			'" + $('strPartComment')  + "', \
+  			'" + $strPartComment  + "', \
   			'" + $('intBlockPieces') + "', \
   			'" + $('strBlockDept') + "', \
   			'" + $('strRequestClass') + "', \
@@ -86,12 +93,12 @@ try {
   			1, \
   			'" + strDateTime + "', \
                  '" + strDateTime + " cassette printed by: " + $('strWhoEngraved')+ " at "+ $('strWorkstationID') + " on hopper "+ $('strHopper') +".', \
-  			'" + $('strBlockComment') + "') \
+  			'" + strBlockComment + "') \
   			ON DUPLICATE KEY UPDATE \
   			`Hopper`= '" + $('strHopper') + "', \
   			`WorkstationID`= '" + ('strWorkstationID') + "', \
   			`SpecNumFormatted`= '" + $('strSpecNumFormatted') + "', \
-  			`PatientName`= '" + $('strPatientName') + "', \
+  			`PatientName`= '" + $strPatientName + "', \
   			`SpecimenYear`= '" + $('strSpecYear') + "', \
   			`SpecimenNumber`= '" + $('strSpecNum')+ "', \
   			`Template`= '" + $('strTemplate') + "', \
@@ -100,20 +107,20 @@ try {
   			`PartInst` = '" + $('intPartInst') + "', \
   			`BlockInst` = '" + $('intBlockInst') + "', \
   			`WhoEngraved` = '" + $('strWhoEngraved') + "', \
-  			`PartType` = '" + $('strPartType') + "', \
-  			`PartDescription` = '" + $('strPartDesc') + "', \
+  			`PartType` = '" + strPartType + "', \
+  			`PartDescription` = '" + strPartDesc + "', \
   			`DateOfService` = '" + $('strDateTaken') + "', \
   			`DateReceived` = '" + $('strDateReceived') + "', \
   			`Protocol` = '" + $('strProtocolID') + "', \
   			`Sequence` = '" + $('intBlockSequence') + "', \
   			`PartSequence` = '" + $('intPartSequence') + "', \
-  			`PartComment` = '" + $('strPartComment') + "', \
+  			`PartComment` = '" + $strPartComment + "', \
   			`Pieces` = '" + $('intBlockPieces') + "', \
   			`BlockDept` = '" + $('strBlockDept') + "', \
   			`RequestClass` = '" + $('strRequestClass') + "', \
   			`BlockDesignator` = '" + $('strBlockLabel') + "', \
   			`PartDesignator` = '" + $('strSpecLabel') + "', \
-  			`BlockComment` = '" + $('strBlockComment')  + "', \
+  			`BlockComment` = '" + strBlockComment  + "', \
   			`TimesEngraved` = `TimesEngraved`+1, \
   			`LastTimeEngraved` = '" + strDateTime  + "', \
   			`Audit` = CONCAT(`Audit`, ' #', '" + strDateTime + "', ' ', 'Cassette printed by: " + $('strWhoEngraved')+ " at "+ $('strWorkstationID') + " on hopper "+ $('strHopper') +".'), \
@@ -135,4 +142,8 @@ finally {
 	if (dbConnMYSQL) {
 		dbConnMYSQL.close();
 	}
+}
+
+function EscapeApostrophe(txt)  {
+  return txt.replace(/\'/g, "''")
 }
