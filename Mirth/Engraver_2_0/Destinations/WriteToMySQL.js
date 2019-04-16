@@ -13,14 +13,6 @@ const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver');
 //Get Specimen ID
 strSpecimenID = channelMap.get("strSpecimenID");
 
-
-
-//Clean up Null for DateOfService
-//strDateOfService = $('strDateTaken');
-//if (strDateOfService == 'null') {
-//strDateOfService = "";
-//}
-
 //Sanitize variables
 var strBlockComment = SanitizeVariableAddLeadingAndTrailingApostrophies($('strBlockComment'))
 var strPartComment = SanitizeVariableAddLeadingAndTrailingApostrophies($('strPartComment'))
