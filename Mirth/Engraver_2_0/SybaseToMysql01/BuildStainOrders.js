@@ -104,7 +104,7 @@ dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDri
 
 
 	//Update p_stainprocess that block is matched and slides have been created.
-	//Is this right?? should it be updating copath_p_stainprocess??  Note - this seems to be working and creating entries in the copath_p_stainprocesss table.
+
 		strSQL = "UPDATE tblSlides \
 			       INNER JOIN copath_p_stainprocess  \
 			               ON ( tblSlides.BlockInst = copath_p_stainprocess.block_inst ) \
