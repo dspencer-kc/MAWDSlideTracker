@@ -8,7 +8,8 @@ module.exports = {
   printSlides: printSlides,
   getUserInfo: getUserInfo,
   updateSlideToPrint: updateSlideToPrint,
-  pullSlides: pullSlides
+  pullSlides: pullSlides,
+  dbQuery: dbQuery
 }
 
 function printSlides (request, response, callback) {
@@ -124,19 +125,19 @@ function printSlides (request, response, callback) {
           })
 
         // Update query to say slide has been printed
-        strSQLUpdateStatement = "UPDATE `OPENLIS`.`tblSlides` \
+        strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\` \
                                                     SET \
-                                                        `Status` = 'Printed',\
-                                                        `Printed` = TRUE,\
-                                                        `DateTimePrinted` = '" + strDate + "',\
-                                                        `LocationPrinted` = '" + strLocationID + "',\
-                                                        `WhoPrinted` = '" + strPrintRequestBy + "',\
-                                                        `TimesPrinted` = `TimesPrinted` + 1,\
-                                                        `Audit` = CONCAT(`Audit`,\
-                                                                ' Slide Printed " + strDate + ' at ' + strLocationID + ' by ' + strPrintRequestBy + ".'),\
-                                                        `ToBePrinted` = FALSE\
+                                                        \`Status\` = 'Printed',\
+                                                        \`Printed\` = TRUE,\
+                                                        \`DateTimePrinted\` = '` + strDate + `',\
+                                                        \`LocationPrinted\` = '` + strLocationID + `',\
+                                                        \`WhoPrinted\` = '` + strPrintRequestBy + `',\
+                                                        \`TimesPrinted\` = \`TimesPrinted\` + 1,\
+                                                        \`Audit\` = CONCAT(\`Audit\`,\
+                                                                ' Slide Printed ` + strDate + ' at ' + strLocationID + ' by ' + strPrintRequestBy + `.'),\
+                                                        \`ToBePrinted\` = FALSE\
                                                     WHERE\
-                                                        `SlideID` = '" + row.SlideID + "';"
+                                                        \`SlideID\` = '` + row.SlideID + `';`
 
         con.query(strSQLUpdateStatement, function (updateerr, updateresult) {
           if (updateerr) {
@@ -174,8 +175,8 @@ function getUserInfo (request, response, callback) {
   //= ===========================================================================================
   var strUserID = request.body.userid
 
-  var strSQL = "SELECT * FROM OPENLIS.tblUsers \
-              WHERE `id` = '" + strUserID + "';"
+  var strSQL = `SELECT * FROM OPENLIS.tblUsers
+              WHERE \`id\` = '` + strUserID + `';`
 
   console.log(strSQL)
 
@@ -188,10 +189,6 @@ function getUserInfo (request, response, callback) {
       console.log(err)
     } else {
       console.log('Completed query.')
-      Object.keys(result).forEach(function (key) {
-        var row = result[key]
-        // Format Date
-      })
       console.log(result)
       response.json(result)
     }
@@ -227,10 +224,6 @@ function dbQuery (request, response, callback) {
       console.log(err)
     } else {
       console.log('Completed query.')
-      Object.keys(result).forEach(function (key) {
-        var row = result[key]
-        // Format Date
-      })
       console.log(result)
       response.json(result)
     }
@@ -319,30 +312,30 @@ function pullSlides (request, response, callback) {
 
   // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
   // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-  var strSQL = `SELECT tblSlides.*, \
-                     tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
-                     copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
-                     copath_c_d_person_1.initials         AS OrderPathInitials, \
-                     copath_c_d_person_1.prettyprint_name AS OrderingPathName, \
-                     copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, \
-                     copath_c_d_department.name           AS StainDept  \
-                FROM   ((((((tblSlides \
-                         INNER JOIN copath_p_stainprocess \
-                                 ON tblSlides.BlockStainInstID = \
-                                    copath_p_stainprocess._blockstaininstid) \
-                        INNER JOIN tblBlock  \
-                                ON tblSlides.BlockID = tblBlock.BlockID)  \
-                       LEFT JOIN tblCassetteColorHopperLookup  \
-                              ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) \
-                      LEFT JOIN copath_c_d_stainstatus \
-                             ON copath_p_stainprocess.stainstatus_id = \
-                                copath_c_d_stainstatus.id) \
-                     LEFT JOIN copath_c_d_person \
-                            ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) \
-                    LEFT JOIN copath_c_d_person AS copath_c_d_person_1 \
-                           ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) \
-                   LEFT JOIN copath_c_d_department \
-                          ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
+  var strSQL = `SELECT tblSlides.*, 
+                     tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, 
+                     copath_c_d_stainstatus.name          AS CopathStainOrderStatus, 
+                     copath_c_d_person_1.initials         AS OrderPathInitials, 
+                     copath_c_d_person_1.prettyprint_name AS OrderingPathName, 
+                     copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, 
+                     copath_c_d_department.name           AS StainDept  
+                FROM   ((((((tblSlides 
+                         INNER JOIN copath_p_stainprocess 
+                                 ON tblSlides.BlockStainInstID = 
+                                    copath_p_stainprocess._blockstaininstid) 
+                        INNER JOIN tblBlock  
+                                ON tblSlides.BlockID = tblBlock.BlockID)  
+                       LEFT JOIN tblCassetteColorHopperLookup  
+                              ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) 
+                      LEFT JOIN copath_c_d_stainstatus 
+                             ON copath_p_stainprocess.stainstatus_id = 
+                                copath_c_d_stainstatus.id) 
+                     LEFT JOIN copath_c_d_person 
+                            ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) 
+                    LEFT JOIN copath_c_d_person AS copath_c_d_person_1 
+                           ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) 
+                   LEFT JOIN copath_c_d_department 
+                          ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id 
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
   // console.log(strSQL)
 
@@ -358,7 +351,7 @@ function pullSlides (request, response, callback) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        if (row.OrderingPath = 'null') {
+        if (row.OrderingPath === 'null') {
           row.OrderingPath = ''
         }
       })
