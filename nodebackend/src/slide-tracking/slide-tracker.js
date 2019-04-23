@@ -39,28 +39,22 @@ function printSlides (request, response, callback) {
   //= ===========================================================================================
   // print the slides here
   console.log(request)
-    var strLocationID = 'unknown'
-    var strSQLUpdateStatement = ''
+  var strLocationID = 'unknown'
+  var strSQLUpdateStatement = ''
 
-    var strDate
-    strDate = new Date().toLocaleString()
+  var strDate
+  strDate = new Date().toLocaleString()
 
-    var strAction = request.body.action
-    var strBlockID = request.body.blockID
-    var strPrintRequestBy = request.body.printRequestedBy
-    var strSlideQueuePath = request.body.slideQueuePath
-    var strOrderPathInitials =''
+  var strAction = request.body.action
+  var strBlockID = request.body.blockID
+  var strPrintRequestBy = request.body.printRequestedBy
+  var strSlideQueuePath = request.body.slideQueuePath
+  var strOrderPathInitials = ''
 
-    console.log('Hello PrintSlides')
-    //console.log(strBlockID)
-    //console.log(strAction) // strAction is not used
-    //console.log(strPrintRequestBy)
-    //console.log(strDate)
-    //console.log('Slidequeuepath:', strSlideQueuePath)
+  console.log('Hello PrintSlides')
 
-
-    // Get all required information from blockID, only include slides that are marked 'to be printed'
-    strSQL = `SELECT tblSlides.*, \
+  // Get all required information from blockID, only include slides that are marked 'to be printed'
+  var strSQL = `SELECT tblSlides.*, \
                        tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
                        copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
                        copath_c_d_person_1.initials         AS OrderPathInitials, \
@@ -86,7 +80,7 @@ function printSlides (request, response, callback) {
                             ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
 
-    //console.log(strSQL)
+    // console.log(strSQL)
 
     // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
