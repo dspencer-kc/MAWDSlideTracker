@@ -251,15 +251,11 @@ function updateSlideToPrint (request, response, callback) {
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
 
-  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
-            'SET ' +
-                ' `ToBePrinted` = ' + blToPrintStatus +
-            ' WHERE `SlideID` = \'' + strSlideID + '\';'
+  var strSQL = `UPDATE \`OPENLIS\`.\`tblSlides\` 
+            SET
+              \`ToBePrinted\` = ` + blToPrintStatus +
+            ` WHERE \`SlideID\` = '` + strSlideID + `';`
   console.log(strSQL)
-  // Update caused error
-  // var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
-  //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
-  //            'WHERE `SlideID` = \'' + strSlideID + '\';'
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
