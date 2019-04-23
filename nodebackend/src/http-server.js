@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const router = express.Router()
 var bodyParser = require('body-parser')
-
 var slideTracker = require('./slide-tracking/slide-tracker')
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -60,8 +59,6 @@ router.get('/slideparameters', (request, response) => {
     console.log(message)
   })
 })
-
-
 
 module.exports = {
   start: start

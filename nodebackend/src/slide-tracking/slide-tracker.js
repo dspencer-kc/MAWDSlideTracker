@@ -4,8 +4,6 @@ const url = require('url')
 var dateFormat = require('dateformat')
 var fs = require('fs')
 
-
-
 module.exports = {
   printSlides: printSlides,
   getUserInfo: getUserInfo,
@@ -44,8 +42,6 @@ function printSlides (request, response, callback) {
 
   var strDate
   strDate = new Date().toLocaleString()
-
-  var strAction = request.body.action
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
   var strSlideQueuePath = request.body.slideQueuePath
@@ -80,49 +76,44 @@ function printSlides (request, response, callback) {
                             ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
 
-    // console.log(strSQL)
+  // console.log(strSQL)
 
-    // Connect to the database
+  // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
 
-    //console.log('Connected!')
-    con.query(strSQL, function (err, result) {
-      if (err) {
-        console.log(err)
+  // console.log('Connected!')
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
     } else {
-
-      //console.log(result)
+      // console.log(result)
       // iterate for all the rows in result
       Object.keys(result).forEach(function (key) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        console.log('OrderingPathInitials1:',row.OrderPathInitials)
+        console.log('OrderingPathInitials1:', row.OrderPathInitials)
         if (row.OrderPathInitials == null) {
           strOrderPathInitials = ''
           console.log('Matched null')
-        }
-        else if (row.OrderPathInitials === 'null') {
+        } else if (row.OrderPathInitials === 'null') {
           strOrderPathInitials = ''
           console.log('Matched the word null')
-        }
-        else{
+        } else {
           strOrderPathInitials = row.OrderPathInitials
-          console.log('OrderingPathInitials2:',strOrderPathInitials)
+          console.log('OrderingPathInitials2:', strOrderPathInitials)
         }
-        console.log('OrderingPathInitials3:',strOrderPathInitials)
+        console.log('OrderingPathInitials3:', strOrderPathInitials)
         strOrderPathInitials = strOrderPathInitials.substring(0, 3)
 
-
-
         var d = new Date().toLocaleDateString()
-        fileDate = d.replace(/-|\//g, '')
+        var fileDate = d.replace(/-|\//g, '')
 
         // WriteSlideData
         // SlideID|AccessionID|SlideInst|PartDesignator|BlockDesignator|StainOrderDate|OrderingPath|Patient|SiteLabel|SlideDistributionKeyword|StainLabel
-        strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
+        var strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
-        strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
+        var strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
         console.log(strSlideFlatFileFullName)
         fs.writeFile(strSlideFlatFileFullName, strFileWriteData,
           // callback function that is called after writing file is done
@@ -149,30 +140,25 @@ function printSlides (request, response, callback) {
 
         con.query(strSQLUpdateStatement, function (updateerr, updateresult) {
           if (updateerr) {
-            console.log('updateerror:',updateerr)
+            console.log('updateerror:', updateerr)
+          } else {
+            // console.log(strSQLUpdateStatement)
+            // console.log(updateresult.affectedRows + ' record(s) updated')
           }
-          else{
-                    //console.log(strSQLUpdateStatement)
-                    //console.log(updateresult.affectedRows + ' record(s) updated')
-          }
-          //Do not end connection, as you need to go through the entire loop
-        }) //end update query
+          // Do not end connection, as you need to go through the entire loop
+        }) // end update query
       })
-
-
     }
-      con.end()
+    con.end()
+  }) // end qury
 
-    }) //end qury
-
-    console.log(`${strBlockID}`)
-    response.send('Slides have been sent to Slide Printer')
-
+  console.log(`${strBlockID}`)
+  response.send('Slides have been sent to Slide Printer')
 }
 
-//function getSlideParameters (request, response, callback) {
+// function getSlideParameters (request, response, callback) {
 //  // get some slide parameters here
-//}
+// }
 
 function getUserInfo (request, response, callback) {
   //= ==========================================================================================
@@ -186,7 +172,6 @@ function getUserInfo (request, response, callback) {
   //    When to call:
   //      To get userinfo based on badge barcode
   //= ===========================================================================================
-  var strResponse = ''
   var strUserID = request.body.userid
 
   var strSQL = "SELECT * FROM OPENLIS.tblUsers \
@@ -211,7 +196,7 @@ function getUserInfo (request, response, callback) {
       response.json(result)
     }
     con.end()
-  }) //End query
+  }) // End query
 }
 
 function dbQuery (request, response, callback) {
@@ -226,10 +211,9 @@ function dbQuery (request, response, callback) {
   //    When to call:
   //      To get block info when scanning blocks
   //= ===========================================================================================
-  var strResponse = ''
   var strSQL = request.body.sql
 
-  //var strSQL = "SELECT * FROM OPENLIS.tblUsers \
+  // var strSQL = "SELECT * FROM OPENLIS.tblUsers \
   //            WHERE `id` = '" + strUserID + "';"
 
   console.log(strSQL)
@@ -251,7 +235,7 @@ function dbQuery (request, response, callback) {
       response.json(result)
     }
     con.end()
-  }) //End query
+  }) // End query
 }
 
 function updateSlideToPrint (request, response, callback) {
@@ -278,9 +262,9 @@ function updateSlideToPrint (request, response, callback) {
             'SET ' +
                 ' `ToBePrinted` = ' + blToPrintStatus +
             ' WHERE `SlideID` = \'' + strSlideID + '\';'
-console.log(strSQL)
-  //Update caused error
-  //var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
+  console.log(strSQL)
+  // Update caused error
+  // var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
   //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
   //            'WHERE `SlideID` = \'' + strSlideID + '\';'
 
@@ -333,10 +317,9 @@ function pullSlides (request, response, callback) {
   var parameters = urlParts.query
   var strBlockID = parameters.blockid
 
-
   // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
   // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-  strSQL = `SELECT tblSlides.*, \
+  var strSQL = `SELECT tblSlides.*, \
                      tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
                      copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
                      copath_c_d_person_1.initials         AS OrderPathInitials, \
@@ -361,9 +344,9 @@ function pullSlides (request, response, callback) {
                    LEFT JOIN copath_c_d_department \
                           ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
                 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
-  //console.log(strSQL)
+  // console.log(strSQL)
 
-var con = mysql.createConnection(mysqlConfig)
+  var con = mysql.createConnection(mysqlConfig)
 
   con.query(strSQL, function (err, result) {
     if (err) {
@@ -380,7 +363,7 @@ var con = mysql.createConnection(mysqlConfig)
         }
       })
 
-      //console.log(result)
+      // console.log(result)
       response.json(result)
     }
     con.end()
