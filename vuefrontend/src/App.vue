@@ -238,9 +238,9 @@ import Slides from './components/SlidesV3'
 import axios from 'axios'
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
-const strApiUrl = 'http://10.24.4.9:2081'
+//const strApiUrl = 'http://10.24.4.9:2081'
 //Local Test
-//const strApiUrl = 'http://localhost:2081'
+const strApiUrl = 'http://localhost:2081'
 console.log('APIURL: ', strApiUrl)
 //import io from 'socket.io-client' //Not sure if this needs done here or just in main.js
 

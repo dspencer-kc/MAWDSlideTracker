@@ -1,0 +1,1 @@
+SELECT BlockDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = 'MPS19-99999' order by ABS(BlockDesignator) desc LIMIT 1;

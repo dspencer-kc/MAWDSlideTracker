@@ -1,0 +1,1 @@
+SELECT SpecNumFormatted, BlockDesignator, PartDesignator FROM OPENLIS.tblBlock where BlockID = 'HBLKMPS19-99999_A_7';

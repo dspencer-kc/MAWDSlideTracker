@@ -34,7 +34,9 @@
 
   <br>
   <div class="customheadertext">
-    <h4> Number of slides:{{ slides.length }}</h4>
+    <h5>Part {{ slides.currentPart }} of {{ slides.noOfParts }}</h5>
+    <h5>Block {{ slides.currentBlock }} of {{ slides.noOfBlocks }}</h5>
+    <h5>Slides on this block: {{ slides.length }}</h5>
   </div>
 
 <div class="container">
@@ -94,9 +96,9 @@ import axios from 'axios'
 
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
-const strApiUrl = 'http://10.24.4.9:2081'
+//const strApiUrl = 'http://10.24.4.9:2081'
 //Local Test
-//const strApiUrl = 'http://localhost:2081'
+const strApiUrl = 'http://localhost:2081'
 
 
 // define the external API URL
@@ -127,7 +129,11 @@ export default {
       formstatuslabel: 'Load Slides',
       info: null,
       slideQueuePath: '',
-      stationName: ''
+      stationName: '',
+      noOfBlocks: null,
+      currentBlock: null,
+      noOfParts: null,
+      currentPart: null
     }
   },
 
@@ -224,7 +230,7 @@ export default {
     console.log("Done printing slides")
   },
 
-    pullSlides() {
+  pullSlides() {
       console.log('start pull slides');
       let blockID = this.blockID
       if (!blockID) {
@@ -258,7 +264,15 @@ export default {
           console.log(e)
         })
     },
-    updateSlideToPrintValue(strSlideID, blChecked)
+  GetNoOfBlocks()
+    {
+    console.log('start GetNoOfBlocks');
+    },
+  GetNoOfParts()
+    {
+    console.log('start GetNoOfParts');
+    },
+  updateSlideToPrintValue(strSlideID, blChecked)
     {
         //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
     axios.post(strApiUrl + '/updateslidetoprint', {
