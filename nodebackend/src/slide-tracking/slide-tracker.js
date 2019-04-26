@@ -9,7 +9,7 @@ module.exports = {
   getUserInfo: getUserInfo,
   updateSlideToPrint: updateSlideToPrint,
   pullSlides: pullSlides,
-  dbQuery: dbQuery
+  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals
 }
 
 function printSlides (request, response, callback) {
@@ -51,30 +51,30 @@ function printSlides (request, response, callback) {
   console.log('Hello PrintSlides')
 
   // Get all required information from blockID, only include slides that are marked 'to be printed'
-  var strSQL = `SELECT tblSlides.*, \
-                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
-                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
-                       copath_c_d_person_1.initials         AS OrderPathInitials, \
-                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, \
-                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, \
-                       copath_c_d_department.name           AS StainDept  \
-                  FROM   ((((((tblSlides \
-                           INNER JOIN copath_p_stainprocess \
-                                   ON tblSlides.BlockStainInstID = \
-                                      copath_p_stainprocess._blockstaininstid) \
-                          INNER JOIN tblBlock  \
-                                  ON tblSlides.BlockID = tblBlock.BlockID)  \
-                         LEFT JOIN tblCassetteColorHopperLookup  \
-                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) \
-                        LEFT JOIN copath_c_d_stainstatus \
-                               ON copath_p_stainprocess.stainstatus_id = \
-                                  copath_c_d_stainstatus.id) \
-                       LEFT JOIN copath_c_d_person \
-                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) \
-                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 \
-                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) \
-                     LEFT JOIN copath_c_d_department \
-                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
+  var strSQL = `SELECT tblSlides.*, 
+                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, 
+                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, 
+                       copath_c_d_person_1.initials         AS OrderPathInitials, 
+                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, 
+                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, 
+                       copath_c_d_department.name           AS StainDept 
+                  FROM   ((((((tblSlides 
+                           INNER JOIN copath_p_stainprocess 
+                                   ON tblSlides.BlockStainInstID = 
+                                      copath_p_stainprocess._blockstaininstid) 
+                          INNER JOIN tblBlock  
+                                  ON tblSlides.BlockID = tblBlock.BlockID)  
+                         LEFT JOIN tblCassetteColorHopperLookup  
+                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) 
+                        LEFT JOIN copath_c_d_stainstatus 
+                               ON copath_p_stainprocess.stainstatus_id = 
+                                  copath_c_d_stainstatus.id) 
+                       LEFT JOIN copath_c_d_person 
+                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) 
+                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 
+                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) 
+                     LEFT JOIN copath_c_d_department 
+                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id 
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
 
   // console.log(strSQL)
@@ -125,18 +125,18 @@ function printSlides (request, response, callback) {
           })
 
         // Update query to say slide has been printed
-        strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\` \
-                                                    SET \
-                                                        \`Status\` = 'Printed',\
-                                                        \`Printed\` = TRUE,\
-                                                        \`DateTimePrinted\` = '` + strDate + `',\
-                                                        \`LocationPrinted\` = '` + strLocationID + `',\
-                                                        \`WhoPrinted\` = '` + strPrintRequestBy + `',\
-                                                        \`TimesPrinted\` = \`TimesPrinted\` + 1,\
-                                                        \`Audit\` = CONCAT(\`Audit\`,\
-                                                                ' Slide Printed ` + strDate + ' at ' + strLocationID + ' by ' + strPrintRequestBy + `.'),\
-                                                        \`ToBePrinted\` = FALSE\
-                                                    WHERE\
+        strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\` 
+                                                    SET 
+                                                        \`Status\` = 'Printed',
+                                                        \`Printed\` = TRUE,
+                                                        \`DateTimePrinted\` = '` + strDate + `',
+                                                        \`LocationPrinted\` = '` + strLocationID + `',
+                                                        \`WhoPrinted\` = '` + strPrintRequestBy + `',
+                                                        \`TimesPrinted\` = \`TimesPrinted\` + 1,
+                                                        \`Audit\` = CONCAT(\`Audit\`,
+                                                                ' Slide Printed ` + strDate + ' at ' + strLocationID + ' by ' + strPrintRequestBy + `.'),
+                                                        \`ToBePrinted\` = FALSE
+                                                    WHERE
                                                         \`SlideID\` = '` + row.SlideID + `';`
 
         con.query(strSQLUpdateStatement, function (updateerr, updateresult) {
@@ -196,36 +196,57 @@ function getUserInfo (request, response, callback) {
   }) // End query
 }
 
-function dbQuery (request, response, callback) {
+function getPartBlockCurrentAndTotals (request, response, callback) {
   //= ==========================================================================================
   //
-  //    Function dbQuery
-  //      Get Block Info
+  //    Function getPartBlockCurrentAndTotals
+  //      Get Current and How Many Parts are on case and Blocks are on this part
   //
   //    Author: Drew Spencer
   //
   //
   //    When to call:
-  //      To get block info when scanning blocks
+  //      When block is scanned
   //= ===========================================================================================
-  var strSQL = request.body.sql
+  var strBlockID = request.body.blockID
+  var strAccessionId = null
+  var strCurrentBlock = null
+  var strCurrentPart = null
 
-  // var strSQL = "SELECT * FROM OPENLIS.tblUsers \
-  //            WHERE `id` = '" + strUserID + "';"
-
-  console.log(strSQL)
+  // Get Accession ID, Current Block, Current Part based on Block ID
+  console.log(strBlockID)
+  // ie HBLKD18-99999_A_2
+  var strNoPrefix = strBlockID.substring(4)
+  var strTemp = strNoPrefix.split('_')
+  strAccessionId = strTemp[0]
+  strCurrentPart = strTemp[1]
+  strCurrentBlock = strTemp[2]
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
   console.log('Connected!')
 
+  // Get Total Blocks
+  var strSQLTotalBlocks = `SELECT BlockDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAccessionId}' AND PartDesignator = '${strCurrentPart}' order by ABS(BlockDesignator) desc limit 1;`
+  // Get Total Parts on case
+  var strSQLTotalParts = `SELECT PartDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAccessionId}' order by PartDesignator desc LIMIT 1;`
+  // console.log(strSQLTotalBlocks)
+  var strSQL = strSQLTotalBlocks + strSQLTotalParts
+
+  // Send multiple queries at once
   con.query(strSQL, function (err, result) {
     if (err) {
       console.log(err)
     } else {
-      console.log('Completed query.')
-      console.log(result)
-      response.json(result)
+      var strTotalBlocks = result[0][0].BlockDesignator
+      var strTotalParts = result[1][0].PartDesignator
+      var jsonResult = {
+        currentblock: strCurrentBlock,
+        currentpart: strCurrentPart,
+        totalblocks: strTotalBlocks,
+        totalparts: strTotalParts
+      }
+      response.json(jsonResult)
     }
     con.end()
   }) // End query

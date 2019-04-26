@@ -34,8 +34,8 @@
 
   <br>
   <div class="customheadertext">
-    <h5>Part {{ slides.currentPart }} of {{ slides.noOfParts }}</h5>
-    <h5>Block {{ slides.currentBlock }} of {{ slides.noOfBlocks }}</h5>
+    <h5>Part {{ this.currentPart }} of {{ this.totalParts }}</h5>
+    <h5>Block {{ this.currentBlock }} of {{ this.totalBlocks }}</h5>
     <h5>Slides on this block: {{ slides.length }}</h5>
   </div>
 
@@ -130,10 +130,11 @@ export default {
       info: null,
       slideQueuePath: '',
       stationName: '',
-      noOfBlocks: null,
+      totalBlocks: null,
       currentBlock: null,
-      noOfParts: null,
-      currentPart: null
+      totalParts: null,
+      currentPart: null,
+      test: {}
     }
   },
 
@@ -230,8 +231,9 @@ export default {
     console.log("Done printing slides")
   },
 
-  pullSlides() {
+    pullSlides() {
       console.log('start pull slides');
+      this.GetPartBlockCurrentAndTotals()
       let blockID = this.blockID
       if (!blockID) {
         alert('please enter block ID to pull up slides')
@@ -264,29 +266,51 @@ export default {
           console.log(e)
         })
     },
-  GetNoOfBlocks()
+    updateSlideToPrintValue(strSlideID, blChecked)
     {
-    console.log('start GetNoOfBlocks');
-    },
-  GetNoOfParts()
-    {
-    console.log('start GetNoOfParts');
-    },
-  updateSlideToPrintValue(strSlideID, blChecked)
-    {
-        //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-    axios.post(strApiUrl + '/updateslidetoprint', {
-    action: 'UpdateSlideToPrintValue',
-    slideId: strSlideID,
-    toPrintStatus: blChecked
-  })
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+            //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
+      axios.post(strApiUrl + '/updateslidetoprint', {
+        action: 'UpdateSlideToPrintValue',
+        slideId: strSlideID,
+        toPrintStatus: blChecked
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
+    },
+    GetPartBlockCurrentAndTotals() {
+        console.log('start GetPartBlockCurrentAndTotals')
+              axios.post(strApiUrl + '/getpartblockcurrentandtotals', {
+              blockID: this.blockID
+            })
+            .then(apidata => {
+              this.loading = false;
+              this.error_message = '';
+              if (apidata.errorcode) {
+                this.error_message = `Error looking up badge.`
+                console.log('error')
+                return
+              }
+              console.log('apidata:', apidata);
+              this.test = apidata.data
+              console.log(this.test)
+              this.totalBlocks = this.test.currentblock
+              this.currentBlock = this.test.currentblock
+              this.totalParts = this.test.totalparts
+              this.currentPart = this.test.currentpart
+
+
+            }).catch((e) => {
+              console.log(e)
+            })
+            .catch(function (error) {
+              console.log("error:")
+              console.log(error)
+            })
     },
     clearCurrentSlide(){
       console.log("hellocancelbutton")
