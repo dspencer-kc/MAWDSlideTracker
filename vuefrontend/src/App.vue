@@ -18,7 +18,7 @@
 
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <a class="navbar-brand" href="#">
-          MAWD Slide Tracking / Printing
+          TEST MAWD Slide Tracking / Printing
       </a>
 
       <ul class="navbar-nav ml-auto">
@@ -238,7 +238,9 @@ import Slides from './components/SlidesV3'
 import axios from 'axios'
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
-const strApiUrl = 'http://10.24.4.9:2081'
+//const strApiUrl = 'http://10.24.4.9:2081'
+//Test
+const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
 //const strApiUrl = 'http://localhost:2081'
 console.log('APIURL: ', strApiUrl)
