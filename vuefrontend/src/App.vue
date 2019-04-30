@@ -18,7 +18,7 @@
 
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <a class="navbar-brand" href="#">
-          TEST MAWD Slide Tracking / Printing
+          TEST MAWD Slide Tracking / Printing 1.01
       </a>
 
       <ul class="navbar-nav ml-auto">
