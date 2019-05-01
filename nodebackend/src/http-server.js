@@ -22,8 +22,8 @@ app.post('/getuserinfo', function (request, response) {
   })
 })
 
-app.post('/dbquery', function (request, response) {
-  slideTracker.dbQuery(request, response, function (err, message) {
+app.post('/getpartblockcurrentandtotals', function (request, response) {
+  slideTracker.getPartBlockCurrentAndTotals(request, response, function (err, message) {
     if (err) return console.log(err)
     console.log(message)
   })
