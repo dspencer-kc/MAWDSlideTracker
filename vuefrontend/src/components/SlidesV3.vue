@@ -33,7 +33,7 @@
   </div>
 
   <br>
-  <div class="customheadertext">
+  <div class="customsubheadertext">
     <h5>Part {{ this.currentPart }} of {{ this.totalParts }}</h5>
     <h5>Block {{ this.currentBlock }} of {{ this.totalBlocks }}</h5>
     <h5>Slides on this block: {{ slides.length }}</h5>
@@ -96,9 +96,9 @@ import axios from 'axios'
 
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
-//const strApiUrl = 'http://10.24.4.9:2081'
+const strApiUrl = 'http://10.24.4.9:2081'
 //Test
-const strApiUrl = 'http://10.24.4.9:2082'
+//const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
 //const strApiUrl = 'http://localhost:2081'
 
