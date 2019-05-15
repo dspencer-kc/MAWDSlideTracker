@@ -11,7 +11,7 @@ const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
 // If no syncid, set as 0.
 if (isNaN(strSyncID)) {
   strSyncID = 0
-} else if (strSyncID === '') {
+} else if (strSyncID == "") {
   strSyncID = 0
 }
 
@@ -38,7 +38,8 @@ try {
              AccessionID, \
 			 LastTimeUpdatedFromCoPath,  \
 			 SyncID,  \
-			 specimen_id)  \
+			 specimen_id, \
+			 Audit)  \
 	SELECT CONCAT(\"HSLD\",tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst,\".\",tblIntegers.integers) AS SlideId, \
 	       tblBlock.blockid, \
 	       CONCAT(tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst) AS BlockStainInstId, \
@@ -59,7 +60,8 @@ try {
 	       tblBlock.SpecNumFormatted, \
 		   NOW(), \
 		   " + strSyncID +", \
-		   tblBlock.Specimen_id \
+		   tblBlock.Specimen_id, \
+             CONCAT(\"Slide inserted: \", NOW()) \
 	FROM   tblIntegers, \
 	       tblBlock \
 	       INNER JOIN copath_p_stainprocess \
@@ -90,7 +92,8 @@ try {
 			 `LastTimeUpdatedFromCoPath` = NOW(), \
 			 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1, \
 			  `SyncID` = " + strSyncID +", \
-		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\";"
+		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\", \
+		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated:\",NOW(), \".\");"
 
   // logger.debug("SQL:" + strSQL);
   dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)

@@ -18,7 +18,8 @@ INSERT INTO tblSlides
              SiteLabel,
              AccessionID,
 			 LastTimeUpdatedFromCoPath,
-			 specimen_id)
+			 specimen_id,
+                            Audit)
 	SELECT CONCAT("HSLD",tblBlock.SpecNumFormatted,"_",tblBlock.PartDesignator,"_",tblBlock.BlockDesignator,".",copath_p_stainprocess.stain_inst,".",tblIntegers.integers) AS SlideId,
 	       tblBlock.blockid,
 	       CONCAT(tblBlock.SpecNumFormatted,"_",tblBlock.PartDesignator,"_",tblBlock.BlockDesignator,".",copath_p_stainprocess.stain_inst) AS BlockStainInstId,
@@ -38,7 +39,8 @@ INSERT INTO tblSlides
 	       "MAWD",
 	       tblBlock.SpecNumFormatted,
 		   NOW(),
-		   tblBlock.Specimen_id
+		   tblBlock.Specimen_id,
+                     CONCAT("Slide inserted: ", NOW())
 	FROM   tblIntegers,
 	       tblBlock
 	       INNER JOIN copath_p_stainprocess
@@ -68,4 +70,5 @@ INSERT INTO tblSlides
 			 `specimen_id` = tblBlock.Specimen_id,
 			 `LastTimeUpdatedFromCoPath` = NOW(),
 			 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1,
-		   `Note` = CONCAT("Slide updated on: ", NOW(), ".  Slide and block values have been updated." );
+		   `Note` = CONCAT("Slide updated on: ", NOW(), ".  Slide and block values have been updated." ),
+                       `Audit` = CONCAT(`Audit`, 'Slide updated:',NOW(), '.');
