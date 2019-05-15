@@ -33,7 +33,7 @@
   </div>
 
   <br>
-  <div class="customheadertext">
+  <div class="customsubheadertext">
     <h5>Part {{ this.currentPart }} of {{ this.totalParts }}</h5>
     <h5>Block {{ this.currentBlock }} of {{ this.totalBlocks }}</h5>
     <h5>Slides on this block: {{ slides.length }}</h5>
@@ -50,7 +50,7 @@
              <div class=slidelabel>
                     <div class=slideheader>
                         {{ result.AccessionID }}-{{ result.PartDesignator }}{{ result.BlockDesignator }}<br>
-                        {{ result.Patient.substring(0,10) }}
+                        {{ result.Patient.substring(0,9) }}
                         </div>
                       <div class=slidebody>
                       {{ result.StainLabel }}<br>
@@ -97,6 +97,8 @@ import axios from 'axios'
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
 const strApiUrl = 'http://10.24.4.9:2081'
+//Test
+//const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
 //const strApiUrl = 'http://localhost:2081'
 
@@ -133,8 +135,7 @@ export default {
       totalBlocks: null,
       currentBlock: null,
       totalParts: null,
-      currentPart: null,
-      test: {}
+      currentPart: null
     }
   },
 
@@ -296,12 +297,13 @@ export default {
                 return
               }
               console.log('apidata:', apidata);
-              this.test = apidata.data
-              console.log(this.test)
-              this.totalBlocks = this.test.currentblock
-              this.currentBlock = this.test.currentblock
-              this.totalParts = this.test.totalparts
-              this.currentPart = this.test.currentpart
+              let temp = {}
+              temp = apidata.data
+              console.log(temp)
+              this.totalBlocks = temp.totalblocks
+              this.currentBlock = temp.currentblock
+              this.totalParts = temp.totalparts
+              this.currentPart = temp.currentpart
 
 
             }).catch((e) => {

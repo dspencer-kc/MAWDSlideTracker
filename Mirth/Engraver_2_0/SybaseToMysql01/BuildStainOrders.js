@@ -1,27 +1,22 @@
-var dbConnMYSQL;
-var strSQL;
-var result;
-var strDateTime = DateUtil.getCurrentDate('yyyyMMddHHmmss');
-var strSyncID = $('intLastSyncID');
-const strMYSQLUserName = configurationMap.get('MYSQLUserName');
-const strMYSQLPassword = configurationMap.get('MYSQLPassword');
-const strMYSQLJDBCConnection = configurationMap.get('MYSQLJDBCConnection');
-const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver');
+var dbConnMYSQL
+var strSQL
+var result
+var strDateTime = DateUtil.getCurrentDate('yyyyMMddHHmmss')
+var strSyncID = $('intLastSyncID')
+const strMYSQLUserName = configurationMap.get('MYSQLUserName')
+const strMYSQLPassword = configurationMap.get('MYSQLPassword')
+const strMYSQLJDBCConnection = configurationMap.get('MYSQLJDBCConnection')
+const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
 
+// If no syncid, set as 0.
+if (isNaN(strSyncID)) {
+  strSyncID = 0
+} else if (strSyncID == "") {
+  strSyncID = 0
+}
 
-		//If no syncid, set as 0.
-		if (isNaN(strSyncID))
-		{
-			strSyncID = 0;
-		}
-		else if (strSyncID == "")
-		{
-			strSyncID = 0
-		}
-
-//Sync New Slide Orders
-try
-{
+// Sync New Slide Orders
+try {
 	strSQL = "INSERT INTO tblSlides \
             (slideid, \
              blockid, \
@@ -43,7 +38,8 @@ try
              AccessionID, \
 			 LastTimeUpdatedFromCoPath,  \
 			 SyncID,  \
-			 specimen_id)  \
+			 specimen_id, \
+			 Audit)  \
 	SELECT CONCAT(\"HSLD\",tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst,\".\",tblIntegers.integers) AS SlideId, \
 	       tblBlock.blockid, \
 	       CONCAT(tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst) AS BlockStainInstId, \
@@ -64,7 +60,8 @@ try
 	       tblBlock.SpecNumFormatted, \
 		   NOW(), \
 		   " + strSyncID +", \
-		   tblBlock.Specimen_id \
+		   tblBlock.Specimen_id, \
+             CONCAT(\"Slide inserted: \", NOW()) \
 	FROM   tblIntegers, \
 	       tblBlock \
 	       INNER JOIN copath_p_stainprocess \
@@ -95,16 +92,14 @@ try
 			 `LastTimeUpdatedFromCoPath` = NOW(), \
 			 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1, \
 			  `SyncID` = " + strSyncID +", \
-		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\";";
+		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\", \
+		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated:\",NOW(), \".\");"
 
-	//logger.debug("SQL:" + strSQL);
-dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
-	result = dbConnMYSQL.executeUpdate(strSQL);
+  // logger.debug("SQL:" + strSQL);
+  dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
+  result = dbConnMYSQL.executeUpdate(strSQL)
 
-
-
-	//Update p_stainprocess that block is matched and slides have been created.
-	//Is this right?? should it be updating copath_p_stainprocess??  Note - this seems to be working and creating entries in the copath_p_stainprocesss table.
+  // Update p_stainprocess that block is matched and slides have been created.
 		strSQL = "UPDATE tblSlides \
 			       INNER JOIN copath_p_stainprocess  \
 			               ON ( tblSlides.BlockInst = copath_p_stainprocess.block_inst ) \
@@ -115,12 +110,12 @@ dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDri
 			SET    copath_p_stainprocess._blockstaininstid = tblSlides.BlockStainInstID, \
 				  copath_p_stainprocess._syncid = "+ strSyncID +", \
 			       copath_p_stainprocess._status = concat(\"Block Synced Slides Built \",NOW()) \
-			WHERE  (( ( copath_p_stainprocess._blockstaininstid ) IS NULL )); ";
+			WHERE  (( ( copath_p_stainprocess._blockstaininstid ) IS NULL )); "
 
-	result = dbConnMYSQL.executeUpdate(strSQL);
+  result = dbConnMYSQL.executeUpdate(strSQL)
 
-			//Update tblSlides Stain Status
-		strSQL = "UPDATE ((tblSlides \
+  // Update tblSlides Stain Status
+  strSQL = "UPDATE ((tblSlides \
 				         INNER JOIN copath_p_stainprocess \
 				                 ON tblSlides.BlockStainInstID = \
 				                    copath_p_stainprocess.`_blockstaininstid`) \
@@ -134,20 +129,13 @@ dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDri
 				       tblSlides.TimesPrinted = tblSlides.TimesPrinted \
 				                                + `_TimesPrintedIncrease`, \
 				       tblSlides.Audit = CONCAT(Audit,' Status Update: ',name,' By:',username,' at:',status_date)\
-				 WHERE ( copath_p_stainprocess._lastSyncTime > '" + $('strLastSyncDateTime') + "');  ";
+				 WHERE ( copath_p_stainprocess._lastSyncTime > '" + $('strLastSyncDateTime') + "');  "
 
-
-				result = dbConnMYSQL.executeUpdate(strSQL);
-
-}
-catch(err)
-{
-	logger.debug("ERROR- MYSQL:" + err.name + " Error Details: " + err + ". SQL: " + strSQL);
-}
-finally
-{
-			if (dbConnMYSQL)
-			{
-			dbConnMYSQL.close();
-			}
+  result = dbConnMYSQL.executeUpdate(strSQL)
+} catch (err) {
+  logger.debug('ERROR- MYSQL:' + err.name + ' Error Details: ' + err + '. SQL: ' + strSQL)
+} finally {
+  if (dbConnMYSQL) {
+    dbConnMYSQL.close()
+  }
 }

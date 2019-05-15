@@ -160,7 +160,8 @@ try {
 								 AccessionID, \
 					 LastTimeUpdatedFromCoPath,  \
 					 SyncID,  \
-					 specimen_id)  \
+					 specimen_id, \
+			 		 Audit)  \
 			SELECT CONCAT(\"HSLD\",tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst,\".\",tblIntegers.integers) AS SlideId, \
 						 tblBlock.blockid, \
 						 CONCAT(tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst) AS BlockStainInstId, \
@@ -181,7 +182,8 @@ try {
 						 tblBlock.SpecNumFormatted, \
 					 NOW(), \
 					 " + strSyncID +", \
-					 tblBlock.Specimen_id \
+					 tblBlock.Specimen_id, \
+             			 CONCAT(\"Cassette Delete Detected, Slide inserted on new cassette: \", NOW()) \
 			FROM   tblIntegers, \
 						 tblBlock \
 						 INNER JOIN copath_p_stainprocess \
@@ -213,7 +215,8 @@ try {
 					 `LastTimeUpdatedFromCoPath` = NOW(), \
 					 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1, \
 						`SyncID` = " + strSyncID +", \
-					 `Note` = \"Orphaned slide updated based off of part designator on: " + strDateTime + ".  Slide and block values have been updated.\";";
+					 `Note` = \"Orphaned slide updated based off of part designator on: " + strDateTime + ".  Slide and block values have been updated.\", \
+		  			 `Audit` = CONCAT(`tblSlides`.`Audit`, \"Block Deletion Detected, Slide updated on new block:\",NOW(), \".\");"
 
 			//logger.debug("SQL:" + strSQL);
 		dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
