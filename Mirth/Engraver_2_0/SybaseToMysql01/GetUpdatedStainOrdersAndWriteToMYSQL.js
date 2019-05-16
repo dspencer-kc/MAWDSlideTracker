@@ -1,74 +1,66 @@
 
-//Sync New Slide Orders
+// Sync New Slide Orders
 
+var dbConnMYSQL
+var dbConnCoPath
+var strSpecimenID = "empty"
+var strSQL
+var strSQL1
+var strSQL2
+var result
+var lastInsertIDResult
+var mySQLresult
+var intResultSize
+var intSuccessfullInserts = 0
+var strDateTime = DateUtil.getCurrentDate('yyyyMMddHHmmss')
+var strLastSyncDateTime = $('strLastSyncDateTime') // Last DateTime Sync was ran
+var strMostRecentStatusDate // The most recent status date of stain orders that were uploaded.  If some of the database calls fail, this is where to pick back up.
+var strDBInsertStatus
+var strTimeToComplete
+var strSyncStatus
+var intLastSyncID
+const strMYSQLUserName = configurationMap.get('MYSQLUserName')
+const strMYSQLPassword = configurationMap.get('MYSQLPassword')
+const strMYSQLJDBCConnection = configurationMap.get('MYSQLJDBCConnection')
+const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver')
+const strSybaseUserName = configurationMap.get('SybaseUserName')
+const strSybasePassword = configurationMap.get('SybasePassword')
+const strSybaseJDBCConnection = configurationMap.get('SybaseJDBCConnection')
+const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver')
 
-var dbConnMYSQL;
-var dbConnCoPath;
-var strSpecimenID = "empty";
-var strSQL;
-var strSQL1;
-var strSQL2;
-var result;
-var lastInsertIDResult;
-var mySQLresult;
-var intResultSize;
-var intSuccessfullInserts = 0;
-var strDateTime = DateUtil.getCurrentDate('yyyyMMddHHmmss');
-var strLastSyncDateTime = $('strLastSyncDateTime');  //Last DateTime Sync was ran
-var strMostRecentStatusDate;					//The most recent status date of stain orders that were uploaded.  If some of the database calls fail, this is where to pick back up.
-var strDBInsertStatus;
-var strTimeToComplete;
-var strSyncStatus;
-var intLastSyncID;
-const strMYSQLUserName = configurationMap.get('MYSQLUserName');
-const strMYSQLPassword = configurationMap.get('MYSQLPassword');
-const strMYSQLJDBCConnection = configurationMap.get('MYSQLJDBCConnection');
-const strMYSQLJDBCDriver = configurationMap.get('MYSQLJDBCDriver');
-const strSybaseUserName = configurationMap.get('SybaseUserName');
-const strSybasePassword = configurationMap.get('SybasePassword');
-const strSybaseJDBCConnection = configurationMap.get('SybaseJDBCConnection');
-const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver');
-
-
-
-		//Get slides with status more recent than last sync
-		//Known Issues - this will not pull in updates, p_stainprocess.status_date only updates when status is changed.
-		//Workaround is to continuously sync
-		strSQL1 = "SELECT TOP 1000 * FROM p_stainprocess where status_date > '" + strLastSyncDateTime + "' ORDER BY status_date";
-		//logger.debug("JS Writer:" + strSQL1);
+// Get slides with status more recent than last sync
+// Known Issues - this will not pull in updates, p_stainprocess.status_date only updates when status is changed.
+// Workaround is to continuously sync
+strSQL1 = "SELECT TOP 1000 * FROM p_stainprocess where status_date > '" + strLastSyncDateTime + "' ORDER BY status_date"
+// logger.debug("JS Writer:" + strSQL1);
 try {
-	dbConnCoPath = DatabaseConnectionFactory.createDatabaseConnection(strSybaseJDBCDriver,strSybaseJDBCConnection,strSybaseUserName,strSybasePassword)
-	result = dbConnCoPath.executeCachedQuery(strSQL1);
+  dbConnCoPath = DatabaseConnectionFactory.createDatabaseConnection(strSybaseJDBCDriver,strSybaseJDBCConnection,strSybaseUserName,strSybasePassword)
+  result = dbConnCoPath.executeCachedQuery(strSQL1)
 
-	//Loop set result size for loop.  Loop after dbconn established.
+  // Loop set result size for loop.  Loop after dbconn established.
+  intResultSize = result.size()
 
+  // Insert into OPENLIS Mysql=======================
 
-	intResultSize = result.size();
+  try {
+    dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection,strMYSQLUserName,strMYSQLPassword);
 
-			//Insert into OPENLIS Mysql=======================
+    if (intResultSize > 0) {
+      for (var i = 0; i < intResultSize; i++) {
+        // logger.debug("i: " + i.toString() + "Entry point.");
+        result.next()
 
-			try {
-				dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection,strMYSQLUserName,strMYSQLPassword);
+        // try Catch within loop.  result.getString Errors when block inst is null.
 
+        try {
 
-				if(intResultSize>0)
-				{
-				for(var i = 0; i < intResultSize; i++)
-					{
-					//logger.debug("i: " + i.toString() + "Entry point.");
-					result.next();
+          // GetVariables That need cleaned up
+          var strLogComment = result.getString('log_comment')
+          strLogComment = escape(strLogComment)  //Need to clean up later.
 
-						//try Catch within loop.  result.getString Errors when block inst is null.
+          // Keys off of status updates. Need to cascade status updates to slides
 
-						try{
-
-							//GetVariables That need cleaned up
-							var strLogComment = result.getString('log_comment');
-							strLogComment = escape(strLogComment);  //Need to clean up later.
-
-							//Keys off of status updates. Need to cascade status updates to slides
-
-								strSQL2 = "INSERT INTO `copath_p_stainprocess` \
+          strSQL2 = "INSERT INTO `copath_p_stainprocess` \
 									(`specimen_id`, \
 									`part_inst`, \
 									`stain_inst`, \
@@ -174,35 +166,27 @@ try {
 									`_lastSyncTime`= '" + strDateTime + "', \
 									`_timesUpdated`= `_timesUpdated`+1;";
 
-									//logger.debug(strSQL2);
+          // logger.debug(strSQL2)
+        } catch (err) {
+          // GetStringError
+          logger.debug("Error Name:" + err.name + " Error Details: " + err + ". SQL2:" + strSQL2)
+          logger.debug("GetString Error")
+        } finally {
+        }
 
-						}
-						catch(err){
-							//GetStringError
-							logger.debug("Error Name:" + err.name + " Error Details: " + err + ". SQL2:" + strSQL2);
-							logger.debug("GetString Error");
-						}
-						finally{
-						}
+        // Update database
+        mySQLresult = dbConnMYSQL.executeUpdate(strSQL2)
+        strDBInsertStatus = mySQLresult.toString()
+        strMostRecentStatusDate = result.getString('status_date')
+        strSyncStatus = "Success"
+        intSuccessfullInserts++
+      } // End For loop
 
+      // Calculate query time
+      strTimeToComplete = Math.abs(DateUtil.getCurrentDate('yyyyMMddHHmmss') - strDateTime)
 
-										//Update database
-										mySQLresult = dbConnMYSQL.executeUpdate(strSQL2);
-										strDBInsertStatus = mySQLresult.toString();
-										strMostRecentStatusDate = result.getString('status_date');
-										strSyncStatus = "Success";
-										intSuccessfullInserts++;
-
-
-      								} //End For loop
-
-
-						//Calculate query time, no idea if this is accurate.FIXME:
-						strTimeToComplete = Math.abs(DateUtil.getCurrentDate('yyyyMMddHHmmss') - strDateTime);
-
-					//	logger.debug("1");
-						//Log that sync was completed
-						strSQL = "INSERT INTO `tblSyncStatus` \
+      // Log that sync was completed
+      strSQL = "INSERT INTO `tblSyncStatus` \
 							(`syncTime`, \
 							`status`, \
 							`mostrecentstainstatus`, \
@@ -213,58 +197,46 @@ try {
 							'" + strSyncStatus + "', \
 							'" + strMostRecentStatusDate + "', \
 							" + intSuccessfullInserts.toString() + ", \
-							'" + strTimeToComplete + "');";
+							'" + strTimeToComplete + "');"
 
-				mySQLresult = dbConnMYSQL.executeUpdate(strSQL);
+      mySQLresult = dbConnMYSQL.executeUpdate(strSQL)
 
-				//Save syncid  to varialbe for build stain orders
+      // Save syncid  to varialbe for build stain orders
 
-				try{
-				strSQLGetLastInsertID = "SELECT LAST_INSERT_ID() as lastinsertid;";
-				lastInsertIDResult = dbConnMYSQL.executeCachedQuery(strSQLGetLastInsertID);
-				lastInsertIDResult.next();
-				intLastSyncID = lastInsertIDResult.getString('lastinsertid');
-				channelMap.put ("intLastSyncID", intLastSyncID);
-				}
-				catch(err) {
-			        logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ".  Prior to this, " + intSuccessfullInserts.toString() + " were inserted. Status:" + strDBInsertStatus + " SQL: " + strSQL + " SQL2: " + strSQL2 + "SQL strSQLGetLastInsertID: " + strSQLGetLastInsertID );
-			        } //End catch
+      try {
+        strSQLGetLastInsertID = "SELECT LAST_INSERT_ID() as lastinsertid;"
+        lastInsertIDResult = dbConnMYSQL.executeCachedQuery(strSQLGetLastInsertID)
+        lastInsertIDResult.next()
+        intLastSyncID = lastInsertIDResult.getString('lastinsertid')
+        channelMap.put ("intLastSyncID", intLastSyncID)
+      } catch (err) {
+        logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ".  Prior to this, " + intSuccessfullInserts.toString() + " were inserted. Status:" + strDBInsertStatus + " SQL: " + strSQL + " SQL2: " + strSQL2 + "SQL strSQLGetLastInsertID: " + strSQLGetLastInsertID )
+      } // End catch
 
+      // Log Sync Completed
+      logger.info("Sync Completed, " + intSuccessfullInserts.toString() + " records synced.  Completed in " + strTimeToComplete + " millisecond(s).  The most recent Stain Status date inserted is:" + strMostRecentStatusDate + " SyncID: " + intLastSyncID) 
+    // End if slide orders exist.
+    } 
+    else { // No records to insert
+      strSyncStatus = "No stain updates to insert"
+      strMostRecentStatusDate = strLastSyncDateTime
 
-				//Log Sync Completed
-				logger.info("Sync Completed, " + intSuccessfullInserts.toString() + " records synced.  Completed in " + strTimeToComplete + " millisecond(s).  The most recent Stain Status date inserted is:" + strMostRecentStatusDate + " SyncID: " + intLastSyncID);
+      //Log Sync Completed
+      strTimeToComplete = Math.abs(DateUtil.getCurrentDate('yyyyMMddHHmmss') - strDateTime);
+      //logger.debug("Sync Completed - No new orders, " + intSuccessfullInserts.toString() + " records synced.  Completed in " + strTimeToComplete + " millisecond(s).  The most recent Stain Status date inserted is:" + strMostRecentStatusDate);
+    } // End Else
+  } catch (err) {
+    logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ".  Prior to this, " + intSuccessfullInserts.toString() + " were inserted. Status:" + strDBInsertStatus + " SQL: " + strSQL + " SQL2: " + strSQL2 + "SQL strSQLGetLastInsertID: " + strSQLGetLastInsertID );
+  } finally {
+    if (dbConnMYSQL) {
+      dbConnMYSQL.close();
+    }
+  }
 
-								}//End if slide orders exist.
-				else { 	//No records to insert
-				strSyncStatus = "No stain updates to insert";
-				strMostRecentStatusDate = strLastSyncDateTime;
-
-				//Log Sync Completed
-				strTimeToComplete = Math.abs(DateUtil.getCurrentDate('yyyyMMddHHmmss') - strDateTime);
-				//logger.debug("Sync Completed - No new orders, " + intSuccessfullInserts.toString() + " records synced.  Completed in " + strTimeToComplete + " millisecond(s).  The most recent Stain Status date inserted is:" + strMostRecentStatusDate);
-
-
-					}//End Else
-
-
-			} //End try
-			catch(err) {
-			        logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ".  Prior to this, " + intSuccessfullInserts.toString() + " were inserted. Status:" + strDBInsertStatus + " SQL: " + strSQL + " SQL2: " + strSQL2 + "SQL strSQLGetLastInsertID: " + strSQLGetLastInsertID );
-			        } //End catch
-
-
-
-			finally {
-				if (dbConnMYSQL) {
-					dbConnMYSQL.close();
-				}
-			}
-
-	//logger.info( result.toString() );
-	//channelMap.put ("strSpecimenID", strSpecimenID);
-
+  // logger.info( result.toString() );
+  // channelMap.put ("strSpecimenID", strSpecimenID);
 } finally {
-	if (dbConnCoPath) {
-		dbConnCoPath.close();
-	}
+  if (dbConnCoPath) {
+    dbConnCoPath.close()
+  }
 }
