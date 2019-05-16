@@ -215,7 +215,8 @@ export default {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: this.username,
-      slideQueuePath: this.slideQueuePath
+      slideQueuePath: this.slideQueuePath,
+      stationName: this.stationName
 
       })
       .then(function (response) {
