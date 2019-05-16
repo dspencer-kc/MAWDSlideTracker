@@ -55,8 +55,7 @@ try {
         try {
 
           // GetVariables That need cleaned up
-          var strLogComment = result.getString('log_comment')
-          strLogComment = escape(strLogComment)  //Need to clean up later.
+          var strLogComment = SanitizeVariableAddLeadingAndTrailingApostrophies(result.getString('log_comment'))
 
           // Keys off of status updates. Need to cascade status updates to slides
 
@@ -109,7 +108,7 @@ try {
 									'" + result.getString('status_date') + "', \
 									'" + result.getString('label_text') + "', \
 									'" + result.getString('stainproclog_id') + "', \
-									'" + strLogComment + "', \
+									" + strLogComment + ", \
 									'" + result.getString('requestclass_id') + "', \
 									'" + result.getInt('block_inst') + "', \
 									'" + result.getString('ppath_link') + "', \
@@ -142,7 +141,7 @@ try {
 									`status_date`= '" + result.getString('status_date') + "', \
 									`label_text`= '" + result.getString('label_text') + "', \
 									`stainproclog_id`= '" + result.getString('stainproclog_id') + "', \
-									`log_comment`= '" + strLogComment + "', \
+									`log_comment`= " + strLogComment + ", \
 									`requestclass_id`= '" + result.getString('requestclass_id') + "', \
 									`ppath_link`= '" + result.getString('ppath_link') + "', \
 									`wkdept_id`= '" + result.getString('wkdept_id') + "', \
@@ -239,4 +238,16 @@ try {
   if (dbConnCoPath) {
     dbConnCoPath.close()
   }
+}
+
+function SanitizeVariableAddLeadingAndTrailingApostrophies(txt) {
+  if (txt == null) {
+    return "null"
+  } else {
+    return "'" + EscapeApostrophe(txt) + "'"
+  }
+}
+
+function EscapeApostrophe (txt) {
+  return (txt + "").replace(/\'/g, "''")
 }
