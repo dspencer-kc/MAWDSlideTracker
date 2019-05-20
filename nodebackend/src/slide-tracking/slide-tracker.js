@@ -329,7 +329,18 @@ function pullSlides (request, response, callback) {
 
   // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
   // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-  var strSQL = `SELECT tblSlides.*, 
+  var strSQL = `SELECT tblSlides.AccessionID,
+                      tblSlides.PartDesignator,
+                      tblSlides.BlockDesignator,
+                      tblSlides.Patient,
+                      tblSlides.StainLabel,
+                      tblSlides.ToBePrinted,
+                      tblSlides.SlideInst,
+                      tblSlides.slidecount,
+                      tblSlides.StainOrderDate,
+                      tblSlides.SiteLabel,
+                      tblSlides.SlideID,
+                      tblSlides.Status, 
                      tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, 
                      copath_c_d_stainstatus.name          AS CopathStainOrderStatus, 
                      copath_c_d_person_1.initials         AS OrderPathInitials, 
