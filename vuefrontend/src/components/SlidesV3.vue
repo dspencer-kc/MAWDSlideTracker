@@ -98,7 +98,7 @@ import axios from 'axios'
 //Prod
 const strApiUrl = 'http://10.24.4.9:2081'
 //Test
-//const strApiUrl = 'http://10.24.4.9:2082'
+// const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
 //const strApiUrl = 'http://localhost:2081'
 
@@ -234,7 +234,7 @@ export default {
 
     pullSlides() {
       console.log('start pull slides');
-      this.GetPartBlockCurrentAndTotals()
+      //this.GetPartBlockCurrentAndTotals()
       let blockID = this.blockID
       if (!blockID) {
         alert('please enter block ID to pull up slides')
@@ -266,6 +266,7 @@ export default {
         }).catch((e) => {
           console.log(e)
         })
+        this.GetPartBlockCurrentAndTotals()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
@@ -316,9 +317,13 @@ export default {
     },
     clearCurrentSlide(){
       console.log("hellocancelbutton")
-      this.blockID ="";
-      this.formstatus = 'loadslides';
-      this.formstatuslabel = 'Load Slides';
+      this.blockID =""
+      this.formstatus = 'loadslides'
+      this.formstatuslabel = 'Load Slides'
+      this.totalBlocks = ''
+      this.currentBlock = ''
+      this.totalParts = ''
+      this.currentPart = ''
       //Always disable input textbox now that we're scanning
       //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}

@@ -20,7 +20,7 @@
       <a class="navbar-brand" href="#">
           Slide Tracker
       </a>
-      <a class="nav-link" href="#">v 1.01</a>
+      <a class="nav-link" href="#">v 1.02</a>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
@@ -248,7 +248,7 @@ import axios from 'axios'
 //Prod
 const strApiUrl = 'http://10.24.4.9:2081'
 //Test
-//const strApiUrl = 'http://10.24.4.9:2082'
+// const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
 //const strApiUrl = 'http://localhost:2081'
 console.log('APIURL: ', strApiUrl)
