@@ -11,12 +11,9 @@ SELECT tblSlides.AccessionID,
         tblSlides.SlideID,
         tblSlides.Status,
        tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, 
-       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, 
        copath_c_d_person_1.initials         AS OrderPathInitials, 
-       copath_c_d_person_1.prettyprint_name AS OrderingPathName, 
-       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, 
        copath_c_d_department.name           AS StainDept
-FROM   ((((((tblSlides 
+FROM   ((((tblSlides 
              INNER JOIN copath_p_stainprocess 
                      ON tblSlides.BlockStainInstID = 
                         copath_p_stainprocess._blockstaininstid) 
@@ -24,11 +21,6 @@ FROM   ((((((tblSlides
                     ON tblSlides.BlockID = tblBlock.BlockID) 
            LEFT JOIN tblCassetteColorHopperLookup 
                   ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) 
-          LEFT JOIN copath_c_d_stainstatus 
-                 ON copath_p_stainprocess.stainstatus_id = 
-                    copath_c_d_stainstatus.id) 
-         LEFT JOIN copath_c_d_person 
-                ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) 
         LEFT JOIN copath_c_d_person AS copath_c_d_person_1 
                ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) 
        LEFT JOIN copath_c_d_department 
