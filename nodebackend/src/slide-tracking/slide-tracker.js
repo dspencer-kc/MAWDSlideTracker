@@ -4,13 +4,12 @@ const url = require('url')
 var dateFormat = require('dateformat')
 var fs = require('fs')
 
-
-
 module.exports = {
   printSlides: printSlides,
   getUserInfo: getUserInfo,
   updateSlideToPrint: updateSlideToPrint,
-  pullSlides: pullSlides
+  pullSlides: pullSlides,
+  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals
 }
 
 function printSlides (request, response, callback) {
@@ -39,81 +38,83 @@ function printSlides (request, response, callback) {
   //= ===========================================================================================
   // print the slides here
   console.log(request)
-    var strLocationID = 'unknown'
-    var strSQLUpdateStatement = ''
+  var strLocationID = 'unknown'
+  var strSQLUpdateStatement = ''
 
-    var strDate
-    strDate = new Date().toLocaleString()
+  var strDate
+  strDate = new Date().toLocaleString()
+  var strBlockID = request.body.blockID
+  var strPrintRequestBy = request.body.printRequestedBy
+  var strSlideQueuePath = request.body.slideQueuePath
+  var strOrderPathInitials = ''
 
-    var strAction = request.body.action
-    var strBlockID = request.body.blockID
-    var strPrintRequestBy = request.body.printRequestedBy
-    var strSlideQueuePath = request.body.slideQueuePath
+  console.log('Hello PrintSlides')
 
-    console.log('Hello PrintSlides')
-    console.log(strBlockID)
-    console.log(strAction) // strAction is not used
-    console.log(strPrintRequestBy)
-    console.log(strDate)
-    console.log('Slidequeuepath:', strSlideQueuePath)
-
-
-    // Get all required information from blockID, only include slides that are marked 'to be printed'
-    strSQL = `SELECT tblSlides.*, \
-                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
-                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
-                       copath_c_d_person_1.initials         AS OrderPathInitials, \
-                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, \
-                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, \
-                       copath_c_d_department.name           AS StainDept  \
-                  FROM   ((((((tblSlides \
-                           INNER JOIN copath_p_stainprocess \
-                                   ON tblSlides.BlockStainInstID = \
-                                      copath_p_stainprocess._blockstaininstid) \
-                          INNER JOIN tblBlock  \
-                                  ON tblSlides.BlockID = tblBlock.BlockID)  \
-                         LEFT JOIN tblCassetteColorHopperLookup  \
-                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) \
-                        LEFT JOIN copath_c_d_stainstatus \
-                               ON copath_p_stainprocess.stainstatus_id = \
-                                  copath_c_d_stainstatus.id) \
-                       LEFT JOIN copath_c_d_person \
-                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) \
-                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 \
-                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) \
-                     LEFT JOIN copath_c_d_department \
-                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
+  // Get all required information from blockID, only include slides that are marked 'to be printed'
+  var strSQL = `SELECT tblSlides.*, 
+                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, 
+                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, 
+                       copath_c_d_person_1.initials         AS OrderPathInitials, 
+                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, 
+                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, 
+                       copath_c_d_department.name           AS StainDept 
+                  FROM   ((((((tblSlides 
+                           INNER JOIN copath_p_stainprocess 
+                                   ON tblSlides.BlockStainInstID = 
+                                      copath_p_stainprocess._blockstaininstid) 
+                          INNER JOIN tblBlock  
+                                  ON tblSlides.BlockID = tblBlock.BlockID)  
+                         LEFT JOIN tblCassetteColorHopperLookup  
+                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) 
+                        LEFT JOIN copath_c_d_stainstatus 
+                               ON copath_p_stainprocess.stainstatus_id = 
+                                  copath_c_d_stainstatus.id) 
+                       LEFT JOIN copath_c_d_person 
+                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) 
+                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 
+                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) 
+                     LEFT JOIN copath_c_d_department 
+                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id 
                   WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
 
-    console.log(strSQL)
+  // console.log(strSQL)
 
-    // Connect to the database
+  // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
 
-    console.log('Connected!')
-    con.query(strSQL, function (err, result) {
-      if (err) {
-        console.log(err)
+  // console.log('Connected!')
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
     } else {
-
-      console.log(result)
+      // console.log(result)
       // iterate for all the rows in result
       Object.keys(result).forEach(function (key) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        if (row.OrderingPath = 'null') {
-          row.OrderingPath = ''
+        console.log('OrderingPathInitials1:', row.OrderPathInitials)
+        if (row.OrderPathInitials == null) {
+          strOrderPathInitials = ''
+          console.log('Matched null')
+        } else if (row.OrderPathInitials === 'null') {
+          strOrderPathInitials = ''
+          console.log('Matched the word null')
+        } else {
+          strOrderPathInitials = row.OrderPathInitials
+          console.log('OrderingPathInitials2:', strOrderPathInitials)
         }
+        console.log('OrderingPathInitials3:', strOrderPathInitials)
+        strOrderPathInitials = strOrderPathInitials.substring(0, 3)
 
         var d = new Date().toLocaleDateString()
-        fileDate = d.replace(/-|\//g, '')
+        var fileDate = d.replace(/-|\//g, '')
 
         // WriteSlideData
         // SlideID|AccessionID|SlideInst|PartDesignator|BlockDesignator|StainOrderDate|OrderingPath|Patient|SiteLabel|SlideDistributionKeyword|StainLabel
-        strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + row.OrderingPath + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
+        var strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
-        strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
+        var strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
         console.log(strSlideFlatFileFullName)
         fs.writeFile(strSlideFlatFileFullName, strFileWriteData,
           // callback function that is called after writing file is done
@@ -124,47 +125,42 @@ function printSlides (request, response, callback) {
           })
 
         // Update query to say slide has been printed
-        strSQLUpdateStatement = "UPDATE `OPENLIS`.`tblSlides` \
-                                                    SET \
-                                                        `Status` = 'Printed',\
-                                                        `Printed` = TRUE,\
-                                                        `DateTimePrinted` = '" + strDate + "',\
-                                                        `DTPrinted` =   NOW(),\
-                                                        `LocationPrinted` = '" + strLocationID + "',\
-                                                        `WhoPrinted` = '" + strPrintRequestBy + "',\
-                                                        `TimesPrinted` = `TimesPrinted` + 1,\
-                                                        `Audit` = CONCAT(`Audit`,\
-                                                                ' Slide Printed " + strDate + ' at ' + strLocationID + ' by ' + strPrintRequestBy + ".'),\
-                                                        `ToBePrinted` = FALSE\
-                                                    WHERE\
-                                                        `SlideID` = '" + row.SlideID + "';"
+        strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\` 
+                                                    SET 
+                                                        \`Status\` = 'Printed',
+                                                        \`Printed\` = TRUE,
+                                                        \`DateTimePrinted\` = '` + strDate + `',
+                                                        \`DTPrinted\` = NOW(),
+                                                        \`LocationPrinted\` = '` + strLocationID + `',
+                                                        \`WhoPrinted\` = '` + strPrintRequestBy + `',
+                                                        \`TimesPrinted\` = \`TimesPrinted\` + 1,
+                                                        \`Audit\` = CONCAT(\`Audit\`,
+                                                                ' Slide Printed ` + strDate + ' at ' + strLocationID + ' by ' + strPrintRequestBy + `.'),
+                                                        \`ToBePrinted\` = FALSE
+                                                    WHERE
+                                                        \`SlideID\` = '` + row.SlideID + `';`
 
         con.query(strSQLUpdateStatement, function (updateerr, updateresult) {
           if (updateerr) {
-            console.log('updateerror:',updateerr)
+            console.log('updateerror:', updateerr)
+          } else {
+            // console.log(strSQLUpdateStatement)
+            // console.log(updateresult.affectedRows + ' record(s) updated')
           }
-          else{
-                    console.log(strSQLUpdateStatement)
-                    console.log(updateresult.affectedRows + ' record(s) updated')
-          }
-          //Do not end connection, as you need to go through the entire loop
-        }) //end update query
+          // Do not end connection, as you need to go through the entire loop
+        }) // end update query
       })
-
-
     }
-      con.end()
+    con.end()
+  }) // end qury
 
-    }) //end qury
-
-    console.log(`${strBlockID}`)
-    response.send('Slides have been sent to Slide Printer')
-
+  console.log(`${strBlockID}`)
+  response.send('Slides have been sent to Slide Printer')
 }
 
-//function getSlideParameters (request, response, callback) {
+// function getSlideParameters (request, response, callback) {
 //  // get some slide parameters here
-//}
+// }
 
 function getUserInfo (request, response, callback) {
   //= ==========================================================================================
@@ -178,11 +174,10 @@ function getUserInfo (request, response, callback) {
   //    When to call:
   //      To get userinfo based on badge barcode
   //= ===========================================================================================
-  var strResponse = ''
   var strUserID = request.body.userid
 
-  var strSQL = "SELECT * FROM OPENLIS.tblUsers \
-              WHERE `id` = '" + strUserID + "';"
+  var strSQL = `SELECT * FROM OPENLIS.tblUsers
+              WHERE \`id\` = '` + strUserID + `';`
 
   console.log(strSQL)
 
@@ -195,55 +190,67 @@ function getUserInfo (request, response, callback) {
       console.log(err)
     } else {
       console.log('Completed query.')
-      Object.keys(result).forEach(function (key) {
-        var row = result[key]
-        // Format Date
-      })
       console.log(result)
       response.json(result)
     }
     con.end()
-  }) //End query
+  }) // End query
 }
 
-function getBlockInfo (request, response, callback) {
+function getPartBlockCurrentAndTotals (request, response, callback) {
   //= ==========================================================================================
   //
-  //    Function getBlockInfo
-  //      Get Block Info
+  //    Function getPartBlockCurrentAndTotals
+  //      Get Current and How Many Parts are on case and Blocks are on this part
   //
   //    Author: Drew Spencer
   //
   //
   //    When to call:
-  //      To get block info when scanning blocks
+  //      When block is scanned
   //= ===========================================================================================
-  var strResponse = ''
-  var strSQL = request.body.userid
+  var strBlockID = request.body.blockID
+  var strAccessionId = null
+  var strCurrentBlock = null
+  var strCurrentPart = null
 
-  //var strSQL = "SELECT * FROM OPENLIS.tblUsers \
-  //            WHERE `id` = '" + strUserID + "';"
-
-  console.log(strSQL)
+  // Get Accession ID, Current Block, Current Part based on Block ID
+  console.log(strBlockID)
+  // ie HBLKD18-99999_A_2
+  var strNoPrefix = strBlockID.substring(4)
+  var strTemp = strNoPrefix.split('_')
+  strAccessionId = strTemp[0]
+  strCurrentPart = strTemp[1]
+  strCurrentBlock = strTemp[2]
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
   console.log('Connected!')
 
+  // Get Total Blocks
+  var strSQLTotalBlocks = `SELECT BlockDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAccessionId}' AND PartDesignator = '${strCurrentPart}' order by ABS(BlockDesignator) desc limit 1;`
+  // Get Total Parts on case
+  var strSQLTotalParts = `SELECT PartDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAccessionId}' order by PartDesignator desc LIMIT 1;`
+  // console.log(strSQLTotalBlocks)
+  var strSQL = strSQLTotalBlocks + strSQLTotalParts
+
+  // Send multiple queries at once
   con.query(strSQL, function (err, result) {
     if (err) {
       console.log(err)
     } else {
-      console.log('Completed query.')
-      Object.keys(result).forEach(function (key) {
-        var row = result[key]
-        // Format Date
-      })
-      console.log(result)
-      response.json(result)
+      var strTotalBlocks = result[0][0].BlockDesignator
+      var strTotalParts = result[1][0].PartDesignator
+      var jsonResult = {
+        currentblock: strCurrentBlock,
+        currentpart: strCurrentPart,
+        totalblocks: strTotalBlocks,
+        totalparts: strTotalParts
+      }
+      response.json(jsonResult)
     }
     con.end()
-  }) //End query
+  }) // End query
 }
 
 function updateSlideToPrint (request, response, callback) {
@@ -266,15 +273,11 @@ function updateSlideToPrint (request, response, callback) {
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
 
-  var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
-            'SET ' +
-                ' `ToBePrinted` = ' + blToPrintStatus +
-            ' WHERE `SlideID` = \'' + strSlideID + '\';'
-console.log(strSQL)
-  //Update caused error
-  //var strSQL = 'UPDATE `OPENLIS`.`tblSlides` ' +
-  //            'SET `ToBePrinted` = \'' + blToPrintStatus + '\' ' +
-  //            'WHERE `SlideID` = \'' + strSlideID + '\';'
+  var strSQL = `UPDATE \`OPENLIS\`.\`tblSlides\` 
+            SET
+              \`ToBePrinted\` = ` + blToPrintStatus +
+            ` WHERE \`SlideID\` = '` + strSlideID + `';`
+  console.log(strSQL)
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
@@ -325,37 +328,25 @@ function pullSlides (request, response, callback) {
   var parameters = urlParts.query
   var strBlockID = parameters.blockid
 
-
   // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
   // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-  strSQL = `SELECT tblSlides.*, \
-                     tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, \
-                     copath_c_d_stainstatus.name          AS CopathStainOrderStatus, \
-                     copath_c_d_person_1.initials         AS OrderPathInitials, \
-                     copath_c_d_person_1.prettyprint_name AS OrderingPathName, \
-                     copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, \
-                     copath_c_d_department.name           AS StainDept  \
-                FROM   ((((((tblSlides \
-                         INNER JOIN copath_p_stainprocess \
-                                 ON tblSlides.BlockStainInstID = \
-                                    copath_p_stainprocess._blockstaininstid) \
-                        INNER JOIN tblBlock  \
-                                ON tblSlides.BlockID = tblBlock.BlockID)  \
-                       LEFT JOIN tblCassetteColorHopperLookup  \
-                              ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) \
-                      LEFT JOIN copath_c_d_stainstatus \
-                             ON copath_p_stainprocess.stainstatus_id = \
-                                copath_c_d_stainstatus.id) \
-                     LEFT JOIN copath_c_d_person \
-                            ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) \
-                    LEFT JOIN copath_c_d_person AS copath_c_d_person_1 \
-                           ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) \
-                   LEFT JOIN copath_c_d_department \
-                          ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id \
-                WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}'));`
-  //console.log(strSQL)
+  var strSQL = `SELECT tblSlides.AccessionID,
+  tblSlides.PartDesignator,
+  tblSlides.BlockDesignator,
+  tblSlides.Patient,
+  tblSlides.StainLabel,
+  tblSlides.ToBePrinted,
+  tblSlides.SlideInst,
+  tblSlides.slidecount,
+  tblSlides.StainOrderDate,
+  tblSlides.SiteLabel,
+  tblSlides.SlideID,
+  tblSlides.Status
+FROM   tblSlides  
+WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
+  // console.log(strSQL)
 
-var con = mysql.createConnection(mysqlConfig)
+  var con = mysql.createConnection(mysqlConfig)
 
   con.query(strSQL, function (err, result) {
     if (err) {
@@ -367,12 +358,12 @@ var con = mysql.createConnection(mysqlConfig)
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        if (row.OrderingPath = 'null') {
+        if (row.OrderingPath === 'null') {
           row.OrderingPath = ''
         }
       })
 
-      //console.log(result)
+      // console.log(result)
       response.json(result)
     }
     con.end()
