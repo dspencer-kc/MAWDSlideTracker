@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const router = express.Router()
 var bodyParser = require('body-parser')
-
 var slideTracker = require('./slide-tracking/slide-tracker')
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -18,6 +17,13 @@ app.use(function (req, res, next) {
 
 app.post('/getuserinfo', function (request, response) {
   slideTracker.getUserInfo(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/getpartblockcurrentandtotals', function (request, response) {
+  slideTracker.getPartBlockCurrentAndTotals(request, response, function (err, message) {
     if (err) return console.log(err)
     console.log(message)
   })
@@ -53,8 +59,6 @@ router.get('/slideparameters', (request, response) => {
     console.log(message)
   })
 })
-
-
 
 module.exports = {
   start: start

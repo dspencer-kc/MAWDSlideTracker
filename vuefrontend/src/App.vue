@@ -18,9 +18,9 @@
 
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <a class="navbar-brand" href="#">
-          MAWD Slide Tracking / Printing
+          Slide Tracker
       </a>
-
+      <a class="nav-link" href="#">v 1.02</a>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
@@ -70,6 +70,14 @@ body {
  text-rendering: optimizeLegibility;
       color: #e0dfdc;
       letter-spacing: .1em;
+      }
+
+.customsubheadertext {
+ text-rendering: optimizeLegibility;
+      color: #e0dfdc;
+      letter-spacing: .1em;
+      color: white;
+      text-shadow: -1px -1px 0 #2c2d2d, 1px -1px 0 #2c2d2d, -1px 1px 0 #2c2d2d, 1px 1px 0 #2c2d2d;
       }
 
 .glassslide {
@@ -236,6 +244,14 @@ tbody {
 //import Slides from './components/SlidesV2'
 import Slides from './components/SlidesV3'
 import axios from 'axios'
+//const strApiUrl = process.env.VUE_APP_API_URL
+//Prod
+const strApiUrl = 'http://10.24.4.9:2081'
+//Test
+// const strApiUrl = 'http://10.24.4.9:2082'
+//Local Test
+//const strApiUrl = 'http://localhost:2081'
+console.log('APIURL: ', strApiUrl)
 //import io from 'socket.io-client' //Not sure if this needs done here or just in main.js
 
 export default
@@ -327,7 +343,8 @@ methods: {
             this.userid = this.scannedbadgeinput.substring(4);
 
             console.log("valid badge prefix");
-              axios.post('http://10.24.4.9:2081/getuserinfo', {
+            console.log(strApiUrl)
+              axios.post(strApiUrl + '/getuserinfo', {
               userid: this.userid
               //userid: 'mwd2954'
             })

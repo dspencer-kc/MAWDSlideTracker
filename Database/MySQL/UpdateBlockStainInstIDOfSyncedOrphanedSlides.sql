@@ -1,0 +1,72 @@
+INSERT INTO tblSlides
+            (slideid,
+             blockid,
+             blockstaininstid,
+             partinst,
+             blockinst,
+             staininst,
+             slideinst,
+             slidecount,
+             stainid,
+             blockdesignator,
+             partdesignator,
+             stainorderdate,
+             orderingpath,
+             department,
+             stainlabel,
+             patient,
+             SiteLabel,
+             AccessionID,
+			 LastTimeUpdatedFromCoPath,
+			 specimen_id)
+	SELECT CONCAT("HSLD",tblBlock.SpecNumFormatted,"_",tblBlock.PartDesignator,"_",tblBlock.BlockDesignator,".",copath_p_stainprocess.stain_inst,".",tblIntegers.integers) AS SlideId,
+	       tblBlock.blockid,
+	       CONCAT(tblBlock.SpecNumFormatted,"_",tblBlock.PartDesignator,"_",tblBlock.BlockDesignator,".",copath_p_stainprocess.stain_inst) AS BlockStainInstId,
+	       tblBlock.partinst,
+	       tblBlock.blockinst,
+	       copath_p_stainprocess.stain_inst,
+	       tblIntegers.integers                                        AS SlideInst,
+	       copath_p_stainprocess.slidecount,
+	       copath_p_stainprocess.stainprocess_id,
+	       tblBlock.blockdesignator,
+	       tblBlock.partdesignator,
+	       copath_p_stainprocess.order_date,
+	       copath_p_stainprocess.orderedby_id,
+	       copath_p_stainprocess.wkdept_id,
+	       copath_p_stainprocess.label_text,
+	       tblBlock.patientname,
+	       "MAWD",
+	       tblBlock.SpecNumFormatted,
+		   NOW(),
+		   tblBlock.Specimen_id
+	FROM   tblIntegers,
+	       tblBlock
+	       INNER JOIN copath_p_stainprocess
+	               ON ( tblBlock.specimen_id = copath_p_stainprocess.specimen_id )
+	                  AND ( tblBlock.partinst = copath_p_stainprocess.part_inst )
+	                  AND ( tblBlock.BlockDesignator = copath_p_stainprocess._blockdesig_label )
+	WHERE   ( tblIntegers.integers  <= copath_p_stainprocess.slidecount ) AND
+                    (copath_p_stainprocess._blockstaininstid  IS NULL)  AND
+                     (copath_p_stainprocess._lastSyncTime > '2019-04-11 12:14:30.0')
+	ON DUPLICATE KEY UPDATE
+             `blockid` = tblBlock.blockid,
+             `blockstaininstid` = CONCAT(tblBlock.SpecNumFormatted, "_", tblBlock.PartDesignator, "_", tblBlock.BlockDesignator, ".", copath_p_stainprocess.stain_inst),
+             `partinst` = tblBlock.partinst,
+             `blockinst` = tblBlock.blockinst,
+             `staininst` = copath_p_stainprocess.stain_inst,
+             `slideinst` = tblIntegers.integers,
+             `slidecount` = copath_p_stainprocess.slidecount,
+             `stainid` = copath_p_stainprocess.stainprocess_id,
+             `blockdesignator` = tblBlock.blockdesignator,
+             `partdesignator` = tblBlock.partdesignator,
+             `stainorderdate` = copath_p_stainprocess.order_date,
+             `orderingpath` = copath_p_stainprocess.orderedby_id,
+             `department` = copath_p_stainprocess.wkdept_id,
+             `stainlabel` = copath_p_stainprocess.label_text,
+             `patient` = tblBlock.patientname,
+             `SiteLabel` = "MAWD",
+             `AccessionID` = tblBlock.SpecNumFormatted,
+			 `specimen_id` = tblBlock.Specimen_id,
+			 `LastTimeUpdatedFromCoPath` = NOW(),
+			 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1,
+		   `Note` = CONCAT("Slide updated on: ", NOW(), ".  Slide and block values have been updated." );

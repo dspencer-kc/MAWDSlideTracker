@@ -33,8 +33,10 @@
   </div>
 
   <br>
-  <div class="customheadertext">
-    <h4> Number of slides:{{ slides.length }}</h4>
+  <div class="customsubheadertext">
+    <h5>Part {{ this.currentPart }} of {{ this.totalParts }}</h5>
+    <h5>Block {{ this.currentBlock }} of {{ this.totalBlocks }}</h5>
+    <h5>Slides on this block: {{ slides.length }}</h5>
   </div>
 
 <div class="container">
@@ -48,7 +50,7 @@
              <div class=slidelabel>
                     <div class=slideheader>
                         {{ result.AccessionID }}-{{ result.PartDesignator }}{{ result.BlockDesignator }}<br>
-                        {{ result.Patient.substring(0,10) }}
+                        {{ result.Patient.substring(0,9) }}
                         </div>
                       <div class=slidebody>
                       {{ result.StainLabel }}<br>
@@ -92,15 +94,21 @@
 <script>
 import axios from 'axios'
 
+//const strApiUrl = process.env.VUE_APP_API_URL
+//Prod
 const strApiUrl = 'http://10.24.4.9:2081'
+//Test
+// const strApiUrl = 'http://10.24.4.9:2082'
+//Local Test
+//const strApiUrl = 'http://localhost:2081'
 
 
 // define the external API URL
 //const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
-const API_URL = 'http://10.24.4.9:2081/slidetracker/slideparameters?blockid='  //For Get Call
+const API_URLWithSlideParameters = strApiUrl + '/slidetracker/slideparameters?blockid='  //For Get Call
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
-  return `${API_URL}${blockID}`
+  return `${API_URLWithSlideParameters}${blockID}`
 }
 export default {
   name: 'slides', // component name
@@ -123,7 +131,11 @@ export default {
       formstatuslabel: 'Load Slides',
       info: null,
       slideQueuePath: '',
-      stationName: ''
+      stationName: '',
+      totalBlocks: null,
+      currentBlock: null,
+      totalParts: null,
+      currentPart: null
     }
   },
 
@@ -172,7 +184,7 @@ export default {
             // code block
         }
       } else {
-        this.blockID = 'Invalid User'
+        this.blockID = ''
       }
 
     },
@@ -222,6 +234,7 @@ export default {
 
     pullSlides() {
       console.log('start pull slides');
+      //this.GetPartBlockCurrentAndTotals()
       let blockID = this.blockID
       if (!blockID) {
         alert('please enter block ID to pull up slides')
@@ -253,28 +266,64 @@ export default {
         }).catch((e) => {
           console.log(e)
         })
+        this.GetPartBlockCurrentAndTotals()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
-        //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-    axios.post(strApiUrl + '/updateslidetoprint', {
-    action: 'UpdateSlideToPrintValue',
-    slideId: strSlideID,
-    toPrintStatus: blChecked
-  })
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+            //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
+      axios.post(strApiUrl + '/updateslidetoprint', {
+        action: 'UpdateSlideToPrintValue',
+        slideId: strSlideID,
+        toPrintStatus: blChecked
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
+    },
+    GetPartBlockCurrentAndTotals() {
+        console.log('start GetPartBlockCurrentAndTotals')
+              axios.post(strApiUrl + '/getpartblockcurrentandtotals', {
+              blockID: this.blockID
+            })
+            .then(apidata => {
+              this.loading = false;
+              this.error_message = '';
+              if (apidata.errorcode) {
+                this.error_message = `Error looking up badge.`
+                console.log('error')
+                return
+              }
+              console.log('apidata:', apidata);
+              let temp = {}
+              temp = apidata.data
+              console.log(temp)
+              this.totalBlocks = temp.totalblocks
+              this.currentBlock = temp.currentblock
+              this.totalParts = temp.totalparts
+              this.currentPart = temp.currentpart
+
+
+            }).catch((e) => {
+              console.log(e)
+            })
+            .catch(function (error) {
+              console.log("error:")
+              console.log(error)
+            })
     },
     clearCurrentSlide(){
       console.log("hellocancelbutton")
-      this.blockID ="";
-      this.formstatus = 'loadslides';
-      this.formstatuslabel = 'Load Slides';
+      this.blockID =""
+      this.formstatus = 'loadslides'
+      this.formstatuslabel = 'Load Slides'
+      this.totalBlocks = ''
+      this.currentBlock = ''
+      this.totalParts = ''
+      this.currentPart = ''
       //Always disable input textbox now that we're scanning
       //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}

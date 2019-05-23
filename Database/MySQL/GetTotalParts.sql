@@ -1,0 +1,1 @@
+SELECT PartDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = 'MPS19-99999' order by PartDesignator desc LIMIT 1;
