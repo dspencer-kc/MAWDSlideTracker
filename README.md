@@ -2,7 +2,7 @@
 
 MAWD Slide Tracker is designed to track slides and blocks for a histology lab and runs on top of an APLIS (currently CernerCopath Plus running on Sybase).  This project was started by our lab to enhance our cassette and slide tracking abilities.  Inspiration and solution architecture was taken from the OPENLIS project.  In continuing with the ideas of the OPENLIS movement, the MAWDSlideTracker (or whatever we end up calling it) is designed for another lab to be able to reuse the code.  However, to get the project off the ground, it is very much tied to our specific lab and lab software setup.
 
-## Contributers
+## Contributors
 
 MAWD IT is writing most of the code, myself, Drew Spencer and Jami Shelton contributing  but this would never have started without Sid's help and continued support.
 
