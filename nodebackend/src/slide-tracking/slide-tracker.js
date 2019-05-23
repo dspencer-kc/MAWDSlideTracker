@@ -130,6 +130,7 @@ function printSlides (request, response, callback) {
                                                         \`Status\` = 'Printed',
                                                         \`Printed\` = TRUE,
                                                         \`DateTimePrinted\` = '` + strDate + `',
+                                                        \`DTPrinted\` = NOW(),
                                                         \`LocationPrinted\` = '` + strLocationID + `',
                                                         \`WhoPrinted\` = '` + strPrintRequestBy + `',
                                                         \`TimesPrinted\` = \`TimesPrinted\` + 1,
