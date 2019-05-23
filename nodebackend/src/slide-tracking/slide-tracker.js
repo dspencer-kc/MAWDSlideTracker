@@ -49,7 +49,6 @@ function printSlides (request, response, callback) {
     var strBlockID = request.body.blockID
     var strPrintRequestBy = request.body.printRequestedBy
     var strSlideQueuePath = request.body.slideQueuePath
-    var strOrderPathInitials =''
 
     console.log('Hello PrintSlides')
     console.log(strBlockID)
@@ -103,23 +102,16 @@ function printSlides (request, response, callback) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-
-        if (row.OrderPathInitials = 'null') {
-          strOrderPathInitials = ''
+        if (row.OrderingPath = 'null') {
+          row.OrderingPath = ''
         }
-        else{
-          strOrderPathInitials = row.OrderPathInitials
-        }
-        strOrderPathInitials = strOrderPathInitials.substring(0, 3)
-
-
 
         var d = new Date().toLocaleDateString()
         fileDate = d.replace(/-|\//g, '')
 
         // WriteSlideData
         // SlideID|AccessionID|SlideInst|PartDesignator|BlockDesignator|StainOrderDate|OrderingPath|Patient|SiteLabel|SlideDistributionKeyword|StainLabel
-        strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
+        strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + row.OrderingPath + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
         strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
         console.log(strSlideFlatFileFullName)
@@ -137,6 +129,7 @@ function printSlides (request, response, callback) {
                                                         `Status` = 'Printed',\
                                                         `Printed` = TRUE,\
                                                         `DateTimePrinted` = '" + strDate + "',\
+                                                        `DTPrinted` =   NOW(),\
                                                         `LocationPrinted` = '" + strLocationID + "',\
                                                         `WhoPrinted` = '" + strPrintRequestBy + "',\
                                                         `TimesPrinted` = `TimesPrinted` + 1,\
@@ -190,6 +183,46 @@ function getUserInfo (request, response, callback) {
 
   var strSQL = "SELECT * FROM OPENLIS.tblUsers \
               WHERE `id` = '" + strUserID + "';"
+
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      Object.keys(result).forEach(function (key) {
+        var row = result[key]
+        // Format Date
+      })
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) //End query
+}
+
+function getBlockInfo (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function getBlockInfo
+  //      Get Block Info
+  //
+  //    Author: Drew Spencer
+  //
+  //
+  //    When to call:
+  //      To get block info when scanning blocks
+  //= ===========================================================================================
+  var strResponse = ''
+  var strSQL = request.body.userid
+
+  //var strSQL = "SELECT * FROM OPENLIS.tblUsers \
+  //            WHERE `id` = '" + strUserID + "';"
 
   console.log(strSQL)
 
