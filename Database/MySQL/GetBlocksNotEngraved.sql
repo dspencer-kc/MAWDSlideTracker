@@ -1,0 +1,1 @@
+SELECT specimen_id, part_inst, block_inst FROM OPENLIS.copath_p_stainprocess where _lastSyncTime >= '2019-05-27' AND _blockstaininstid is null and block_inst <> 0 ;
