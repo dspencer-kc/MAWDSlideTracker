@@ -10,7 +10,7 @@ SELECT
   p_part.datetime_taken, 
   p_part.datetime_rec, 
   p_part.protocol_id, 
-  p_part.sequence, 
+  p_part.sequence as partsequence, 
   p_part.comment, 
   p_part.part_designator, 
   p_block.pieces_num, 
@@ -20,7 +20,8 @@ SELECT
   p_block.blkdesig_label, 
   p_block.specimen_id, 
   p_block.part_inst, 
-  p_block.block_inst 
+  p_block.block_inst,
+  p_block.sequence as blocksequence 
 FROM 
   (
     (

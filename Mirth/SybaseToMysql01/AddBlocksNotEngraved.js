@@ -79,7 +79,7 @@ try {
           p_part.datetime_taken, \
           p_part.datetime_rec, \
           p_part.protocol_id, \
-          p_part.sequence, \
+          p_part.sequence as partsequence, \
           p_part.comment, \
           p_part.label_designator, \
           p_block.pieces_num, \
@@ -89,7 +89,8 @@ try {
           p_block.blkdesig_label, \
           p_block.specimen_id, \
           p_block.part_inst, \
-          p_block.block_inst \
+          p_block.block_inst, \
+          p_block.sequence as blocksequence \
         FROM \
           ( \
             ( \
@@ -124,22 +125,74 @@ try {
           if (blockInfoResult.size() > 0) {
             // Load first restult otherwise error thrown
             blockInfoResult.next()
-            var strBlkDesigLabel = blockInfoResult.getString('blkdesig_label')
+            
+            // var strBlkDesigLabel = blockInfoResult.getString('blkdesig_label')
+            // WHERE `specimen_id` = '" + blockInfoResult.getString('specimen_id') + "' AND \
 
-            var strNewBlockDesigSQL = "UPDATE `OPENLIS`.`copath_p_stainprocess` \
-							SET \
-						`_blockdesig_label` ='" + strBlkDesigLabel + "' \
-						WHERE `specimen_id` = '" + stainOrderMissingBlockResult.getString('specimen_id') + "' AND \
-						`part_inst` = '" + stainOrderMissingBlockResult.getString('part_inst') + "' AND \
-						`stain_inst` = '" + stainOrderMissingBlockResult.getString('stain_inst') + "' AND \
-						`block_inst` = '" + stainOrderMissingBlockResult.getString('block_inst') + "';"
+            //Sanitize variables
+            var strPatientFullname = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('lastname') + "," + blockInfoResult.getString('firstname') + " " + blockInfoResult.getString('middlename'))
+            var strPartDescription = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('part_description'))
+            var strPartComment = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('comment'))
+            var strBlockComment = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('log_comment'))
 
-            //logger.debug("strNewBlockDesigSQL: " + strNewBlockDesigSQL);
+            var strInsertNewBlockSQL = "INSERT INTO `tblBlock` \
+            (`BlockID`, \
+            `SpecNumFormatted`, \
+            `PatientName`, \
+             `SpecimenYear`, \
+            `SpecimenNumber`, \
+            `Specimen_id`, \
+            `PartInst`, \
+            `BlockInst`, \
+            `PartType`, \
+            `PartDescription`, \
+            `DateOfService`, \
+            `DateReceived`, \
+            `Protocol`, \
+            `Sequence`, \
+            `PartSequence`, \
+            `PartComment`, \
+            `Pieces`, \
+            `BlockDept`, \
+            `RequestClass`, \
+            `BlockDesignator`, \
+            `PartDesignator`, \
+            `TimesEngraved`, \
+            `Audit`, \
+            `BlockComment`) \
+            VALUES \
+            ( \
+            CONCAT('HBLK','" + blockInfoResult.getString('SpecNumFormatted') + "','_','" + blockInfoResult.getString('PartDesignator') + "','_','" + blockInfoResult.getString('BlockDesignator') + "') AS BlockID , #BlockID ie 'HBLKMPS19-99999_A_9'\
+            '" + blockInfoResult.getString('specnum_formatted') + "', #SpecNumFormatted \
+            " + strPatientFullname + ", #PatientName \
+            '" + blockInfoResult.getString('specnum_year') + "', #SpecimenYear \
+            '" + blockInfoResult.getString('specnum_num') + "', #SpecimenNumber \
+            '" + strSpecId + '", #Specimen_id \
+            '" + blockInfoResult.getString('part_inst') + "', #PartInst\
+            '" + blockInfoResult.getString('block_inst') + "', #BlockInst\
+            '" + blockInfoResult.getString('parttype_id') + "', #PartType\
+            " + strPartDescription + ", #PartDescription \
+            '" + blockInfoResult.getString('datetime_taken') + "', #DateOfService \
+            '" + blockInfoResult.getString('datetime_rec') + "', #DateReceived \
+            '" + blockInfoResult.getString('protocol_id') + "', #Protocol \
+            '" + blockInfoResult.getString('blocksequence') + "', #Sequence \
+            '" + blockInfoResult.getString('partsequence') + "', #PartSequence \
+            " + strPartComment + ", #PartComment \
+            '" + blockInfoResult.getString('pieces_num') + "', #Pieces \
+            '" + blockInfoResult.getString('wkdept_id') + "', #BlockDept \
+            '" + blockInfoResult.getString('requestclass_id') + "', #RequestClass \
+            '" + blockInfoResult.getString('blkdesig_label') + "', #BlockDesignator \
+            '" + blockInfoResult.getString('part_designator') + "', #PartDesignator \
+            0, #TimesEngraved \    
+            '" + DTStamp + " Block not engraved, added from Stain Order', #Audit \
+            " + strBlockComment + "); #BlockComment final statement semicolon required except in sybase"
+
+            // logger.debug("strInsertNewBlockSQL: " + strInsertNewBlockSQL);
             try {
 
-              lastInsertIDResult = dbConnMYSQL.executeUpdate(strNewBlockDesigSQL);
+              lastInsertIDResult = dbConnMYSQL.executeUpdate(strInsertNewBlockSQL);
             } catch (err) {
-              logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ". SQL: " + strNewBlockDesigSQL);
+              logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ". SQL: " + strInsertNewBlockSQL);
 
             }
 
@@ -157,87 +210,86 @@ try {
         }
       } //End For loop
 
-			//Build Stain Orders off of block Desig
-			strSQL = "INSERT INTO tblSlides \
-								(slideid, \
-								 blockid, \
-								 blockstaininstid, \
-								 partinst, \
-								 blockinst, \
-								 staininst, \
-								 slideinst, \
-								 slidecount, \
-								 stainid, \
-								 blockdesignator, \
-								 partdesignator, \
-								 stainorderdate, \
-								 orderingpath, \
-								 department, \
-								 stainlabel, \
-								 patient, \
-								 SiteLabel, \
-								 AccessionID, \
-					 LastTimeUpdatedFromCoPath,  \
-					 SyncID,  \
-					 specimen_id, \
-			 		 Audit)  \
-			SELECT CONCAT(\"HSLD\",tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst,\".\",tblIntegers.integers) AS SlideId, \
-						 tblBlock.blockid, \
-						 CONCAT(tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst) AS BlockStainInstId, \
-						 tblBlock.partinst, \
-						 tblBlock.blockinst, \
-						 copath_p_stainprocess.stain_inst, \
-						 tblIntegers.integers                                        AS SlideInst, \
-						 copath_p_stainprocess.slidecount, \
-						 copath_p_stainprocess.stainprocess_id, \
-						 tblBlock.blockdesignator, \
-						 tblBlock.partdesignator, \
-						 copath_p_stainprocess.order_date, \
-						 copath_p_stainprocess.orderedby_id, \
-						 copath_p_stainprocess.wkdept_id, \
-						 copath_p_stainprocess.label_text, \
-						 tblBlock.patientname, \
-						 \"MAWD\", \
-						 tblBlock.SpecNumFormatted, \
-					 NOW(), \
-					 " + strSyncID +", \
-					 tblBlock.Specimen_id, \
-             			 CONCAT(\"Cassette Delete Detected, Slide inserted on new cassette: \", NOW()) \
-			FROM   tblIntegers, \
-						 tblBlock \
-						 INNER JOIN copath_p_stainprocess \
-										 ON ( tblBlock.specimen_id = copath_p_stainprocess.specimen_id ) \
-												AND ( tblBlock.partinst = copath_p_stainprocess.part_inst ) \
-												AND ( tblBlock.BlockDesignator = copath_p_stainprocess._blockdesig_label ) \
-												WHERE   ( tblIntegers.integers  <= copath_p_stainprocess.slidecount ) AND \
-									(copath_p_stainprocess._blockstaininstid  IS NULL)  AND \
-									 (copath_p_stainprocess._lastSyncTime > '" + $('strLastSyncDateTime') + "') \
-			ON DUPLICATE KEY UPDATE \
-								 `blockid` = tblBlock.blockid, \
-								 `blockstaininstid` = CONCAT(tblBlock.SpecNumFormatted, \"_\", tblBlock.PartDesignator, \"_\", tblBlock.BlockDesignator, \".\", copath_p_stainprocess.stain_inst), \
-								 `partinst` = tblBlock.partinst, \
-								 `blockinst` = tblBlock.blockinst, \
-								 `staininst` = copath_p_stainprocess.stain_inst, \
-								 `slideinst` = tblIntegers.integers, \
-								 `slidecount` = copath_p_stainprocess.slidecount, \
-								 `stainid` = copath_p_stainprocess.stainprocess_id, \
-								 `blockdesignator` = tblBlock.blockdesignator, \
-								 `partdesignator` = tblBlock.partdesignator, \
-								 `stainorderdate` = copath_p_stainprocess.order_date, \
-								 `orderingpath` = copath_p_stainprocess.orderedby_id, \
-								 `department` = copath_p_stainprocess.wkdept_id, \
-								 `stainlabel` = copath_p_stainprocess.label_text, \
-								 `patient` = tblBlock.patientname, \
-								 `SiteLabel` = \"MAWD\", \
-								 `AccessionID` = tblBlock.SpecNumFormatted, \
-					 `specimen_id` = tblBlock.Specimen_id, \
-					 `LastTimeUpdatedFromCoPath` = NOW(), \
-					 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1, \
-						`SyncID` = " + strSyncID +", \
-					 `Note` = \"Orphaned slide updated based off of part designator on: " + strDateTime + ".  Slide and block values have been updated.\", \
-		  			 `Audit` = CONCAT(`tblSlides`.`Audit`, \"Block Deletion Detected, Slide updated on new block:\",NOW(), \".\");"
+			//Build Stain Orders off of Block Synced
+            strSQL = "INSERT INTO tblSlides \
+            (slideid, \
+             blockid, \
+             blockstaininstid, \
+             partinst, \
+             blockinst, \
+             staininst, \
+             slideinst, \
+             slidecount, \
+             stainid, \
+             blockdesignator, \
+             partdesignator, \
+             stainorderdate, \
+             orderingpath, \
+             department, \
+             stainlabel, \
+             patient, \
+             SiteLabel, \
+             AccessionID, \
+			 LastTimeUpdatedFromCoPath,  \
+			 SyncID,  \
+			 specimen_id, \
+			 Audit)  \
+	SELECT CONCAT(\"HSLD\",tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst,\".\",tblIntegers.integers) AS SlideId, \
+	       tblBlock.blockid, \
+	       CONCAT(tblBlock.SpecNumFormatted,\"_\",tblBlock.PartDesignator,\"_\",tblBlock.BlockDesignator,\".\",copath_p_stainprocess.stain_inst) AS BlockStainInstId, \
+	       tblBlock.partinst, \
+	       tblBlock.blockinst, \
+	       copath_p_stainprocess.stain_inst, \
+	       tblIntegers.integers                                        AS SlideInst, \
+	       copath_p_stainprocess.slidecount, \
+	       copath_p_stainprocess.stainprocess_id, \
+	       tblBlock.blockdesignator, \
+	       tblBlock.partdesignator, \
+	       copath_p_stainprocess.order_date, \
+	       copath_p_stainprocess.orderedby_id, \
+	       copath_p_stainprocess.wkdept_id, \
+	       copath_p_stainprocess.label_text, \
+	       tblBlock.patientname, \
+	       \"MAWD\", \
+	       tblBlock.SpecNumFormatted, \
+		   NOW(), \
+		   " + strSyncID +", \
+		   tblBlock.Specimen_id, \
+             CONCAT(\"Slide inserted off block not engraved: \", NOW()) \
+	FROM   tblIntegers, \
+	       tblBlock \
+	       INNER JOIN copath_p_stainprocess \
+	               ON ( tblBlock.specimen_id = copath_p_stainprocess.specimen_id ) \
+	                  AND ( tblBlock.partinst = copath_p_stainprocess.part_inst ) \
+	                  AND ( tblBlock.blockinst = copath_p_stainprocess.block_inst ) \
+	WHERE  ( ( ( tblIntegers.integers ) <= copath_p_stainprocess.slidecount ) \
+	         AND ( (( copath_p_stainprocess._blockstaininstid ) IS NULL) OR copath_p_stainprocess._lastSyncTime > '" + $('strLastSyncDateTime') + "') ) \
+	ON DUPLICATE KEY UPDATE \
+             `blockid` = tblBlock.blockid, \
+             `blockstaininstid` = CONCAT(tblBlock.SpecNumFormatted, \"_\", tblBlock.PartDesignator, \"_\", tblBlock.BlockDesignator, \".\", copath_p_stainprocess.stain_inst), \
+             `partinst` = tblBlock.partinst, \
+             `blockinst` = tblBlock.blockinst, \
+             `staininst` = copath_p_stainprocess.stain_inst, \
+             `slideinst` = tblIntegers.integers, \
+             `slidecount` = copath_p_stainprocess.slidecount, \
+             `stainid` = copath_p_stainprocess.stainprocess_id, \
+             `blockdesignator` = tblBlock.blockdesignator, \
+             `partdesignator` = tblBlock.partdesignator, \
+             `stainorderdate` = copath_p_stainprocess.order_date, \
+             `orderingpath` = copath_p_stainprocess.orderedby_id, \
+             `department` = copath_p_stainprocess.wkdept_id, \
+             `stainlabel` = copath_p_stainprocess.label_text, \
+             `patient` = tblBlock.patientname, \
+             `SiteLabel` = \"MAWD\", \
+             `AccessionID` = tblBlock.SpecNumFormatted, \
+			 `specimen_id` = tblBlock.Specimen_id, \
+			 `LastTimeUpdatedFromCoPath` = NOW(), \
+			 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1, \
+			  `SyncID` = " + strSyncID +", \
+		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\", \
+		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated off block not engraced:\",NOW(), \".\");"
 
-			//logger.debug("SQL:" + strSQL);
+			// logger.debug("SQL:" + strSQL);
 		dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
 			result = dbConnMYSQL.executeUpdate(strSQL);
 
@@ -250,7 +302,7 @@ try {
 											AND ( tblSlides.Specimen_id = copath_p_stainprocess.specimen_id ) \
 							SET    copath_p_stainprocess._blockstaininstid = tblSlides.BlockStainInstID, \
 							copath_p_stainprocess._syncid = "+ strSyncID +", \
-					 	copath_p_stainprocess._status = concat(\"Block Synced Slides Built \",NOW()) \
+					 	copath_p_stainprocess._status = concat(\"NonEngraved Blocks Synced and Slides Built \",NOW()) \
 					 	WHERE  (( ( copath_p_stainprocess._blockstaininstid ) IS NULL )) \
 										AND (copath_p_stainprocess._lastSyncTime > '" + strLastSyncDateTime + "') \; ";
 
@@ -278,3 +330,14 @@ try {
 
   }
 }
+function SanitizeVariableAddLeadingAndTrailingApostrophies(txt)  {
+    if (txt == null) {
+        return "null"
+    } else {
+        return "'" + EscapeApostrophe(txt) + "'"
+    }
+  }
+  function EscapeApostrophe(txt)  {
+    return (txt + "").replace(/\'/g, "''")
+  }
+  
