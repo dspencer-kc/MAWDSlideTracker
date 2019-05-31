@@ -29,6 +29,7 @@ const strSybasePassword = configurationMap.get('SybasePassword')
 const strSybaseJDBCConnection = configurationMap.get('SybaseJDBCConnection')
 const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver')
 var strSyncID = $('intLastSyncID')
+var intDebugLevel = 10
 
 // If no syncid, set as 0.
 if (isNaN(strSyncID)) {
@@ -41,7 +42,10 @@ if (isNaN(strSyncID)) {
 
 strSQL1 = "SELECT specimen_id, part_inst, block_inst FROM OPENLIS.copath_p_stainprocess where _lastSyncTime > '" + strLastSyncDateTime + "' AND _blockstaininstid is null and block_inst <> 0 ;"
 
-// logger.debug("JS Writer:" + strSQL1);
+if (intDebugLevel > 1) {
+  logger.debug("strSQL1:" + strSQL1);
+}
+
 try {
   dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
   stainOrderMissingBlockResult = dbConnMYSQL.executeCachedQuery(strSQL1)
@@ -81,7 +85,7 @@ try {
           p_part.protocol_id, \
           p_part.sequence as partsequence, \
           p_part.comment, \
-          p_part.label_designator, \
+          p_part.part_designator, \
           p_block.pieces_num, \
           p_block.wkdept_id, \
           p_block.requestclass_id, \
@@ -118,7 +122,15 @@ try {
             ) \
           ) "
 
+          if (intDebugLevel > 1) {
+            logger.debug("strSQL2:" + strSQL2)
+          }
+
           var blockInfoResult = dbConnCoPath.executeCachedQuery(strSQL2)
+
+          if (intDebugLevel > 9) {
+            logger.debug("Block Info Request Query Completed")
+          }
 
           // Update tblBlocks with Block Info from Sybase
           // Only update if there is a result
@@ -134,6 +146,10 @@ try {
             var strPartDescription = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('part_description'))
             var strPartComment = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('comment'))
             var strBlockComment = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('log_comment'))
+
+            if (intDebugLevel > 9) {
+                logger.debug("Variables Sanitized")
+              }
 
             var strInsertNewBlockSQL = "INSERT INTO `tblBlock` \
             (`BlockID`, \
@@ -162,35 +178,41 @@ try {
             `BlockComment`) \
             VALUES \
             ( \
-            CONCAT('HBLK','" + blockInfoResult.getString('SpecNumFormatted') + "','_','" + blockInfoResult.getString('PartDesignator') + "','_','" + blockInfoResult.getString('BlockDesignator') + "') AS BlockID , #BlockID ie 'HBLKMPS19-99999_A_9'\
-            '" + blockInfoResult.getString('specnum_formatted') + "', #SpecNumFormatted \
-            " + strPatientFullname + ", #PatientName \
-            '" + blockInfoResult.getString('specnum_year') + "', #SpecimenYear \
-            '" + blockInfoResult.getString('specnum_num') + "', #SpecimenNumber \
-            '" + strSpecId + '", #Specimen_id \
-            '" + blockInfoResult.getString('part_inst') + "', #PartInst\
-            '" + blockInfoResult.getString('block_inst') + "', #BlockInst\
-            '" + blockInfoResult.getString('parttype_id') + "', #PartType\
-            " + strPartDescription + ", #PartDescription \
-            '" + blockInfoResult.getString('datetime_taken') + "', #DateOfService \
-            '" + blockInfoResult.getString('datetime_rec') + "', #DateReceived \
-            '" + blockInfoResult.getString('protocol_id') + "', #Protocol \
-            '" + blockInfoResult.getString('blocksequence') + "', #Sequence \
-            '" + blockInfoResult.getString('partsequence') + "', #PartSequence \
-            " + strPartComment + ", #PartComment \
-            '" + blockInfoResult.getString('pieces_num') + "', #Pieces \
-            '" + blockInfoResult.getString('wkdept_id') + "', #BlockDept \
-            '" + blockInfoResult.getString('requestclass_id') + "', #RequestClass \
-            '" + blockInfoResult.getString('blkdesig_label') + "', #BlockDesignator \
-            '" + blockInfoResult.getString('part_designator') + "', #PartDesignator \
-            0, #TimesEngraved \    
-            '" + DTStamp + " Block not engraved, added from Stain Order', #Audit \
-            " + strBlockComment + "); #BlockComment final statement semicolon required except in sybase"
+            CONCAT('HBLK','" + blockInfoResult.getString('specnum_formatted') + "','_','" + blockInfoResult.getString('part_designator') + "','_','" + blockInfoResult.getString('blkdesig_label') + "') AS BlockID , \
+            '" + blockInfoResult.getString('specnum_formatted') + "', \
+            " + strPatientFullname + ",  \
+            '" + blockInfoResult.getString('specnum_year') + "',  \
+            '" + blockInfoResult.getString('specnum_num') + "',  \
+            '" + strSpecId + "',  \
+            '" + blockInfoResult.getString('part_inst') + "',  \
+            '" + blockInfoResult.getString('block_inst') + "',  \
+            '" + blockInfoResult.getString('parttype_id') + "',  \
+            " + strPartDescription + ",  \
+            '" + blockInfoResult.getString('datetime_taken') + "',  \
+            '" + blockInfoResult.getString('datetime_rec') + "',  \
+            '" + blockInfoResult.getString('protocol_id') + "',  \
+            '" + blockInfoResult.getString('blocksequence') + "',  \
+            '" + blockInfoResult.getString('partsequence') + "', \
+            " + strPartComment + ",  \
+            '" + blockInfoResult.getString('pieces_num') + "',  \
+            '" + blockInfoResult.getString('wkdept_id') + "',  \
+            '" + blockInfoResult.getString('requestclass_id') + "',  \
+            '" + blockInfoResult.getString('blkdesig_label') + "',  \
+            '" + blockInfoResult.getString('part_designator') + "',  \
+            0,  \
+            '" + strDateTime + "' Block not engraved, added from Stain Order',  \
+            " + strBlockComment + ");"
 
-            // logger.debug("strInsertNewBlockSQL: " + strInsertNewBlockSQL);
-            try {
+            if (intDebugLevel > 1) {
+              logger.debug("strInsertNewBlockSQL:" + strInsertNewBlockSQL)
+            }
 
-              lastInsertIDResult = dbConnMYSQL.executeUpdate(strInsertNewBlockSQL);
+              try {
+              lastInsertIDResult = dbConnMYSQL.executeUpdate(strInsertNewBlockSQL)
+
+              if (intDebugLevel > 9) {
+                logger.debug("Insert New Block SQL Completed")
+              }
             } catch (err) {
               logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ". SQL: " + strInsertNewBlockSQL);
 
@@ -289,7 +311,10 @@ try {
 		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\", \
 		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated off block not engraced:\",NOW(), \".\");"
 
-			// logger.debug("SQL:" + strSQL);
+           if (intDebugLevel > 1) {
+            logger.debug("strSQL303:" + strSQL)
+          }
+
 		dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
 			result = dbConnMYSQL.executeUpdate(strSQL);
 
@@ -305,7 +330,11 @@ try {
 					 	copath_p_stainprocess._status = concat(\"NonEngraved Blocks Synced and Slides Built \",NOW()) \
 					 	WHERE  (( ( copath_p_stainprocess._blockstaininstid ) IS NULL )) \
 										AND (copath_p_stainprocess._lastSyncTime > '" + strLastSyncDateTime + "') \; ";
-
+        
+      if (intDebugLevel > 1) {
+        logger.debug("strSQL323:" + strSQL)
+      }
+                                
 		result = dbConnMYSQL.executeUpdate(strSQL);
 
     } //End if slide orders exist.

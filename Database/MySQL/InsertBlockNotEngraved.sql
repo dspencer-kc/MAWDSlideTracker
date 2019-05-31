@@ -231,7 +231,7 @@ INSERT INTO `tblBlock`
 	'" + blockInfoResult.getString('wkdept_id') + "', #BlockDept \
 	'" + blockInfoResult.getString('requestclass_id') + "', #RequestClass \
 	'" + blockInfoResult.getString('blkdesig_label') + "', #BlockDesignator \
-	'" + blockInfoResult.getString('part_designatorl') + "', #PartDesignator \
+	'" + blockInfoResult.getString('part_designator') + "', #PartDesignator \
 	0, #TimesEngraved \    
     '" + DTStamp + " Block not engraved, added from Stain Order', #Audit \
 	**'LOOP'); #BlockComment final statement semicolon required except in sybase"
