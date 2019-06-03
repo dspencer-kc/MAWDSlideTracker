@@ -1,6 +1,5 @@
-//Sync Slide Orders that do not match due to block being deleted.
+//  Sync Slide Orders that do not match due to block being deleted.
 //  Not matched because block_inst gets updated when new block is created.
-
 
 var dbConnMYSQL
 var dbConnCoPath
@@ -210,33 +209,24 @@ try {
             if (intDebugLevel > 1) {
               logger.debug("strInsertNewBlockSQL:" + strInsertNewBlockSQL)
             }
-
-              try {
+            try {
               lastInsertIDResult = dbConnMYSQL.executeUpdate(strInsertNewBlockSQL)
-
               if (intDebugLevel > 9) {
                 logger.debug("Insert New Block SQL Completed")
               }
             } catch (err) {
-              logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ". SQL: " + strInsertNewBlockSQL);
-
+              logger.debug("ERROR- MYSQL Insert - Error Name:" + err.name + " Error Details: " + err + ". SQL: " + strInsertNewBlockSQL)
             }
-
           }
-
-
-
         } catch (err) {
-          //GetStringError
+          // GetStringError
           logger.debug("Error Name:" + err.name + " Error Details: " + err + ". SQL2:" + strSQL2);
           logger.debug("Catch 116");
         } finally {
-
-
         }
-      } //End For loop
+      } // End For loop
 
-			//Build Stain Orders off of Block Synced
+			// Build Stain Orders off of Block Synced
             strSQL = "INSERT INTO tblSlides \
             (slideid, \
              blockid, \
@@ -315,15 +305,15 @@ try {
 		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\", \
 		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated off block not engraved:\",NOW(), \".\");"
 
-           if (intDebugLevel > 1) {
-            logger.debug("strSQL303:" + strSQL)
-          }
+      if (intDebugLevel > 1) {
+        logger.debug("strSQL303:" + strSQL)
+      }
 
-		dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
-			result = dbConnMYSQL.executeUpdate(strSQL);
+      dbConnMYSQL = DatabaseConnectionFactory.createDatabaseConnection(strMYSQLJDBCDriver, strMYSQLJDBCConnection, strMYSQLUserName, strMYSQLPassword)
+      result = dbConnMYSQL.executeUpdate(strSQL)
 
-			//Update copath_p_stainprocess w synced Slides
-			strSQL = "UPDATE tblSlides \
+      //  Update copath_p_stainprocess w synced Slides
+      strSQL = "UPDATE tblSlides \
 					 INNER JOIN copath_p_stainprocess  \
 									 ON (tblSlides.BlockDesignator = copath_p_stainprocess._blockdesig_label) \
 											AND ( tblSlides.StainInst = copath_p_stainprocess.stain_inst ) \
@@ -333,37 +323,30 @@ try {
 							copath_p_stainprocess._syncid = "+ strSyncID +", \
 					 	copath_p_stainprocess._status = concat(\"NonEngraved Blocks Synced and Slides Built \",NOW()) \
 					 	WHERE  (( ( copath_p_stainprocess._blockstaininstid ) IS NULL )) \
-										AND (copath_p_stainprocess._lastSyncTime > '" + strLastSyncDateTime + "') \; ";
-        
+                                        AND (copath_p_stainprocess._lastSyncTime > '" + strLastSyncDateTime + "') \; "
+
       if (intDebugLevel > 1) {
         logger.debug("strSQL323:" + strSQL)
       }
-                                
-		result = dbConnMYSQL.executeUpdate(strSQL);
-
-    } //End if slide orders exist.
-
-
-  } //End try
+      result = dbConnMYSQL.executeUpdate(strSQL)
+    } // End if slide orders exist.
+  } // End try
   catch (err) {
     logger.debug("ERROR- db error - Error Name:" + err.name + " Error Details: " + err + ".  Prior to this, " + intSuccessfullInserts.toString() + " were inserted. Status:" + strDBInsertStatus + " SQL: " + strSQL + " SQL1: " + strSQL1 + " SQL2: " + strSQL2);
-  } //End catch
-  finally {
+  } finally {
     if (dbConnCoPath) {
-      dbConnCoPath.close();
+      dbConnCoPath.close()
     }
   }
 
-  //logger.info( stainOrderMissingBlockResult.toString() );
-  //channelMap.put ("strSpecimenID", strSpecimenID);
-
+  // logger.info( stainOrderMissingBlockResult.toString() );
+  // channelMap.put ("strSpecimenID", strSpecimenID);
 } finally {
   if (dbConnMYSQL) {
-    dbConnMYSQL.close();
-
+    dbConnMYSQL.close()
   }
 }
-function SanitizeVariableAddLeadingAndTrailingApostrophies(txt)  {
+function SanitizeVariableAddLeadingAndTrailingApostrophies (txt) {
     if (txt == null) {
         return "null"
     } else {
@@ -373,14 +356,14 @@ function SanitizeVariableAddLeadingAndTrailingApostrophies(txt)  {
   function EscapeApostrophe(txt)  {
     return (txt + "").replace(/\'/g, "''")
   }
-  function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(txt)  {
+  function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
     if (txt == null) {
         return ""
     } else {
         return "'" + EscapeApostrophe(txt) + "'"
     }
   }
-  function SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(txt)  {
+  function SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString (txt) {
     if (txt == null) {
         return ""
     } else {
