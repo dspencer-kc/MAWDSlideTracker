@@ -29,7 +29,7 @@ const strSybasePassword = configurationMap.get('SybasePassword')
 const strSybaseJDBCConnection = configurationMap.get('SybaseJDBCConnection')
 const strSybaseJDBCDriver = configurationMap.get('SybaseJDBCDriver')
 var strSyncID = $('intLastSyncID')
-var intDebugLevel = 10
+var intDebugLevel = 0
 
 // If no syncid, set as 0.
 if (isNaN(strSyncID)) {
@@ -141,8 +141,12 @@ try {
             // var strBlkDesigLabel = blockInfoResult.getString('blkdesig_label')
             // WHERE `specimen_id` = '" + blockInfoResult.getString('specimen_id') + "' AND \
 
-            //Sanitize variables
-            var strPatientFullname = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('lastname') + "," + blockInfoResult.getString('firstname') + " " + blockInfoResult.getString('middlename'))
+            // Sanitize variables
+
+            var strPatientLName = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('lastname'))
+            var strPatientFName = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('firstname'))
+            var strPatientMiddleName = SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(blockInfoResult.getString('middlename'))
+            var strPatientFullname = "'" + strPatientLName + "," + strPatientFName + " " + strPatientMiddleName + "'"
             var strPartDescription = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('part_description'))
             var strPartComment = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('comment'))
             var strBlockComment = SanitizeVariableAddLeadingAndTrailingApostrophies(blockInfoResult.getString('log_comment'))
@@ -200,7 +204,7 @@ try {
             '" + blockInfoResult.getString('blkdesig_label') + "',  \
             '" + blockInfoResult.getString('part_designator') + "',  \
             0,  \
-            '" + strDateTime + "' Block not engraved, added from Stain Order',  \
+            '" + strDateTime + " Block not engraved, added from Stain Order\',  \
             " + strBlockComment + ");"
 
             if (intDebugLevel > 1) {
@@ -309,7 +313,7 @@ try {
 			 `TimesUpdatedFromCoPath` = `TimesUpdatedFromCoPath`+1, \
 			  `SyncID` = " + strSyncID +", \
 		   `Note` = \"Slide updated on: " + strDateTime + ".  Slide and block values have been updated.\", \
-		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated off block not engraced:\",NOW(), \".\");"
+		   `Audit` = CONCAT(`tblSlides`.`Audit`, \"Slide updated off block not engraved:\",NOW(), \".\");"
 
            if (intDebugLevel > 1) {
             logger.debug("strSQL303:" + strSQL)
@@ -368,5 +372,19 @@ function SanitizeVariableAddLeadingAndTrailingApostrophies(txt)  {
   }
   function EscapeApostrophe(txt)  {
     return (txt + "").replace(/\'/g, "''")
+  }
+  function SanitizeVariableAddLeadingAndTrailingApostrophiesNullAsEmptyString(txt)  {
+    if (txt == null) {
+        return ""
+    } else {
+        return "'" + EscapeApostrophe(txt) + "'"
+    }
+  }
+  function SanitizeVariableNoLeadingAndTrailingApostrophiesNullAsEmptyString(txt)  {
+    if (txt == null) {
+        return ""
+    } else {
+        return EscapeApostrophe(txt)
+    }
   }
   
