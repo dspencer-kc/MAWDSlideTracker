@@ -179,59 +179,66 @@ INSERT INTO `tblBlock`
     '20190403163409 cassette printed by: mwd26061 at MAWD.00-\B on hopper 106.', #Audit
 
 
-	'LOOP'); #BlockComment and end
+	'LOOP')
+    
+    	ON DUPLICATE KEY UPDATE
+
+
+	    `BlockID`= `BlockID`; #BlockComment and end
 
 
     Mirth Javascript:
 
-    var strInsertNewBlockSQL = "INSERT INTO `tblBlock` \
-	(`BlockID`, \
-	`SpecNumFormatted`, \
-	`PatientName`, \
- 	`SpecimenYear`, \
-	`SpecimenNumber`, \
-	`Specimen_id`, \
-	`PartInst`, \
-	`BlockInst`, \
-	`PartType`, \
-	`PartDescription`, \
-	`DateOfService`, \
-	`DateReceived`, \
-	`Protocol`, \
-	`Sequence`, \
-	`PartSequence`, \
-	`PartComment`, \
-	`Pieces`, \
-	`BlockDept`, \
-	`RequestClass`, \
-	`BlockDesignator`, \
-	`PartDesignator`, \
-	`TimesEngraved`, \
-	`Audit`, \
-	`BlockComment`) \
-	VALUES \
-	( \
-	CONCAT('HBLK','" + blockInfoResult.getString('SpecNumFormatted') + "','_','" + blockInfoResult.getString('PartDesignator') + "','_','" + blockInfoResult.getString('BlockDesignator') + "') AS BlockID , #BlockID ie 'HBLKMPS19-99999_A_9'\
-	'" + blockInfoResult.getString('specnum_formatted') + "', #SpecNumFormatted \
-	**'" + strPatient + "', #PatientName //Need to Sanitize** \
-	'" + blockInfoResult.getString('specnum_year') + "', #SpecimenYear \
-	'" + blockInfoResult.getString('specnum_num') + "', #SpecimenNumber \
-	**	'Empty', #Specimen_id \
-	'" + blockInfoResult.getString('part_inst') + "', #PartInst\
-	'" + blockInfoResult.getString('block_inst') + "', #BlockInst\
-	'" + blockInfoResult.getString('parttype_id') + "', #PartType\
-	**'" + Sanitize(blockInfoResult.getString('part_description')) + "', #PartDescription \
-	'" + blockInfoResult.getString('datetime_taken') + "', #DateOfService \
-	'" + blockInfoResult.getString('datetime_rec') + "', #DateReceived \
-	'" + blockInfoResult.getString('protocol_id') + "', #Protocol \
-	'" + blockInfoResult.getString('blocksequence') + "', #Sequence \
-	'" + blockInfoResult.getString('partsequence') + "', #PartSequence \
-	** 'null', #PartComment
-	'" + blockInfoResult.getString('pieces_num') + "', #Pieces \
-	'" + blockInfoResult.getString('wkdept_id') + "', #BlockDept \
-	'" + blockInfoResult.getString('requestclass_id') + "', #RequestClass \
-	'" + blockInfoResult.getString('blkdesig_label') + "', #BlockDesignator \
-	'" + blockInfoResult.getString('part_designator') + "', #PartDesignator \
-	0, #TimesEngraved \    
-    '" + DTStamp + " Block not engraved, added from Stain Order', #Audit \
-	**'LOOP'); #BlockComment final statement semicolon required except in sybase"
+               var strInsertNewBlockSQL = "INSERT INTO `tblBlock` \
+            (`BlockID`, \
+            `SpecNumFormatted`, \
+            `PatientName`, \
+             `SpecimenYear`, \
+            `SpecimenNumber`, \
+            `Specimen_id`, \
+            `PartInst`, \
+            `BlockInst`, \
+            `PartType`, \
+            `PartDescription`, \
+            `DateOfService`, \
+            `DateReceived`, \
+            `Protocol`, \
+            `Sequence`, \
+            `PartSequence`, \
+            `PartComment`, \
+            `Pieces`, \
+            `BlockDept`, \
+            `RequestClass`, \
+            `BlockDesignator`, \
+            `PartDesignator`, \
+            `TimesEngraved`, \
+            `Audit`, \
+            `BlockComment`) \
+            VALUES \
+            ( \
+            CONCAT('HBLK','" + blockInfoResult.getString('specnum_formatted') + "','_','" + blockInfoResult.getString('part_designator') + "','_','" + blockInfoResult.getString('blkdesig_label') + "'), \
+            '" + blockInfoResult.getString('specnum_formatted') + "', \
+            " + strPatientFullname + ",  \
+            '" + blockInfoResult.getString('specnum_year') + "',  \
+            '" + blockInfoResult.getString('specnum_num') + "',  \
+            '" + strSpecId + "',  \
+            '" + blockInfoResult.getString('part_inst') + "',  \
+            '" + blockInfoResult.getString('block_inst') + "',  \
+            '" + blockInfoResult.getString('parttype_id') + "',  \
+            " + strPartDescription + ",  \
+            '" + blockInfoResult.getString('datetime_taken') + "',  \
+            '" + blockInfoResult.getString('datetime_rec') + "',  \
+            '" + blockInfoResult.getString('protocol_id') + "',  \
+            '" + blockInfoResult.getString('blocksequence') + "',  \
+            '" + blockInfoResult.getString('partsequence') + "', \
+            " + strPartComment + ",  \
+            '" + blockInfoResult.getString('pieces_num') + "',  \
+            '" + blockInfoResult.getString('wkdept_id') + "',  \
+            '" + blockInfoResult.getString('requestclass_id') + "',  \
+            '" + blockInfoResult.getString('blkdesig_label') + "',  \
+            '" + blockInfoResult.getString('part_designator') + "',  \
+            0,  \
+            '" + strDateTime + " Block not engraved, added from Stain Order\',  \
+            " + strBlockComment + ") \
+                	ON DUPLICATE KEY UPDATE \
+	    `BlockID`= `BlockID`;"

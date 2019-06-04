@@ -181,7 +181,7 @@ try {
             `BlockComment`) \
             VALUES \
             ( \
-            CONCAT('HBLK','" + blockInfoResult.getString('specnum_formatted') + "','_','" + blockInfoResult.getString('part_designator') + "','_','" + blockInfoResult.getString('blkdesig_label') + "') AS BlockID , \
+            CONCAT('HBLK','" + blockInfoResult.getString('specnum_formatted') + "','_','" + blockInfoResult.getString('part_designator') + "','_','" + blockInfoResult.getString('blkdesig_label') + "'), \
             '" + blockInfoResult.getString('specnum_formatted') + "', \
             " + strPatientFullname + ",  \
             '" + blockInfoResult.getString('specnum_year') + "',  \
@@ -204,7 +204,9 @@ try {
             '" + blockInfoResult.getString('part_designator') + "',  \
             0,  \
             '" + strDateTime + " Block not engraved, added from Stain Order\',  \
-            " + strBlockComment + ");"
+            " + strBlockComment + ") \
+                	ON DUPLICATE KEY UPDATE \
+	    `BlockID`= `BlockID`;"
 
             if (intDebugLevel > 1) {
               logger.debug("strInsertNewBlockSQL:" + strInsertNewBlockSQL)
