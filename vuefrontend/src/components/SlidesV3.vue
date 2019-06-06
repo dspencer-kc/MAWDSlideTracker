@@ -300,8 +300,8 @@ export default {
   },
 
     pullSlides() {
-      console.log('start pull slides');
-      this.GetPartBlockCurrentAndTotals()
+           console.log('start pull slides');
+      //this.GetPartBlockCurrentAndTotals()
       let blockID = this.blockID
       if (!blockID) {
         alert('please enter block ID to pull up slides')
@@ -333,6 +333,7 @@ export default {
         }).catch((e) => {
           console.log(e)
         })
+        this.GetPartBlockCurrentAndTotals()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
