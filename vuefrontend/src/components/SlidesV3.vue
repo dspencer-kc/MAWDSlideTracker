@@ -21,7 +21,10 @@
     </div>
       <b-input id="InputBlockID" class="mb-2 mr-sm-2 mb-sm-0" v-model="blockID" :disabled=inputTextBoxDisabled placeholder="Scan Block to Proceed" />
       <b-button type="submit" variant="primary lg" :disabled=inputButtonDisabled>{{formstatuslabel}}</b-button>
+      <b-button id="btnManualBlockIDToggle" :disabled=inputNoBarcodeButtonDisabled v-b-toggle.collapse-manualbockid variant="outline-secondary"> No Barcode </b-button>
        <b-button variant="secondary sm" @click="clearCurrentSlide()">Cancel</b-button>
+
+
     </b-form>
   </div>
   <div v-if="loading" class="loader">
@@ -31,7 +34,64 @@
   <div v-else-if="error_message">
     <h3>{{ error_message }}</h3>
   </div>
-
+  <b-collapse id="collapse-manualbockid" class="mt-2">        
+    <b-card>
+      <p class="card-text">If you cannot scan the barcode, you can manually input the full block ID in the fields below:<br>**Double check the slides that pull up correspond to the block**</p>
+      <b-row>
+          <b-col> 
+            <label>Case Prefix:</label>
+          </b-col>
+          <b-col> 
+           <b-input id="InputCasePrefix" v-model="manualcaseprefix" />
+          </b-col>
+      </b-row>
+            <b-row>
+          <b-col> 
+            <label>Year:</label>
+          </b-col>
+          <b-col> 
+           <b-input id="InputCaseTwoDigitYear" v-model="manualcasetwodigityear" />
+          </b-col>
+      </b-row>
+      <b-row>
+          <b-col> 
+            <label>Case Number:</label>
+          </b-col>
+          <b-col> 
+           <b-input id="InputCaseNo" v-model="manualcasenumber" />
+          </b-col>
+      </b-row>
+            <b-row>
+          <b-col> 
+            <label> Part:</label>
+          </b-col>
+          <b-col> 
+           <b-input id="InputPart" v-model="manualpart" />
+          </b-col>
+      </b-row>
+      <b-row>
+          <b-col> 
+            <label> Block: </label>
+          </b-col>
+          <b-col> 
+           <b-input id="InputBlock" v-model="manualblock" />
+          </b-col>
+      </b-row>
+      <b-row>
+          <b-col> 
+            <label> Full Block ID:</label>
+          </b-col>
+          <b-col> 
+              <label> HBLK{{manualcaseprefix}}{{manualcasetwodigityear}}-{{manualcasenumber}}_{{manualpart}}_{{manualblock}} </label>
+          </b-col>
+      </b-row>
+      <b-row>
+          <div class="col-md-12 text-center">
+            <b-button type="submit" variant="secondary lg" @click="manuallyLoadBlockID()"> Pull Slides From Manual Block ID</b-button>
+          </div>
+      </b-row>
+    </b-card>
+  </b-collapse>
   <br>
   <div class="customsubheadertext">
     <h5>Part {{ this.currentPart }} of {{ this.totalParts }}</h5>
@@ -54,7 +114,7 @@
                         </div>
                       <div class=slidebody>
                       {{ result.StainLabel }}<br>
-                      Level {{ result.SlideInst}} of {{ result.SlideCount}}<br>
+                      Level {{ result.SlideInst}} of {{ result.slidecount}}<br>
                       {{ result.StainOrderDate}}<br>
                       {{ result.OrderPathInitials}}<br>
                       </div>
@@ -98,7 +158,7 @@ import axios from 'axios'
 //Prod
 const strApiUrl = 'http://10.24.4.9:2081'
 //Test
-// const strApiUrl = 'http://10.24.4.9:2082'
+//const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
 //const strApiUrl = 'http://localhost:2081'
 
@@ -135,7 +195,14 @@ export default {
       totalBlocks: null,
       currentBlock: null,
       totalParts: null,
-      currentPart: null
+      currentPart: null,
+      manualblockid: null,
+      manualcaseprefix: null,
+      manualcasetwodigityear: '19',
+      manualcasenumber: null,
+      manualaccid: null,
+      manualpart: null,
+      manualblock: null
     }
   },
 
@@ -164,6 +231,8 @@ export default {
         //Depending on prefix, send to correct placeholder
         console.log('slide: barcodescan', data.barcodeScanData)
         console.log('slide: prefix', data.barcodeScanData.substring(0,4))
+
+        'collapse no barcode'
 
         switch(data.barcodeScanData.substring(0,4)) {
           case 'HBLK':
@@ -226,15 +295,15 @@ export default {
       });
 
     //Done printing, scan new block
-    this.formstatus = 'loadslides';
-    this.formstatuslabel = 'Load Slides';
+    this.formstatus = 'loadslides'
+    this.formstatuslabel = 'Load Slides'
     this.clearCurrentSlide()
     console.log("Done printing slides")
   },
 
     pullSlides() {
       console.log('start pull slides');
-      //this.GetPartBlockCurrentAndTotals()
+      this.GetPartBlockCurrentAndTotals()
       let blockID = this.blockID
       if (!blockID) {
         alert('please enter block ID to pull up slides')
@@ -266,7 +335,6 @@ export default {
         }).catch((e) => {
           console.log(e)
         })
-        this.GetPartBlockCurrentAndTotals()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
@@ -317,13 +385,10 @@ export default {
     },
     clearCurrentSlide(){
       console.log("hellocancelbutton")
-      this.blockID =""
-      this.formstatus = 'loadslides'
-      this.formstatuslabel = 'Load Slides'
-      this.totalBlocks = ''
-      this.currentBlock = ''
-      this.totalParts = ''
-      this.currentPart = ''
+      this.blockID ="";
+      this.formstatus = 'loadslides';
+      this.formstatuslabel = 'Load Slides';
+      
       //Always disable input textbox now that we're scanning
       //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}
@@ -331,6 +396,12 @@ export default {
     },
     setFocusToInputBlockID(){
       document.getElementById("InputBlockID").focus();
+    },
+    manuallyLoadBlockID(){
+      this.blockID = "HBLK" + this.manualcaseprefix + this.manualcasetwodigityear + '-' + this.manualcasenumber + '_' + this.manualpart + '_' + this.manualblock
+      this.pullSlides()
+      //Collapse additional options
+      document.getElementById("btnManualBlockIDToggle").click()
     },
   },
   computed:{
@@ -351,6 +422,14 @@ export default {
       //}
       //always disable input text box now that values are being scanned
       return true
+    },
+    inputNoBarcodeButtonDisabled(){
+      //if (this.validuser=='f' || !blockID ) {
+      if (this.validuser && !this.blockID) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 }
