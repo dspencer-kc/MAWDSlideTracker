@@ -232,8 +232,6 @@ export default {
         console.log('slide: barcodescan', data.barcodeScanData)
         console.log('slide: prefix', data.barcodeScanData.substring(0,4))
 
-        'collapse no barcode'
-
         switch(data.barcodeScanData.substring(0,4)) {
           case 'HBLK':
             //BlockScan Detected Pull Slides
