@@ -385,10 +385,13 @@ export default {
     },
     clearCurrentSlide(){
       console.log("hellocancelbutton")
-      this.blockID ="";
-      this.formstatus = 'loadslides';
-      this.formstatuslabel = 'Load Slides';
-      
+      this.blockID =""
+      this.formstatus = 'loadslides'
+      this.formstatuslabel = 'Load Slides'
+      this.totalBlocks = ''
+      this.currentBlock = ''
+      this.totalParts = ''
+      this.currentPart = ''
       //Always disable input textbox now that we're scanning
       //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}
