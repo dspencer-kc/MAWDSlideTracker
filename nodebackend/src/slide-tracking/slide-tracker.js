@@ -9,7 +9,8 @@ module.exports = {
   getUserInfo: getUserInfo,
   updateSlideToPrint: updateSlideToPrint,
   pullSlides: pullSlides,
-  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals
+  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
+  histodata: histoData
 }
 
 function printSlides (request, response, callback) {
@@ -371,4 +372,32 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
   // });
   // con.end();
   console.log(`${strBlockID}`)
+}
+function histoData (request, response, callback) {
+  // ===========================================================================================
+  //    Histo data for chart
+  // ============================================================================================
+  console.log('histodata start')
+  var strResponse = ''
+  // var strAction = request.body.action
+  // var strSlideID = request.body.slideId
+  // var blToPrintStatus = request.body.toPrintStatus
+  var strSQL = `SELECT WhoPrinted, SlideCount FROM 'OPENLIS.tblSlides';`
+  console.log(strSQL)
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      response.send(err)
+      console.log(err)
+    // On Error, close connection
+    } else {
+    // if there is no error, you have the result
+      strResponse = result.affectedRows + ' record(s) updated'
+      console.log(strResponse)
+    }
+    con.end()
+  })
+
+  response.send('OK')
 }

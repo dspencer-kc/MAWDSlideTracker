@@ -43,6 +43,13 @@ app.post('/printslides', function (request, response) {
   })
 })
 
+app.post('/histodata', function (request, response) {
+  slideTracker.histodata(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
 // all routes prefixed with /slidetracker
 app.use('/slidetracker', router)
 console.log('slideTrackerDefault')
