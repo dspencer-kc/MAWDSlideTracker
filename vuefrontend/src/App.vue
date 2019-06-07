@@ -20,7 +20,7 @@
       <a class="navbar-brand" href="#">
           Slide Tracker
       </a>
-      <a class="nav-link" href="#">v 1.02</a>
+      <a class="nav-link" href="#">v 1.10</a>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
