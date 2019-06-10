@@ -378,11 +378,9 @@ function histoData (request, response, callback) {
   //    Histo data for chart
   // ============================================================================================
   console.log('histodata start')
-  var strResponse = ''
   // var strAction = request.body.action
-  // var strSlideID = request.body.slideId
-  // var blToPrintStatus = request.body.toPrintStatus
-  var strSQL = `SELECT WhoPrinted, SlideCount FROM 'OPENLIS.tblSlides';`
+
+  var strSQL = `SELECT WhoPrinted, Sum(SlideCount) FROM OPENLIS.tblSlides Group By WhoPrinted;`
   console.log(strSQL)
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
@@ -393,11 +391,8 @@ function histoData (request, response, callback) {
     // On Error, close connection
     } else {
     // if there is no error, you have the result
-      strResponse = result.affectedRows + ' record(s) updated'
-      console.log(strResponse)
+      response.json(result)
     }
     con.end()
   })
-
-  response.send('OK')
 }
