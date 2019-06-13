@@ -372,3 +372,73 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
   // con.end();
   console.log(`${strBlockID}`)
 }
+
+function addUnstainedSlide (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function addUnstainedSlide
+  //      Get Unstained Slides
+  //
+  //    Author: Drew Spencer
+  //
+  //
+  //    When to call:
+  //      To get unstained slide info
+  //= ===========================================================================================
+  var strUserID = request.body.userid
+
+  var strSQL = `SELECT * FROM OPENLIS.tblUsers
+              WHERE \`id\` = '` + strUserID + `';`
+
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) // End query
+}
+
+function addAdditionalSlideLevel (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function addAdditionalSlideLevel
+  //      Get Slide Levels
+  //
+  //    Author: Drew Spencer
+  //
+  //
+  //    When to call:
+  //      To get slide level info
+  //= ===========================================================================================
+  var strUserID = request.body.userid
+
+  var strSQL = `SELECT * FROM OPENLIS.tblUsers
+              WHERE \`id\` = '` + strUserID + `';`
+
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) // End query
+}
