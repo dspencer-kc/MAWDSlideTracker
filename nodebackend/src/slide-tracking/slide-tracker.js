@@ -380,7 +380,7 @@ function histoData (request, response, callback) {
   console.log('histodata start')
   // var strAction = request.body.action
 
-  var strSQL = `SELECT WhoPrinted, Sum(SlideCount) FROM OPENLIS.tblSlides Group By WhoPrinted;`
+  var strSQL = `SELECT WhoPrinted, Sum(SlideCount) As 'TotalSlides' FROM OPENLIS.tblSlides Group By WhoPrinted;`
   console.log(strSQL)
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
