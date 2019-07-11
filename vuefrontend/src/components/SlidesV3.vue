@@ -153,6 +153,7 @@
 <!--components/Slides.vue -->
 <script>
 import axios from 'axios'
+import store from '../store.js'
 
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
@@ -173,12 +174,12 @@ function buildUrl(blockID) {
 export default {
   name: 'slides', // component name
   props: {
-    username: String,
+    // username: String,  access through store
     firstname: String,
     lastname: String,
     userid: String,
     background: String,
-    validuser: Boolean
+    // validuser: Boolean access through store
     //blockID: String
     },
     data() {
@@ -190,8 +191,8 @@ export default {
       formstatus: 'loadslides',
       formstatuslabel: 'Load Slides',
       info: null,
-      slideQueuePath: '',
-      stationName: '',
+      // slideQueuePath: '', moved to store
+      // stationName: '', moved to store
       totalBlocks: null,
       currentBlock: null,
       totalParts: null,
@@ -223,11 +224,11 @@ export default {
   },
   methods: {
     validateScanData(data){
-      if (this.validuser) {
+      if (store.state.validuser) {
         console.log('Slide Queue Path: ', data.slideQueuePath)
-        this.slideQueuePath = data.slideQueuePath
+        store.commit('SetSlideQueuePath', data.slideQueuePath)
         console.log('slide station name:', data.stationName)
-        this.stationName = data.stationName
+        store.commit('SetStationName', data.stationName)
         //Depending on prefix, send to correct placeholder
         console.log('slide: barcodescan', data.barcodeScanData)
         console.log('slide: prefix', data.barcodeScanData.substring(0,4))
@@ -272,17 +273,17 @@ export default {
 
   printSlides()
   {
-    console.log('start print slides');
+    console.log('start print slides')
 
     //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
     //Add printRequestedBy
-    console.log(this.slideQueuePath)
+    console.log(store.state.slideQueuePath)
 
       axios.post(strApiUrl + '/printslides', {
       action: 'PrintSlides',
       blockID: this.blockID,
-      printRequestedBy: this.username,
-      slideQueuePath: this.slideQueuePath
+      printRequestedBy: store.state.username,
+      slideQueuePath: store.state.slideQueuePath
 
       })
       .then(function (response) {
@@ -409,7 +410,7 @@ export default {
   computed:{
     inputButtonDisabled(){
       //if (this.validuser=='f' || !blockID ) {
-      if (this.validuser && this.blockID) {
+      if (store.state.validuser && this.blockID) {
         return false;
       } else {
         return true;
@@ -427,10 +428,10 @@ export default {
     },
     inputNoBarcodeButtonDisabled(){
       //if (this.validuser=='f' || !blockID ) {
-      if (this.validuser && !this.blockID) {
-        return false;
+      if (store.state.validuser && !this.blockID) {
+        return false
       } else {
-        return true;
+        return true
       }
     }
   }
