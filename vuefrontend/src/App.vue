@@ -20,7 +20,7 @@
       <a class="navbar-brand" href="#">
           Slide Tracker
       </a>
-      <a class="nav-link" href="#">v 1.10</a>
+      <a class="nav-link" href="#">v 2.00</a>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
@@ -37,7 +37,7 @@
 
       <br>
       <div class="row">
-          <slides :username="username" :background="background" :firstname="firstname" :validuser="validuser"></slides>
+          <slides :background="background" :firstname="firstname"></slides>
       </div>
     </div>
   </div>
@@ -244,6 +244,7 @@ tbody {
 //import Slides from './components/SlidesV2'
 import Slides from './components/SlidesV3'
 import axios from 'axios'
+import store from './store.js'
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
 const strApiUrl = 'http://10.24.4.9:2081'
@@ -265,18 +266,18 @@ data() {
 return {
 
   userinfo: {},
-  username: "usernameinitialvalue",
+  // username: "usernameinitialvalue", moved to store
   firstname: "firstnameinitialvalue",
   lastname: "lastnameinitialvalue",
   userid: "useridinitialvalue",
   background: "backgroundinitialvalue",
   scannedbadgeinput: "Scan Badge To Start",
-  validuser: false,
+  // validuser: false, moved to store
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",
   badgeInputTextBoxDisabled: false
-  //stationname: ''
-  //blockid:''
+  // stationname: ''
+  // blockid:''
 }
 },
 
@@ -308,6 +309,10 @@ methods: {
         //this.blockid = data.barcodeScanData
         break
       case 'SBDG':
+        console.log('Slide Queue Path: ', data.slideQueuePath)
+        store.commit('SetSlideQueuePath', data.slideQueuePath)
+        console.log('slide station name:', data.stationName)
+        store.commit('SetStationName', data.stationName)
       this.scannedbadgeinput = data.barcodeScanData
       this.scanbadge()
         break
@@ -327,12 +332,12 @@ methods: {
   //If someone is signed in, log out
   if ( this.scannedbadgebuttontext == "Log Out"){
 
-    this.validuser = false;
+    store.commit('SetValidUser', false)
     this.userinfo = "";
     this.firstname = ""
     this.lastname = ""
     this.background = ""
-    this.username = ""
+    store.commit('SetUserName', '')
     this.scannedbadgeinput = "Please Scan Badge"
     this.scannedbadgebuttontext = "Scan Badge"
     this.badgeInputTextBoxDisabled = false
@@ -363,14 +368,14 @@ methods: {
               this.firstname = this.userinfo[0].fname;
               this.lastname = this.userinfo[0].lname;
               this.background = this.userinfo[0].background;
-              this.username = this.userinfo[0].username;
+              store.commit('SetUserName', this.userinfo[0].username)
 
               //Validate user
-               if (this.username.length > 0  ) {
+               if (store.state.username.length > 0  ) {
                  this.userstate = "valid user";
-                 this.validuser = true;
+                 store.commit('SetValidUser', true)
                  this.scannedbadgebuttontext = "Log Out";
-                 this.scannedbadgeinput = this.username;
+                 this.scannedbadgeinput = store.state.username
                  this.badgeInputTextBoxDisabled = true
                }
 
@@ -396,7 +401,7 @@ methods: {
 computed:{
   scanBadgeButtonDisabled(){
     //if (this.validuser=='f' || !blockID ) {
-    if (this.validuser && this.blockID) {
+    if (store.state.validuser && this.blockID) {
       return false
     } else {
       return true
