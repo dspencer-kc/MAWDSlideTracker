@@ -7,9 +7,11 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import VueSocketIO from 'vue-socket.io'
+import VueRouter from 'vue-router'
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
+Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
 Vue.use(new VueSocketIO({
   debug: true,
