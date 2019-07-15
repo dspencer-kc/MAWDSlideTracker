@@ -9,7 +9,8 @@ module.exports = {
   getUserInfo: getUserInfo,
   updateSlideToPrint: updateSlideToPrint,
   pullSlides: pullSlides,
-  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals
+  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
+  histodata: histoData
 }
 
 function printSlides (request, response, callback) {
@@ -371,4 +372,37 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
   // });
   // con.end();
   console.log(`${strBlockID}`)
+}
+function histoData (request, response, callback) {
+  // ===========================================================================================
+  //    Histo data for chart
+  // ============================================================================================
+
+  console.log('histodata start')
+  // var strAction = request.body.action
+  var strFromDateTime = request.body.fromdatetime
+  var strToDateTime = request.body.todatetime
+  // var strFromDateTime = '2019-07-11 22:00'
+  // var strToDateTime = '2019-07-14 22:00'
+
+  var strSQL = `SELECT qrySubBlocksPreviousDay.WhoPrinted, Count(qrySubBlocksPreviousDay.BlockID) AS CountOfBlockID
+    FROM (SELECT tblSlides.WhoPrinted, tblSlides.BlockID
+          FROM tblSlides
+          WHERE (((tblSlides.DTPrinted)>=('${strFromDateTime}') And (tblSlides.DTPrinted)<'${strToDateTime}'))
+          GROUP BY tblSlides.WhoPrinted, tblSlides.BlockID) as qrySubBlocksPreviousDay
+    GROUP BY qrySubBlocksPreviousDay.WhoPrinted;`
+  console.log(strSQL)
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      response.send(err)
+      console.log(err)
+    // On Error, close connection
+    } else {
+    // if there is no error, you have the result
+      response.json(result)
+    }
+    con.end()
+  })
 }
