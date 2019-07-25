@@ -1,15 +1,22 @@
 <template>
   <div id="app">
+      <nav>
+        <router-link to='/'>Home</router-link> 
+        <router-link to='/blocksbytech'>Blocks By Tech </router-link> 
+        <router-link to='/login'>Login </router-link> 
+        <router-link :to="{name: 'Profile', params: { msg } }">Go to your profile</router-link>
+    </nav>
+    <router-view></router-view>
 
     <h1>Blocks By Tech</h1>
-    <bar-chart :chart-data="datacollection":width="5" :height="2"></bar-chart>
+    <bar-chart :chart-data="datacollection" :width="5" :height="2"></bar-chart>
       From Date and Time:
-      <input v-model="strFromDateTime">
+      <input v-model="FromDateTime">
       <br>
       To Date and Time:
-      <input v-model="strToDateTime">
+      <input v-model="ToDateTime">
       <br>
-      <button @click="LoadHistoData">Refresh Data</button>
+ 
   </div>
 </template>
 
@@ -17,6 +24,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import BarChart from './components/BarChart.js'
 import LineChart from './components/LineChart.js'
+import store from './store.js'
 import axios from 'axios'
 
 export default {
@@ -27,66 +35,44 @@ export default {
   },
 data() {
 return {
-  arChartData: [],
-  arChartLabels: [],
   strTest: 'hi',
   datacollection: null,
-  strFromDateTime: '2019-07-11 22:00',
-  strToDateTime: '2019-07-14 22:00'
+  msg: `Hello profile`
 }
+},
+created() {
+  console.log('Hello created')
+  // this.SetChartData()
+  this.GetChartData()
 },  
-mounted () {
-    this.LoadHistoData()
+mounted () {    
   },
 methods: {
-  LoadHistoData(){
-    console.log('Hello LoadHistoData')
-    console.log(this.strTest)
-        this.arChartLabels = []
-        this.arChartData = []
-
-    // Need to assign this to an object so it can be referenced within Axios call
-    let vue = this
-      axios.post('http://10.24.4.9:2082/histodata', {
-        fromdatetime: this.strFromDateTime,
-        todatetime: this.strToDateTime
-      })
-    .then(function (response) {
-      console.log(response)
-      for(var i = 0; i < response.data.length; i++) {
-        let strWhoPrinted = ''
-
-        if (response.data[i].WhoPrinted === null) {
-          strWhoPrinted = 'Unknown'
-        } else {
-          strWhoPrinted = response.data[i].WhoPrinted
-        }  
-
-        // Build Chart Data Array
-        vue.arChartLabels.push(strWhoPrinted)
-        vue.arChartData.push(response.data[i].CountOfBlockID)
-     } // end for
-
-        vue.datacollection = {
-                  labels: vue.arChartLabels,
-        datasets: [
-          {
-            label: 'Blocks Cut',
-            backgroundColor: '#f87979',
-            data: vue.arChartData
-          }
-        ]
-
-        }
-
-
-      console.log('done test')
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
-    console.log('done')
+  GetChartData (){
+   store.dispatch('LoadChartDataWPromise').then(() => {
+    console.log('Show after promise blah')
+    this.datacollection = store.state.objChartDataCollection
+    console.log(store.state.objChartDataCollection)
+   })   
   },
+},
+computed: {
+    FromDateTime: {
+        get () {
+            return this.$store.state.strFromDateTime
+        },
+        set (value) {
+            this.$store.commit('SetFromDateTime', value)
+        }
+    },
+        ToDateTime: {
+        get () {
+            return this.$store.state.strToDateTime
+        },
+        set (value) {
+            this.$store.commit('SetToDateTime', value)
+        }
+    }
 }
 }
 </script>
