@@ -1,11 +1,28 @@
 <template>
   <div id="app">
-      <nav>
-        <router-link to='/'>Home</router-link> 
-        <router-link to='/blocksbytech'>Blocks By Tech </router-link> 
-        <router-link to='/login'>Login </router-link> 
-        <router-link :to="{name: 'Profile', params: { msg } }">Go to your profile</router-link>
+
+          <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+      <a class="navbar-brand" href="#">
+          Slide Tracker Reports
+      </a>
+      <a class="nav-link" href="#">v Beta 0.01</a>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <b-link class="nav-link" to="home">Home</b-link>
+      </li>
+      <li class="nav-item">
+        <b-link class="nav-link" to="/blocksbytech">Blocks By Tech</b-link>
+      </li>
+      <li class="nav-item">
+        <b-link class="nav-link" to="/login">Login</b-link>
+      </li>
+    <li class="nav-item">
+        <b-link class="nav-link" :to="{name: 'Profile', params: { msg } }">Go to your profile</b-link>
+      </li>       
+         
+      </ul>
     </nav>
+
     <router-view></router-view>
 
       From Date and Time:
@@ -76,7 +93,17 @@ computed: {
 }
 </script>
 
-<style>
+<style lang="css">
+
+html,
+body {
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
