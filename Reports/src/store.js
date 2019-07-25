@@ -100,7 +100,7 @@ export default new Vuex.Store({
   },
   getters: {
     ChartDataCollection: (state, getters) => {
-      return getters.objChartDataCollection
+      return state.objChartDataCollection
     }
   }
 })

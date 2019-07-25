@@ -2,27 +2,21 @@
 
 <template>
     <div>
-    <h1>Blocks By Tech In Router</h1>
-    <bar-chart :chart-data="localdatacollection" :width="5" :height="2"></bar-chart>
-          From Date and Time:
-      <input v-model="FromDateTime">
-      <br>
-      To Date and Time:
-      <input v-model="ToDateTime">
-      <br>
-      <button @click="GetChartDataLocal">Refresh Data</button>
-
-    <label> From Date and Time: </label>
+    <h1>Blocks By Tech</h1>
+    <bar-chart :chart-data="ChartData" :width="5" :height="2"></bar-chart>
     </div>
     
 </template>
 
 <script>
 import store from '../store.js'
-import BarChart from './BarChart2.js'
+import BarChart from './BarChart.js'
 
 export default {
 name: 'BlocksByTech',
+components: {
+  BarChart
+},
 data() {
 return {
   localdatacollection: null
@@ -31,34 +25,21 @@ return {
 mounted() {
   console.log('Hello component created')
   // this.SetChartData()
-  this.GetChartDataLocal()
+  // this.GetChartDataLocal()
 },
 methods: {
-  GetChartDataLocal (){
-      console.log('Hello getchartdatalocal')
-   store.dispatch('LoadChartDataWPromise').then(() => {
-    console.log('Show after promise blah')
-    this.localdatacollection = store.state.objChartDataCollection
-    console.log('after store data')
-   })   
-  },
+  // GetChartDataLocal (){
+  //     console.log('Hello getchartdatalocal')
+  //  store.dispatch('LoadChartDataWPromise').then(() => {
+  //   console.log('Show after promise blah')
+  //   this.localdatacollection = store.state.objChartDataCollection
+  //   console.log('after store data')
+  //  })   
+  // },
 },
 computed: {
-        FromDateTime: {
-        get () {
-            return this.$store.state.strFromDateTime
-        },
-        set (value) {
-            this.$store.commit('SetFromDateTime', value)
-        }
-    },
-        ToDateTime: {
-        get () {
-            return this.$store.state.strToDateTime
-        },
-        set (value) {
-            this.$store.commit('SetToDateTime', value)
-        }
+    ChartData() {
+      return this.$store.getters.ChartDataCollection
     }
 } 
 }

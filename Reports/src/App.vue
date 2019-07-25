@@ -8,15 +8,14 @@
     </nav>
     <router-view></router-view>
 
-    <h1>Blocks By Tech</h1>
-    <bar-chart :chart-data="datacollection" :width="5" :height="2"></bar-chart>
       From Date and Time:
       <input v-model="FromDateTime">
       <br>
       To Date and Time:
       <input v-model="ToDateTime">
       <br>
- 
+      <br>
+      <button @click="GetChartData">Refresh Data</button>
   </div>
 </template>
 
@@ -43,7 +42,7 @@ return {
 created() {
   console.log('Hello created')
   // this.SetChartData()
-  this.GetChartData()
+  // this.GetChartData()
 },  
 mounted () {    
   },
