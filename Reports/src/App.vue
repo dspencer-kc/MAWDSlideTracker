@@ -14,7 +14,10 @@
         <b-link class="nav-link" to="/blocksbytech">Blocks By Tech</b-link>
       </li>
       <li class="nav-item">
-        <b-link class="nav-link" to="/login">Login</b-link>
+        <b-link class="nav-link" to="/blocksbytechline">Blocks By Tech Line</b-link>
+      </li>      
+      <li class="nav-item">
+        <b-link class="nav-link" to="/blockscutscatter">Blocks Cut Scatter</b-link>
       </li>
     <li class="nav-item">
         <b-link class="nav-link" :to="{name: 'Profile', params: { msg } }">Go to your profile</b-link>

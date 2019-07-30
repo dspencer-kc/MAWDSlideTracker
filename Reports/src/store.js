@@ -11,7 +11,11 @@ export default new Vuex.Store({
     strToDateTime: '2019-07-24 22:00',
     arChartLabels: [],
     arChartData: [],
-    objChartDataCollection: null
+    objChartDataCollection: null,
+    apiurl: 'http://10.24.4.9:2082/histodata',
+    title: 'Blocks By Tech',
+    chartlabel: 'Blocks Cut',
+    backgroundColor: '#f87979'
   },
   mutations: {
     SetStateMsg (state, strTmp) {
@@ -35,13 +39,13 @@ export default new Vuex.Store({
     ClearChartData (state) {
       state.arChartData = []
     },
-    SetChartDataCollection (state, strChartLabel, strBackgroundColor) {
+    SetChartDataCollection (state, strChartLabel) {
       state.objChartDataCollection = {
         labels: state.arChartLabels,
         datasets: [
           {
             label: strChartLabel,
-            backgroundColor: '#f87979',
+            backgroundColor: state.backgroundColor,
             data: state.arChartData
           }
         ]
@@ -62,7 +66,7 @@ export default new Vuex.Store({
     LoadChartDataWPromise ({ commit }) {
       return new Promise((resolve, reject) => {
         console.log('Hello LoadHistoData')
-        axios.post('http://10.24.4.9:2082/histodata', {
+        axios.post(this.state.apiurl, {
           fromdatetime: this.state.strFromDateTime,
           todatetime: this.state.strToDateTime
         })
@@ -73,16 +77,14 @@ export default new Vuex.Store({
 
             console.log(response)
             for (var i = 0; i < response.data.length; i++) {
-              let strWhoPrinted = ''
+              let strXAxisNames = ''
               if (response.data[i].WhoPrinted === null) {
-                strWhoPrinted = 'Unknown'
+                strXAxisNames = 'Unknown'
               } else {
-                strWhoPrinted = response.data[i].WhoPrinted
+                strXAxisNames = response.data[i].WhoPrinted
               }
               // Build Chart Data Array
-              // vue.arChartLabels.push(strWhoPrinted)
-              commit('PushChartLabels', strWhoPrinted)
-              // vue.arChartData.push(response.data[i].CountOfBlockID)
+              commit('PushChartLabels', strXAxisNames)
               commit('PushChartData', response.data[i].CountOfBlockID)
             } // end for
             // Set Chart Collection Object
