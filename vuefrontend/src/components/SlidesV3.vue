@@ -175,10 +175,10 @@ export default {
   name: 'slides', // component name
   props: {
     // username: String,  access through store
-    firstname: String,
+    // firstname: String,
     lastname: String,
     userid: String,
-    background: String,
+    // background: String,
     // validuser: Boolean access through store
     //blockID: String
     },
