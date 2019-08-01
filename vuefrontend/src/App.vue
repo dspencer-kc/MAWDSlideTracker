@@ -253,12 +253,12 @@ import axios from 'axios'
 import store from './store.js'
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
-const strApiUrl = 'http://10.24.4.9:2081'
+// const strApiUrl = Set in store
 //Test
-// const strApiUrl = 'http://10.24.4.9:2082'
+// const strApiUrl = Set in store
 //Local Test
-//const strApiUrl = 'http://localhost:2081'
-console.log('APIURL: ', strApiUrl)
+//const strApiUrl = Set in store
+console.log('APIURL: ', store.state.apiURL)
 //import io from 'socket.io-client' //Not sure if this needs done here or just in main.js
 
 export default
@@ -354,8 +354,8 @@ methods: {
             this.userid = this.scannedbadgeinput.substring(4);
 
             console.log("valid badge prefix");
-            console.log(strApiUrl)
-              axios.post(strApiUrl + '/getuserinfo', {
+            console.log(store.state.apiURL)
+              axios.post(store.state.apiURL + '/getuserinfo', {
               userid: this.userid
               //userid: 'mwd2954'
             })

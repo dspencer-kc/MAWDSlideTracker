@@ -157,7 +157,7 @@ import store from '../store.js'
 
 //const strApiUrl = process.env.VUE_APP_API_URL
 //Prod
-const strApiUrl = 'http://10.24.4.9:2081'
+// const strApiUrl = 'http://10.24.4.9:2081'
 //Test
 //const strApiUrl = 'http://10.24.4.9:2082'
 //Local Test
@@ -166,7 +166,7 @@ const strApiUrl = 'http://10.24.4.9:2081'
 
 // define the external API URL
 //const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
-const API_URLWithSlideParameters = strApiUrl + '/slidetracker/slideparameters?blockid='  //For Get Call
+const API_URLWithSlideParameters = store.state.apiURL + '/slidetracker/slideparameters?blockid='  //For Get Call
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
   return `${API_URLWithSlideParameters}${blockID}`
@@ -339,7 +339,7 @@ export default {
     updateSlideToPrintValue(strSlideID, blChecked)
     {
             //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-      axios.post(strApiUrl + '/updateslidetoprint', {
+      axios.post(store.state.apiURL + '/updateslidetoprint', {
         action: 'UpdateSlideToPrintValue',
         slideId: strSlideID,
         toPrintStatus: blChecked
@@ -354,7 +354,7 @@ export default {
     },
     GetPartBlockCurrentAndTotals() {
         console.log('start GetPartBlockCurrentAndTotals')
-              axios.post(strApiUrl + '/getpartblockcurrentandtotals', {
+              axios.post(store.state.apiURL + '/getpartblockcurrentandtotals', {
               blockID: this.blockID
             })
             .then(apidata => {

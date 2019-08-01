@@ -9,7 +9,13 @@ export default new Vuex.Store({
     username: '',
     validuser: false,
     stationName: '',
-    slideQueuePath: ''
+    slideQueuePath: '',
+    //  Prod
+    apiURL: 'http://10.24.4.9:2081'
+    //  Test
+    //  apiURL: 'http://10.24.4.9:2082'
+    //  Local Test
+    //  apiURL: 'http://localhost:2081'
   },
   mutations: {
     increment (state) {
