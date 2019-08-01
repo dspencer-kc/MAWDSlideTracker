@@ -22,6 +22,12 @@
       </a>
       <a class="nav-link" href="#">v 2.00</a>
       <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <b-link class="nav-link" to="/">Home</b-link>
+      </li>          
+      <li class="nav-item">
+        <b-link class="nav-link" to="/slidedistribution"> Slide Distribution </b-link>
+      </li>      
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
       </li>
@@ -37,7 +43,7 @@
 
       <br>
       <div class="row">
-          <slides :background="background" :firstname="firstname"></slides>
+          <router-view></router-view>
       </div>
     </div>
   </div>
