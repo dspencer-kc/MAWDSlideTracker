@@ -457,6 +457,41 @@ function slideDistribution (request, response, callback) {
       break
     case 'MarkSlideToBeDistributed':
       console.log('Hello Mark Slide To Be Distributed')
+      let strSlideDistID = request.body.slidedistid
+      let strSlideID = request.body.slideid
+
+      let strSQLMarkToBeDistributed = `UPDATE OPENLIS.tblSlides
+      SET
+      Status = 'InTrayPendingLocation',
+      Audit = CONCAT(Audit, 'Marked in tray:',NOW(), '.'),
+      SlideStatusID = '$itpl',
+      SlideDistributionID = ${strSlideDistID}
+      WHERE SlideID = '${strSlideID}';
+      SELECT SlideID from tblSlides WHERE SlideStatusID = '$itpl';
+      SELECT Count(SlideID) AS 'SlidesInTray'
+      FROM tblSlides
+      WHERE SlideStatusID = '$itpl';
+      SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
+      FROM (SELECT subTblSlides.BlockID AS subBlockID  
+            FROM tblSlides as subTblSlides
+            WHERE subTblSlides.SlideStatusID = '$itpl'
+            GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
+      ;`
+
+      console.log(strSQLMarkToBeDistributed)
+      // Connect to the database
+      var con2 = mysql.createConnection(mysqlConfig)
+      con2.query(strSQLMarkToBeDistributed, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con2.end()
+      })
       break
     default:
       break

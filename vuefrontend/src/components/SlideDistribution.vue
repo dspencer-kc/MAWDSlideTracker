@@ -28,7 +28,16 @@
   <div class="customsubheadertext">
     <small> **To reassign location on a tray, scan slide tray, then location without scanning another slide, whenever you scan a slide tray and then scan a slide, it clears all the slides that were previously tied to that slide.** </small>
     <h5>Current Slide Tray: {{currentslidetray}} </h5>
+    <h5>Slide Count in Current Tray: {{strInTraySlideCount}}</h5>
+    <h5>Block Count in Current Tray: {{strInTrayBlockCount}}</h5>
     <h5>Slides in Current Tray: </h5>
+    <ul>
+        <div class="PendingSlides" v-for="result in slides">
+        <li>
+            {{ result.SlideID }}
+        </li>
+        </div>
+    </ul>
   </div>
 
 <div class="container">
@@ -64,8 +73,10 @@ return {
   blSlideTrayLoaded: false,
   blFirstSlideScanned: false,
   SlideDistributionID: null,
-  strInputTextLabel: 'Scan Slide Tray: '
-
+  strInputTextLabel: 'Scan Slide Tray: ',
+  slides: {},
+  strInTrayBlockCount: '',
+  strInTraySlideCount: ''
 }
 },
 mounted() {
@@ -130,33 +141,85 @@ methods: {
 
         if (this.blSlideTrayLoaded) {
           if (this.blFirstSlideScanned) {
-            this.CreateNewSlideDistribution(strSlideID)
-            // this.MarkSlideToBeDistributed(strSlideID)
+            console.log('hello')
+            this.MarkSlideToBeDistributed(strSlideID, this.SlideDistributionID)
           } else {
+            console.log('hello')
             this.CreateNewSlideDistribution(strSlideID)
-            this.MarkSlideToBeDistributed(strSlideID)
-            this.blFirstSlideScanned = true
+            // call this.MarkSlideToBeDistributed(strSlideID) after new slide distribution found
+            // this.blFirstSlideScanned = true
           }
         } else {
           this.inputtext = 'Scan Slide Tray First'
         }
     },
-    MarkSlideToBeDistributed(strSlideID){
-
+    MarkSlideToBeDistributed(strSlideID, strSlideDistributionID){
+      // Call Mark Slides To Be Distributed API to mark all slides scanned as pending distribution
+      console.log('Hello MarkSlideToBeDistributed')
+      axios.post(store.state.apiURL + '/slidedistribution', {
+      action: 'MarkSlideToBeDistributed',
+      slidedistid: strSlideDistributionID,
+      slideid: strSlideID
+      })
+      .then(apidata => {
+        this.loading = false;
+        this.error_message = '';
+        if (apidata.errorcode) {
+        this.error_message = `Error MarkSlideToBeDistributed.`
+        console.log('error')
+        return
+        }
+        console.log('MarkSlideToBeDistributed apidata:')
+        console.log(apidata)
+        let temp = {}
+        temp = apidata.data
+        this.slides = temp[1]
+        let aryTmpSlidesInTray = {}
+        aryTmpSlidesInTray = temp[2]
+        this.strInTraySlideCount = temp[0].data[2]["0"].SlidesInTrayy
+        this.strInTrayBlockCount = temp[3].BlockCountInTray
+        // console.log(temp)
+        // this.SlideDistributionID = temp.insertId
+      }).catch((e) => {
+        console.log(e)
+      })
+      .catch(function (error) {
+        console.log("error:")
+        console.log(error)
+      })
     },
     CreateNewSlideDistribution(strSlideID){
-      // Call Distribute Pending Slides API to send all pending slides to scanned location.
+      // Call API to create new slide distribution for slide tray.
+      console.log('Hello Create New Slide Dsitribution')
       axios.post(store.state.apiURL + '/slidedistribution', {
       action: 'CreateNewSlideDistribution',
       userid: store.state.username,
       slidetray: this.slidetrayID,
       scanlocation: store.state.stationName
       })
-      .then(function (response) {
-      console.log(response);
+      .then(apidata => {
+        this.loading = false;
+        this.error_message = '';
+        if (apidata.errorcode) {
+        this.error_message = `Error creating new slide distribution.`
+        console.log('error')
+        return
+        }
+        // console.log('apidata:')
+        // console.log(apidata)
+        let temp = {}
+        temp = apidata.data
+        console.log('Create New Slide Distr Done, call MarkSlideToBeDistributed')
+        this.SlideDistributionID = temp.insertId
+        this.blFirstSlideScanned = true
+        this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
+
+      }).catch((e) => {
+        console.log(e)
       })
       .catch(function (error) {
-      console.log(error)
+        console.log("error:")
+        console.log(error)
       })
     },
     ScanSlideTray(strSlideTrayID){
@@ -182,7 +245,7 @@ methods: {
     DistributePendingSlides(strLocID){
       // Call Distribute Pending Slides API to send all pending slides to scanned location.
       axios.post(store.state.apiURL + '/slidedistribution', {
-      action: 'DistributePendingSlides',
+      action: 'DistributePendingSlides'
       // blockID: this.blockID,
       // printRequestedBy: store.state.username,
       // slideQueuePath: store.state.slideQueuePath
