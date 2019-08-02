@@ -10,7 +10,8 @@ module.exports = {
   updateSlideToPrint: updateSlideToPrint,
   pullSlides: pullSlides,
   getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
-  histodata: histoData
+  histodata: histoData,
+  slideDistribution: slideDistribution
 }
 
 function printSlides (request, response, callback) {
@@ -405,4 +406,59 @@ function histoData (request, response, callback) {
     }
     con.end()
   })
+}
+function slideDistribution (request, response, callback) {
+  // ===========================================================================================
+  //    Slide Distribution
+  // ============================================================================================
+
+  console.log('slide distribution start')
+  let strAction = request.body.action
+
+  switch (strAction) {
+    case 'CreateNewSlideDistribution':
+      console.log('Hello create new slide distr')
+      let strUser = request.body.userid
+      let strSlideTrayID = request.body.slidetray
+      let strScanLocation = request.body.scanlocation
+
+      let strSQL = `INSERT INTO OPENLIS.tblSlideDistribution
+                    (SlideTray,
+                    Status,
+                    WhoMarkedReadyForCourier,
+                    DTReadyForCourier,
+                    SlideDistributionLocation,
+                    StationSlideTrayScanned,
+                    Audit)
+                    VALUES
+                    ('${strSlideTrayID}',
+                    'PendingLocation',
+                    '${strUser}',
+                    NOW(),
+                    'Pending',
+                    '${strScanLocation}',
+                    concat('Initial insert:', now(), ' ')
+                    );`
+
+      console.log(strSQL)
+      // Connect to the database
+      var con = mysql.createConnection(mysqlConfig)
+      con.query(strSQL, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con.end()
+      })
+      break
+    case 'MarkSlideToBeDistributed':
+      console.log('Hello Mark Slide To Be Distributed')
+      break
+    default:
+      break
+  }
 }

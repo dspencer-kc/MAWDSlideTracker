@@ -26,7 +26,7 @@
   
   <br>
   <div class="customsubheadertext">
-    <p> **To reassign location on a tray, scan slide tray, then location without scanning another slide, whenever you scan a slide tray and then scan a slide, it clears all the slides that were previously tied to that slide.** </p>
+    <small> **To reassign location on a tray, scan slide tray, then location without scanning another slide, whenever you scan a slide tray and then scan a slide, it clears all the slides that were previously tied to that slide.** </small>
     <h5>Current Slide Tray: {{currentslidetray}} </h5>
     <h5>Slides in Current Tray: </h5>
   </div>
@@ -130,7 +130,8 @@ methods: {
 
         if (this.blSlideTrayLoaded) {
           if (this.blFirstSlideScanned) {
-            this.MarkSlideToBeDistributed(strSlideID)
+            this.CreateNewSlideDistribution(strSlideID)
+            // this.MarkSlideToBeDistributed(strSlideID)
           } else {
             this.CreateNewSlideDistribution(strSlideID)
             this.MarkSlideToBeDistributed(strSlideID)
@@ -144,7 +145,19 @@ methods: {
 
     },
     CreateNewSlideDistribution(strSlideID){
-
+      // Call Distribute Pending Slides API to send all pending slides to scanned location.
+      axios.post(store.state.apiURL + '/slidedistribution', {
+      action: 'CreateNewSlideDistribution',
+      userid: store.state.username,
+      slidetray: this.slidetrayID,
+      scanlocation: store.state.stationName
+      })
+      .then(function (response) {
+      console.log(response);
+      })
+      .catch(function (error) {
+      console.log(error)
+      })
     },
     ScanSlideTray(strSlideTrayID){
         if (this.blSlideTrayLoaded === false) {
@@ -168,7 +181,7 @@ methods: {
     },
     DistributePendingSlides(strLocID){
       // Call Distribute Pending Slides API to send all pending slides to scanned location.
-      axios.post(strApiUrl + '/slidedistribution', {
+      axios.post(store.state.apiURL + '/slidedistribution', {
       action: 'DistributePendingSlides',
       // blockID: this.blockID,
       // printRequestedBy: store.state.username,
@@ -178,8 +191,11 @@ methods: {
       console.log(response);
       })
       .catch(function (error) {
-      console.log(error);
-      });
+      console.log(error)
+      })
+    },
+    GetSlidesInCurrentTray() {
+
     }
 
 },
