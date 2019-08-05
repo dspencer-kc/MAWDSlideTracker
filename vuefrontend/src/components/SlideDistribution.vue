@@ -75,6 +75,8 @@ return {
   SlideDistributionID: null,
   strInputTextLabel: 'Scan Slide Tray: ',
   slides: {},
+  obApiResult02: {},
+  obApiResult03: {},
   strInTrayBlockCount: '',
   strInTraySlideCount: ''
 }
@@ -174,10 +176,11 @@ methods: {
         let temp = {}
         temp = apidata.data
         this.slides = temp[1]
-        let aryTmpSlidesInTray = {}
-        aryTmpSlidesInTray = temp[2]
-        this.strInTraySlideCount = temp[0].data[2]["0"].SlidesInTrayy
-        this.strInTrayBlockCount = temp[3].BlockCountInTray
+        // let aryTmpSlidesInTray = {}
+        this.obApiResult02 = temp[2]
+        this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
+        this.obApiResult03 = temp[3]
+        this.strInTrayBlockCount = this.obApiResult03[0].BlockCountInTray
         // console.log(temp)
         // this.SlideDistributionID = temp.insertId
       }).catch((e) => {
@@ -235,30 +238,39 @@ methods: {
         }
     },
     ScanLocation(strLocID){
-        this.slidetrayID = ''
-        this.blSlideTrayLoaded = false
-        this.currentslidetray = 'Waiting for Next Slide Tray'
-        this.inputtext = 'Scan Slide Tray to Proceed'
-        this.strInputTextLabel = 'Scan Slide Tray:'
-        this.DistributePendingSlides(strLocID)
+        if (this.blSlideTrayLoaded) {
+          this.loading = true
+          this.MarkSlidesReadyForCourier(strLocID)
+        } else {
+            this.inputtext = 'Scan Slide Tray Before Location'
+        }
+        
+
     },
-    DistributePendingSlides(strLocID){
+    MarkSlidesReadyForCourier(strLocID){
       // Call Distribute Pending Slides API to send all pending slides to scanned location.
       axios.post(store.state.apiURL + '/slidedistribution', {
-      action: 'DistributePendingSlides'
-      // blockID: this.blockID,
-      // printRequestedBy: store.state.username,
-      // slideQueuePath: store.state.slideQueuePath
+      action: 'MarkSlidesReadyForCourier',
+      slidedistid: this.SlideDistributionID,
+      userid: store.state.username,
+      slidedistrloc: strLocID,
+      scanlocation: store.state.stationName
       })
       .then(function (response) {
-      console.log(response);
+      console.log(response)
+      this.slidetrayID = ''
+      this.blSlideTrayLoaded = false
+      this.currentslidetray = 'Waiting for Next Slide Tray'
+      this.inputtext = 'Scan Slide Tray to Proceed'
+      this.strInputTextLabel = 'Scan Slide Tray:'      
+      this.slidedistid = null
+      this.loading = false
       })
       .catch(function (error) {
       console.log(error)
+      this.loading = false
+      this.inputtext = 'Error'
       })
-    },
-    GetSlidesInCurrentTray() {
-
     }
 
 },

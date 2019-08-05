@@ -467,14 +467,14 @@ function slideDistribution (request, response, callback) {
       SlideStatusID = '$itpl',
       SlideDistributionID = ${strSlideDistID}
       WHERE SlideID = '${strSlideID}';
-      SELECT SlideID from tblSlides WHERE SlideStatusID = '$itpl';
+      SELECT SlideID from tblSlides WHERE SlideDistributionID = ${strSlideDistID};
       SELECT Count(SlideID) AS 'SlidesInTray'
       FROM tblSlides
-      WHERE SlideStatusID = '$itpl';
+      WHERE SlideDistributionID = ${strSlideDistID};
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
       FROM (SELECT subTblSlides.BlockID AS subBlockID  
             FROM tblSlides as subTblSlides
-            WHERE subTblSlides.SlideStatusID = '$itpl'
+            WHERE subTblSlides.SlideDistributionID = ${strSlideDistID}
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
       ;`
 
@@ -491,6 +491,42 @@ function slideDistribution (request, response, callback) {
           response.json(result)
         }
         con2.end()
+      })
+      break
+    case 'MarkSlidesReadyForCourier':
+      console.log('Hello Mark Slide Ready For Courier')
+      let strSlideDistIDMarkForCourier = request.body.slidedistid
+      let strUserMarkForCourier = request.body.userid
+      let strSlideDistrLocID = request.body.slidedistrloc
+      let strScanLocationMarkForCourier = request.body.scanlocation
+
+      let strSQLMarkSlidesReadyForCourier = `UPDATE OPENLIS.tblSlideDistribution
+      SET
+      Status = 'Ready For Courier',
+      DTReadyForCourier = NOW(),
+      SlideDistributionLocation = '${strSlideDistrLocID}',
+      Audit = CONCAT(Audit, 'Assigned location, marked ready for courier:',NOW(), '.'),
+      StationLocationScanned = '${strScanLocationMarkForCourier}',
+      WhoSetLocation = '${strUserMarkForCourier}'
+      WHERE SlideDistributionID = ${strSlideDistIDMarkForCourier};
+      UPDATE OPENLIS.tblSlides
+      SET
+      SlideStatusID = '$rfc'
+      WHERE SlideDistributionID = ${strSlideDistIDMarkForCourier};`
+
+      console.log(strSQLMarkSlidesReadyForCourier)
+      // Connect to the database
+      var con3 = mysql.createConnection(mysqlConfig)
+      con3.query(strSQLMarkSlidesReadyForCourier, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con3.end()
       })
       break
     default:
