@@ -26,7 +26,6 @@
   
   <br>
   <div class="customsubheadertext">
-    <small> **To reassign location on a tray, scan slide tray, then location without scanning another slide, whenever you scan a slide tray and then scan a slide, it clears all the slides that were previously tied to that slide.** </small>
     <h5>Current Slide Tray: {{currentslidetray}} </h5>
     <h5>Slide Count in Current Tray: {{strInTraySlideCount}}</h5>
     <h5>Block Count in Current Tray: {{strInTrayBlockCount}}</h5>
@@ -256,7 +255,7 @@ methods: {
       slidedistrloc: strLocID,
       scanlocation: store.state.stationName
       })
-      .then(function (response) {
+      .then(response => {
       console.log(response)
       this.slidetrayID = ''
       this.blSlideTrayLoaded = false
@@ -265,8 +264,12 @@ methods: {
       this.strInputTextLabel = 'Scan Slide Tray:'      
       this.slidedistid = null
       this.loading = false
+      this.strInTrayBlockCount = ''
+      this.strInTraySlideCount = ''
+      this.slides = {}
+      console.log('success')
       })
-      .catch(function (error) {
+      .catch((error) => {
       console.log(error)
       this.loading = false
       this.inputtext = 'Error'
