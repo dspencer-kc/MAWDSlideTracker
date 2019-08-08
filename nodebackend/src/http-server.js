@@ -57,6 +57,13 @@ app.post('/slidedistribution', function (request, response) {
   })
 })
 
+app.post('/reports', function (request, response) {
+  slideTracker.reports(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
 // all routes prefixed with /slidetracker
 app.use('/slidetracker', router)
 console.log('slideTrackerDefault')

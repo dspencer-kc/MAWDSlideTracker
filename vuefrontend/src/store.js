@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,10 @@ export default new Vuex.Store({
     //  Test
     //  apiURL: 'http://10.24.4.9:2082'
     //  Local Test
-    apiURL: 'http://localhost:2081'
+    apiURL: 'http://localhost:2081',
+    // Note `isActive` is left out and will not appear in the rendered table
+    blockCountTableFields: ['location', 'block_count'],
+    blockCountTableItems: []
   },
   mutations: {
     increment (state) {
@@ -33,12 +37,54 @@ export default new Vuex.Store({
     },
     SetSlideQueuePath (state, strTemp) {
       state.slideQueuePath = strTemp
+    },
+    ClearBlockCountTableItems (state) {
+      state.blockCountTableItems = []
+    },
+    PushBlockCountTableItems (state, objTmp) {
+      state.blockCountTableItems.push(objTmp)
     }
   },
   actions: {
+    LoadBlockCountTableData ({ commit }) {
+      return new Promise((resolve, reject) => {
+        let strFullAPICall = this.state.apiURL + '/reports'
+        console.log('Hello LoadBlockCountTableData')
+        console.log(strFullAPICall)
+        axios.post(strFullAPICall, {
+          action: 'blockcount'
+        })
+          .then(function (response) {
+            // Clear table data
+            commit('ClearBlockCountTableItems')
+            console.log()
+            console.log(response)
+            for (var i = 0; i < response.data.length; i++) {
+              // Build Chart Data Array
+              let strLocation = response.data[i].SlideDistributionLocation
+              strLocation = strLocation.replace('LOCN','')
+              commit('PushBlockCountTableItems', { isActive: false, location: strLocation, block_count: response.data[i].BlockCount })
+            } // end for
+            // Set Chart Collection Object
+            // commit('SetChartDataCollection', 'Blocks Cut', '#f87979')
+            console.log('done test')
+            resolve()
+          })
+          .catch(function (error) {
+            console.log(error)
+            reject(error)
+          })
+        console.log('promise done')
+      })
+    }
 
   },
   getters: {
-
+    BlockCountTableFields: (state, getters) => {
+      return state.blockCountTableFields
+    },
+    BlockCountTableItems: (state, getters) => {
+      return state.blockCountTableItems
+    }
   }
 })

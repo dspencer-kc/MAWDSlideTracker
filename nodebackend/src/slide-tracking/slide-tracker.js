@@ -11,7 +11,8 @@ module.exports = {
   pullSlides: pullSlides,
   getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
   histodata: histoData,
-  slideDistribution: slideDistribution
+  slideDistribution: slideDistribution,
+  reports: reports
 }
 
 function printSlides (request, response, callback) {
@@ -417,7 +418,7 @@ function slideDistribution (request, response, callback) {
 
   switch (strAction) {
     case 'CreateNewSlideDistribution':
-      console.log('Hello create new slide distr')
+      console.log('Create new slide distr')
       let strUser = request.body.userid
       let strSlideTrayID = request.body.slidetray
       let strScanLocation = request.body.scanlocation
@@ -435,12 +436,12 @@ function slideDistribution (request, response, callback) {
                     'PendingLocation',
                     '${strUser}',
                     NOW(),
-                    'Pending',
+                    'Location Being Assigned',
                     '${strScanLocation}',
                     concat('Initial insert:', now(), ' ')
                     );`
 
-      console.log(strSQL)
+      // console.log(strSQL)
       // Connect to the database
       var con = mysql.createConnection(mysqlConfig)
       con.query(strSQL, function (err, result) {
@@ -456,7 +457,7 @@ function slideDistribution (request, response, callback) {
       })
       break
     case 'MarkSlideToBeDistributed':
-      console.log('Hello Mark Slide To Be Distributed')
+      console.log('Mark Slide To Be Distributed')
       let strSlideDistID = request.body.slidedistid
       let strSlideID = request.body.slideid
 
@@ -478,7 +479,7 @@ function slideDistribution (request, response, callback) {
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
       ;`
 
-      console.log(strSQLMarkToBeDistributed)
+      // console.log(strSQLMarkToBeDistributed)
       // Connect to the database
       var con2 = mysql.createConnection(mysqlConfig)
       con2.query(strSQLMarkToBeDistributed, function (err, result) {
@@ -494,7 +495,7 @@ function slideDistribution (request, response, callback) {
       })
       break
     case 'MarkSlidesReadyForCourier':
-      console.log('Hello Mark Slide Ready For Courier')
+      console.log('Mark Slide Ready For Courier')
       let strSlideDistIDMarkForCourier = request.body.slidedistid
       let strUserMarkForCourier = request.body.userid
       let strSlideDistrLocID = request.body.slidedistrloc
@@ -514,7 +515,7 @@ function slideDistribution (request, response, callback) {
       SlideStatusID = '$rfc'
       WHERE SlideDistributionID = ${strSlideDistIDMarkForCourier};`
 
-      console.log(strSQLMarkSlidesReadyForCourier)
+      // console.log(strSQLMarkSlidesReadyForCourier)
       // Connect to the database
       var con3 = mysql.createConnection(mysqlConfig)
       con3.query(strSQLMarkSlidesReadyForCourier, function (err, result) {
@@ -529,6 +530,52 @@ function slideDistribution (request, response, callback) {
         con3.end()
       })
       break
+    default:
+      break
+  }
+}
+function reports (request, response, callback) {
+// ===========================================================================================
+//    Reports
+// ============================================================================================
+
+  console.log('reports start')
+  let strAction = request.body.action
+
+  switch (strAction) {
+    case 'blockcount':
+      // console.log('Hello report block count')
+
+      let strSQL = `SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
+      FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation
+      FROM tblSlides as subTblSlides
+      INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
+      WHERE subTblSlideDistribution.DTReadyForCourier > DATE_ADD(DATE_FORMAT(DATE(CASE WEEKDAY(CURRENT_DATE) 
+           WHEN 0 THEN SUBDATE(CURRENT_DATE,3)
+           WHEN 6 THEN SUBDATE(CURRENT_DATE,2) 
+           WHEN 5 THEN SUBDATE(CURRENT_DATE,1)
+           ELSE SUBDATE(CURRENT_DATE,1) 
+           END), '%Y-%m-%d %T'), INTERVAL 18 HOUR)
+           GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
+      GROUP BY SlideDistributionLocation;`
+
+      // console.log(strSQL)
+
+      // Connect to the database
+      var con = mysql.createConnection(mysqlConfig)
+      con.query(strSQL, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+        // On Error, close connection
+        } else {
+        // if there is no error, you have the result
+          response.json(result)
+        }
+        con.end()
+      })
+      break
+
     default:
       break
   }

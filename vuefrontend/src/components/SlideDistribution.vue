@@ -40,11 +40,8 @@
   </div>
 
 <div class="container">
- <div class="row row-flex">
-  <!--<div class="col-sm-2 mt-2" v-for="result in slides">-->
+    <blockcount> </blockcount>
 
-
-    </div>
   </div>
 </div>
 <!-- /container -->
@@ -54,11 +51,12 @@
 <script>
 import store from '../store.js'
 import axios from 'axios'
+import blockcount from './BlockCountChart.vue'
 
 export default {
 name: 'SlideDistribution',
 components: {
-  
+    blockcount  
 },
 data() {
 return {
@@ -82,6 +80,8 @@ return {
 },
 mounted() {
   console.log('Hello component created')
+  this.LoadTableData()
+  
 },
   sockets: {
       connect: function () {
@@ -182,6 +182,10 @@ methods: {
         this.strInTrayBlockCount = this.obApiResult03[0].BlockCountInTray
         // console.log(temp)
         // this.SlideDistributionID = temp.insertId
+        // Update block count table
+        console.log('Prior to load table data')
+        this.LoadTableData()
+
       }).catch((e) => {
         console.log(e)
       })
@@ -268,12 +272,20 @@ methods: {
       this.strInTraySlideCount = ''
       this.slides = {}
       console.log('success')
+      this.LoadTableData()
       })
       .catch((error) => {
       console.log(error)
       this.loading = false
       this.inputtext = 'Error'
       })
+    },
+    LoadTableData() {
+        store.dispatch('LoadBlockCountTableData').then(() => {
+        console.log('Show after promise blah')
+        // this.datacollection = store.state.objChartDataCollection
+        console.log(store.state.blockCountTableItems)
+        }) 
     }
 
 },
