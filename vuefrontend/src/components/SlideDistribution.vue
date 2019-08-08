@@ -286,11 +286,17 @@ methods: {
             // console.log(response)
             this.slidetrayID = ''
             this.blSlideTrayLoaded = false
+            this.blFirstSlideScanned = false
             this.currentslidetray = 'Waiting for Next Slide Tray'
             this.inputtext = 'Scan Slide Tray to Proceed'
             this.strInputTextLabel = 'Scan Slide Tray:'      
+            this.slidedistid = null
             this.loading = false
-
+            this.strInTrayBlockCount = ''
+            this.strInTraySlideCount = ''
+            this.slides = {}
+            //Clear Slide Distrib ID
+            this.SlideDistributionID = null
             // console.log('success')
             this.LoadTableData()
         })
@@ -310,17 +316,12 @@ methods: {
         })
         .then(response => {
           // console.log(response)
-          this.slidetrayID = ''
-          this.blSlideTrayLoaded = false
-          this.blFirstSlideScanned = false
-          this.currentslidetray = 'Waiting for Next Slide Tray'
-          this.inputtext = 'Scan Slide Tray to Proceed'
-          this.strInputTextLabel = 'Scan Slide Tray:'      
-          this.slidedistid = null
-          this.loading = false
-          this.strInTrayBlockCount = ''
-          this.strInTraySlideCount = ''
-          this.slides = {}
+            this.slidetrayID = ''
+            this.blSlideTrayLoaded = false
+            this.currentslidetray = 'Waiting for Next Slide Tray'
+            this.inputtext = 'Scan Slide Tray to Proceed'
+            this.strInputTextLabel = 'Scan Slide Tray:'      
+            this.loading = false
           //Clear Slide Distrib ID
           this.SlideDistributionID = null
           // console.log('success')
