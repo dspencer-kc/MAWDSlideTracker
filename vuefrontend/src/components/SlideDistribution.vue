@@ -5,13 +5,13 @@
   <div class="mx-auto">
 
 <!--Scan Block......................-->
-    <b-form v-on:submit.prevent="pullOrPrintSlides()" inline>
+    <b-form v-on:submit.prevent inline>
     <div class="customheadertext">
         <h3>{{strInputTextLabel}}  </h3>
     </div>
       <b-input id="InputFromScanner" class="mb-2 mr-sm-2 mb-sm-0" v-model="inputtext" disabled placeholder="Scan Slide Tray to Proceed" />
       <b-button type="submit" variant="primary lg" disabled>{{formstatuslabel}}</b-button>
-       <b-button variant="secondary sm" @click="clearCurrentSlide()">Cancel</b-button>
+       <b-button variant="secondary sm" @click="Cancel()">Cancel</b-button>
 
 
     </b-form>
@@ -157,6 +157,16 @@ methods: {
     MarkSlideToBeDistributed(strSlideID, strSlideDistributionID){
       // Call Mark Slides To Be Distributed API to mark all slides scanned as pending distribution
       console.log('Hello MarkSlideToBeDistributed')
+
+      //Only mark id slide tray is loaded
+      if (this.blSlideTrayLoaded) {
+          // Call MarkSlideToBeDistributed
+      // This calls  4 queries.
+      //  0 - set status InTrayPendingLocation of current slide, and sets slide distrib id
+      //  1 - returns all slides under the current slide distr id to show slides in current tray
+      //  2 - Returns Tray's block Count
+      //  3 - Returns Tray's Slide count
+
       axios.post(store.state.apiURL + '/slidedistribution', {
       action: 'MarkSlideToBeDistributed',
       slidedistid: strSlideDistributionID,
@@ -170,8 +180,8 @@ methods: {
         console.log('error')
         return
         }
-        console.log('MarkSlideToBeDistributed apidata:')
-        console.log(apidata)
+        // console.log('MarkSlideToBeDistributed apidata:')
+        // console.log(apidata)
         let temp = {}
         temp = apidata.data
         this.slides = temp[1]
@@ -192,9 +202,17 @@ methods: {
       .catch(function (error) {
         console.log("error:")
         console.log(error)
-      })
+      })          
+      } else {
+          this.inputtext = 'Scan Slide Tray Before Slide'
+      }
+
+      
     },
     CreateNewSlideDistribution(strSlideID){
+
+      //Clear Slide Distrib ID
+      this.SlideDistributionID = null
       // Call API to create new slide distribution for slide tray.
       console.log('Hello Create New Slide Dsitribution')
       axios.post(store.state.apiURL + '/slidedistribution', {
@@ -217,6 +235,8 @@ methods: {
         temp = apidata.data
         console.log('Create New Slide Distr Done, call MarkSlideToBeDistributed')
         this.SlideDistributionID = temp.insertId
+        console.log('Slide Distr id:')
+        console.log(temp.insertId)
         this.blFirstSlideScanned = true
         this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
 
@@ -251,18 +271,81 @@ methods: {
 
     },
     MarkSlidesReadyForCourier(strLocID){
+      //  Need to handle if first slide has not been scanned, tray needs to be assigned new location
       // Call Distribute Pending Slides API to send all pending slides to scanned location.
+
+      if (this.blFirstSlideScanned) {
+        axios.post(store.state.apiURL + '/slidedistribution', {
+        action: 'MarkSlidesReadyForCourier',
+        slidedistid: this.SlideDistributionID,
+        userid: store.state.username,
+        slidedistrloc: strLocID,
+        scanlocation: store.state.stationName
+        })
+        .then(response => {
+            // console.log(response)
+            this.slidetrayID = ''
+            this.blSlideTrayLoaded = false
+            this.currentslidetray = 'Waiting for Next Slide Tray'
+            this.inputtext = 'Scan Slide Tray to Proceed'
+            this.strInputTextLabel = 'Scan Slide Tray:'      
+            this.loading = false
+
+            // console.log('success')
+            this.LoadTableData()
+        })
+        .catch((error) => {
+            console.log(error)
+            this.loading = false
+            this.inputtext = 'Error'
+        })
+      } else {
+      // Slide tray scanned location without any slides, need to get slide distr id and assign location
       axios.post(store.state.apiURL + '/slidedistribution', {
-      action: 'MarkSlidesReadyForCourier',
-      slidedistid: this.SlideDistributionID,
-      userid: store.state.username,
-      slidedistrloc: strLocID,
-      scanlocation: store.state.stationName
-      })
-      .then(response => {
-      console.log(response)
+        action: 'AssignTrayNewLocation',
+        userid: store.state.username,
+        slidedistrloc: strLocID,
+        scanlocation: store.state.stationName,
+        slidetray: this.slidetrayID
+        })
+        .then(response => {
+          // console.log(response)
+          this.slidetrayID = ''
+          this.blSlideTrayLoaded = false
+          this.blFirstSlideScanned = false
+          this.currentslidetray = 'Waiting for Next Slide Tray'
+          this.inputtext = 'Scan Slide Tray to Proceed'
+          this.strInputTextLabel = 'Scan Slide Tray:'      
+          this.slidedistid = null
+          this.loading = false
+          this.strInTrayBlockCount = ''
+          this.strInTraySlideCount = ''
+          this.slides = {}
+          //Clear Slide Distrib ID
+          this.SlideDistributionID = null
+          // console.log('success')
+          this.LoadTableData()
+        })
+        .catch((error) => {
+            console.log(error)
+            this.loading = false
+            this.inputtext = 'Error'
+        })  
+      }
+      
+    },
+    LoadTableData() {
+        store.dispatch('LoadBlockCountTableData').then(() => {
+        // console.log('Show after promise blah')
+        // this.datacollection = store.state.objChartDataCollection
+        // console.log(store.state.blockCountTableItems)
+        }) 
+    },
+    Cancel() {
+      console.log('hello cancel')
       this.slidetrayID = ''
       this.blSlideTrayLoaded = false
+      this.blFirstSlideScanned = false
       this.currentslidetray = 'Waiting for Next Slide Tray'
       this.inputtext = 'Scan Slide Tray to Proceed'
       this.strInputTextLabel = 'Scan Slide Tray:'      
@@ -271,21 +354,7 @@ methods: {
       this.strInTrayBlockCount = ''
       this.strInTraySlideCount = ''
       this.slides = {}
-      console.log('success')
-      this.LoadTableData()
-      })
-      .catch((error) => {
-      console.log(error)
-      this.loading = false
-      this.inputtext = 'Error'
-      })
-    },
-    LoadTableData() {
-        store.dispatch('LoadBlockCountTableData').then(() => {
-        console.log('Show after promise blah')
-        // this.datacollection = store.state.objChartDataCollection
-        console.log(store.state.blockCountTableItems)
-        }) 
+      this.SlideDistributionID = null
     }
 
 },

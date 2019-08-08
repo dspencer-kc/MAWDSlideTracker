@@ -62,7 +62,7 @@ export default new Vuex.Store({
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
               let strLocation = response.data[i].SlideDistributionLocation
-              strLocation = strLocation.replace('LOCN','')
+              strLocation = strLocation.replace('LOCN', '')
               commit('PushBlockCountTableItems', { isActive: false, location: strLocation, block_count: response.data[i].BlockCount })
             } // end for
             // Set Chart Collection Object

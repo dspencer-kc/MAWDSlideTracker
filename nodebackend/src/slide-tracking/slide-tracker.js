@@ -459,6 +459,8 @@ function slideDistribution (request, response, callback) {
     case 'MarkSlideToBeDistributed':
       console.log('Mark Slide To Be Distributed')
       let strSlideDistID = request.body.slidedistid
+      console.log('Slide Distr ID:')
+      console.log(strSlideDistID)
       let strSlideID = request.body.slideid
 
       let strSQLMarkToBeDistributed = `UPDATE OPENLIS.tblSlides
@@ -528,6 +530,37 @@ function slideDistribution (request, response, callback) {
           response.json(result)
         }
         con3.end()
+      })
+      break
+    case 'AssignTrayNewLocation':
+      console.log('AssignTrayNewLocation')
+      let strUserTrayNewLoc = request.body.userid
+      let strSlideDistrLocIDForST = request.body.slidedistrloc
+      let strScanLocationForST = request.body.scanlocation
+      let strSlideTrayIDForST = request.body.slidetray
+
+      let strSQLAssignNewLoc = `UPDATE OPENLIS.tblSlideDistribution as tblUpdate
+      Inner Join (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDForST}') as tblB ON tblUpdate.SlideDistributionID = tblB.SlideDistID
+      SET
+      tblUpdate.SlideDistributionLocation = '${strSlideDistrLocIDForST}',
+      tblUpdate.Audit = CONCAT(tblUpdate.Audit, 'Assigned location:',NOW(), '.'),
+      tblUpdate.StationLocationScanned = '${strScanLocationForST}',
+      tblUpdate.WhoSetLocation = '${strUserTrayNewLoc}'
+      WHERE tblUpdate.SlideDistributionID = SlideDistID;`
+
+      console.log(strSQLAssignNewLoc)
+      // Connect to the database
+      var con4 = mysql.createConnection(mysqlConfig)
+      con4.query(strSQLAssignNewLoc, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con4.end()
       })
       break
     default:
