@@ -12,6 +12,18 @@
       <b-input id="InputFromScanner" class="mb-2 mr-sm-2 mb-sm-0" v-model="inputtext" disabled placeholder="Scan Slide Tray to Proceed" />
       <b-button type="submit" variant="primary lg" disabled>{{formstatuslabel}}</b-button>
        <b-button variant="secondary sm" @click="Cancel()">Cancel</b-button>
+        <div class = 'pl-5'>
+          <b-form-group>
+          <b-form-radio-group
+              id="rdSlideTrayBehavior"
+              v-model="rdSlideTrayBehaviorSelected"
+              :options="rdSlideTrayBehaviorOptions"
+              :disabled="blRdSlideDisabled"
+              buttons
+              name="radios-btn-default"
+          ></b-form-radio-group>
+          </b-form-group>
+        </div>
 
 
     </b-form>
@@ -75,7 +87,13 @@ return {
   obApiResult02: {},
   obApiResult03: {},
   strInTrayBlockCount: '',
-  strInTraySlideCount: ''
+  strInTraySlideCount: '',
+  rdSlideTrayBehaviorSelected: 'NewSlideTray',
+  rdSlideTrayBehaviorOptions: [
+    { text: 'New Slide Tray', value: 'NewSlideTray' },
+    { text: 'Edit Existing Slide Tray', value: 'EditExisting' },
+  ],
+  blRdSlideDisabled: false
 }
 },
 mounted() {
@@ -142,10 +160,8 @@ methods: {
 
         if (this.blSlideTrayLoaded) {
           if (this.blFirstSlideScanned) {
-            console.log('hello')
             this.MarkSlideToBeDistributed(strSlideID, this.SlideDistributionID)
           } else {
-            console.log('hello')
             this.CreateNewSlideDistribution(strSlideID)
             // call this.MarkSlideToBeDistributed(strSlideID) after new slide distribution found
             // this.blFirstSlideScanned = true
@@ -205,54 +221,121 @@ methods: {
       })          
       } else {
           this.inputtext = 'Scan Slide Tray Before Slide'
-      }
-
-      
+      }      
     },
     CreateNewSlideDistribution(strSlideID){
+      //Only create new slide distribution if New Slide Tray, otherwise, load existing slide tray.  
 
       //Clear Slide Distrib ID
       this.SlideDistributionID = null
-      // Call API to create new slide distribution for slide tray.
-      console.log('Hello Create New Slide Dsitribution')
-      axios.post(store.state.apiURL + '/slidedistribution', {
-      action: 'CreateNewSlideDistribution',
-      userid: store.state.username,
-      slidetray: this.slidetrayID,
-      scanlocation: store.state.stationName
-      })
-      .then(apidata => {
-        this.loading = false;
-        this.error_message = '';
-        if (apidata.errorcode) {
-        this.error_message = `Error creating new slide distribution.`
-        console.log('error')
-        return
-        }
-        // console.log('apidata:')
-        // console.log(apidata)
-        let temp = {}
-        temp = apidata.data
-        console.log('Create New Slide Distr Done, call MarkSlideToBeDistributed')
-        this.SlideDistributionID = temp.insertId
-        console.log('Slide Distr id:')
-        console.log(temp.insertId)
-        this.blFirstSlideScanned = true
-        this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
 
-      }).catch((e) => {
-        console.log(e)
-      })
-      .catch(function (error) {
-        console.log("error:")
-        console.log(error)
-      })
+
+      switch (this.rdSlideTrayBehaviorSelected) {
+        case 'EditExisting':
+          console.log('hello edit existing')
+
+          break
+      
+        default:
+          // Call API to create new slide distribution for slide tray.
+          console.log('Hello Create New Slide Dsitribution')
+          axios.post(store.state.apiURL + '/slidedistribution', {
+          action: 'CreateNewSlideDistribution',
+          userid: store.state.username,
+          slidetray: this.slidetrayID,
+          scanlocation: store.state.stationName
+          })
+          .then(apidata => {
+            this.loading = false;
+            this.error_message = '';
+            if (apidata.errorcode) {
+            this.error_message = `Error creating new slide distribution.`
+            console.log('error')
+            return
+            }
+            // console.log('apidata:')
+            // console.log(apidata)
+            let temp = {}
+            temp = apidata.data
+            console.log('Create New Slide Distr Done, call MarkSlideToBeDistributed')
+            this.SlideDistributionID = temp.insertId
+            console.log('Slide Distr id:')
+            console.log(temp.insertId)
+            this.blFirstSlideScanned = true
+            this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
+
+          }).catch((e) => {
+            console.log(e)
+          })
+          .catch(function (error) {
+            console.log("error:")
+            console.log(error)
+          })
+          break
+      }
     },
     ScanSlideTray(strSlideTrayID){
         if (this.blSlideTrayLoaded === false) {
             this.blSlideTrayLoaded = true
             this.slidetrayID = strSlideTrayID
             this.currentslidetray = this.slidetrayID
+
+            if (this.rdSlideTrayBehaviorSelected = 'EditExisting') {
+             
+              // Get slidedistr id from slide tray and load slides
+              console.log('Hello Edit Existing')
+              this.loading = 'true'
+              axios.post(store.state.apiURL + '/slidedistribution', {
+              action: 'LoadSlideTray',
+              userid: store.state.username,
+              slidetray: this.slidetrayID,
+              scanlocation: store.state.stationName
+              })
+              .then(apidata => {
+                this.loading = false;
+                this.error_message = '';
+                if (apidata.errorcode) {
+                this.error_message = `Error loading existing slide distr.`
+                console.log('error')
+                return
+                }
+                // console.log('apidata:')
+                // console.log(apidata)
+                let temp = {}
+                temp = apidata.data
+
+                console.log('Hi Drew')
+                console.log(temp)
+                console.log(temp[0].CurrentSlideDistID)
+                this.SlideDistributionID = temp[0].CurrentSlideDistID
+                console.log('Current Slide Distr id:')
+                console.log(this.SlideDistributionID)
+
+                //Load Slide Tray now
+                this.slides = temp[1]
+                // let aryTmpSlidesInTray = {}
+                this.obApiResult02 = temp[2]
+                this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
+                this.obApiResult03 = temp[3]
+                this.strInTrayBlockCount = this.obApiResult03[0].BlockCountInTray
+                // console.log(temp)
+                // this.SlideDistributionID = temp.insertId
+                // Update block count table
+                console.log('Prior to load table data')
+                this.LoadTableData()
+                
+
+              }).catch((e) => {
+                console.log(e)
+              })
+              .catch(function (error) {
+                console.log("error:")
+                console.log(error)
+              })
+
+            } else {
+
+            }
             this.inputtext = 'Scan Slide to Proceed'
             this.strInputTextLabel = 'Scan Slide: '
 

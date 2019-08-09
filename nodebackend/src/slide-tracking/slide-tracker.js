@@ -415,13 +415,15 @@ function slideDistribution (request, response, callback) {
 
   console.log('slide distribution start')
   let strAction = request.body.action
+  let strUser = request.body.userid
+  let strScanLocation = request.body.scanlocation
 
   switch (strAction) {
     case 'CreateNewSlideDistribution':
       console.log('Create new slide distr')
-      let strUser = request.body.userid
+      // let strUser = request.body.userid
       let strSlideTrayID = request.body.slidetray
-      let strScanLocation = request.body.scanlocation
+      // let strScanLocation = request.body.scanlocation
 
       let strSQL = `INSERT INTO OPENLIS.tblSlideDistribution
                     (SlideTray,
@@ -563,6 +565,44 @@ function slideDistribution (request, response, callback) {
         con4.end()
       })
       break
+    case 'LoadSlideTray':
+      console.log('Load Existing Slide Tray')
+      // let strUser = request.body.userid
+      let strSlideTrayIDExistingST = request.body.slidetray
+      // let strScanLocation = request.body.scanlocation
+
+      let strSQLExistingST = `
+      SELECT max(subTblSlideDistribution.SlideDistributionID) as CurrentSlideDistID 
+      FROM tblSlideDistribution as subTblSlideDistribution
+      WHERE SlideTray = '${strSlideTrayIDExistingST}';      
+      SELECT SlideID 
+      FROM tblSlides
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}');
+      SELECT Count(SlideID) AS 'SlidesInTray'
+      FROM tblSlides
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}');
+      SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
+      FROM (SELECT subTblSlides.BlockID AS subBlockID  
+            FROM tblSlides as subTblSlides
+            WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}')
+            GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
+      ;`
+
+      // console.log(strSQL)
+      // Connect to the database
+      var con5 = mysql.createConnection(mysqlConfig)
+      con5.query(strSQLExistingST, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con5.end()
+      })
+      break
     default:
       break
   }
@@ -612,4 +652,19 @@ function reports (request, response, callback) {
     default:
       break
   }
+}
+function DBQuery (strSQL, response) {
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      response.send(err)
+      console.log(err)
+      // On Error, close connection
+    } else {
+      // if there is no error, you have the result
+      response.json(result)
+    }
+    con.end()
+  })
 }
