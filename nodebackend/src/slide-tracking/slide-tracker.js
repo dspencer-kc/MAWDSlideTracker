@@ -472,7 +472,32 @@ function slideDistribution (request, response, callback) {
       SlideStatusID = '$itpl',
       SlideDistributionID = ${strSlideDistID}
       WHERE SlideID = '${strSlideID}';
-      SELECT SlideID from tblSlides WHERE SlideDistributionID = ${strSlideDistID};
+      /*qrySlideCountInTrayBySlideDistr*/
+        SELECT 
+            tblSlides.SlideID,
+            qrySubSlideCountsByAcc.CaseSlidesInTray,
+            qrySubSlideCountsByAcc.CaseSlidesTotal,
+            qrySubSlideCountsByAcc.CaseSlidesNotInTray
+        FROM
+            tblSlides
+                INNER JOIN
+            (SELECT 
+                qrySlideCountInTrayByCase.AccessionID,
+                    qrySlideCountInTrayByCase.CaseSlidesInTray,
+                    vwSlideCountByCase.CaseSlidesTotal,
+                    (vwSlideCountByCase.CaseSlidesTotal - qrySlideCountInTrayByCase.CaseSlidesInTray) AS CaseSlidesNotInTray
+            FROM
+                (SELECT 
+                tblSlides.AccessionID,
+                    COUNT(tblSlides.SlideID) AS CaseSlidesInTray
+            FROM
+                tblSlides
+            WHERE
+                (((tblSlides.SlideDistributionID) = ${strSlideDistID}))
+            GROUP BY tblSlides.AccessionID , tblSlides.SlideCount) AS qrySlideCountInTrayByCase
+            INNER JOIN vwSlideCountByCase ON qrySlideCountInTrayByCase.AccessionID = vwSlideCountByCase.AccessionID) AS qrySubSlideCountsByAcc ON qrySubSlideCountsByAcc.AccessionID = tblSlides.AccessionID
+        WHERE
+            tblSlides.SlideDistributionID = ${strSlideDistID};
       SELECT Count(SlideID) AS 'SlidesInTray'
       FROM tblSlides
       WHERE SlideDistributionID = ${strSlideDistID};
@@ -572,12 +597,36 @@ function slideDistribution (request, response, callback) {
       // let strScanLocation = request.body.scanlocation
 
       let strSQLExistingST = `
+      /*Query01*/
       SELECT max(subTblSlideDistribution.SlideDistributionID) as CurrentSlideDistID 
       FROM tblSlideDistribution as subTblSlideDistribution
-      WHERE SlideTray = '${strSlideTrayIDExistingST}';      
-      SELECT SlideID 
-      FROM tblSlides
-      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');
+      WHERE SlideTray = '${strSlideTrayIDExistingST}'; 
+      /*qrySlideCountInTrayBySlideTray*/
+      SELECT 
+          tblSlides.SlideID,
+          qrySubSlideCountsByAcc.CaseSlidesInTray,
+          qrySubSlideCountsByAcc.CaseSlidesTotal,
+          qrySubSlideCountsByAcc.CaseSlidesNotInTray
+      FROM
+          tblSlides
+              INNER JOIN
+          (SELECT 
+              qrySlideCountInTrayByCase.AccessionID,
+                  qrySlideCountInTrayByCase.CaseSlidesInTray,
+                  vwSlideCountByCase.CaseSlidesTotal,
+                  (vwSlideCountByCase.CaseSlidesTotal - qrySlideCountInTrayByCase.CaseSlidesInTray) AS CaseSlidesNotInTray
+          FROM
+              (SELECT 
+              tblSlides.AccessionID,
+                  COUNT(tblSlides.SlideID) AS CaseSlidesInTray
+          FROM
+              tblSlides
+          WHERE
+              (((tblSlides.SlideDistributionID) = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}')))
+          GROUP BY tblSlides.AccessionID , tblSlides.SlideCount) AS qrySlideCountInTrayByCase
+          INNER JOIN vwSlideCountByCase ON qrySlideCountInTrayByCase.AccessionID = vwSlideCountByCase.AccessionID) AS qrySubSlideCountsByAcc ON qrySubSlideCountsByAcc.AccessionID = tblSlides.AccessionID
+      WHERE
+          tblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');     
       SELECT Count(SlideID) AS 'SlidesInTray'
       FROM tblSlides
       WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');

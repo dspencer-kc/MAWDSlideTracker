@@ -40,16 +40,35 @@
     <h5>Current Slide Tray: {{currentslidetray}} </h5>
     <h5>Slide Count in Current Tray: {{strInTraySlideCount}}</h5>
     <h5>Block Count in Current Tray: {{strInTrayBlockCount}}</h5>
-    <h5>Slides in Current Tray: </h5>
-    <ul>
-        <div class="PendingSlides" v-for="result in slides">
-        <li>
-            {{ result.SlideID }}
-        </li>
-        </div>
-    </ul>
+    <br>
+    <h5>Slide Details in Current Tray: </h5>
   </div>
+    <table class="table table-dark">
+      <tr>
+        <th>Slide ID</th>
+        <th>Case Slides In Tray</th> 
+        <th>Case Slides Total</th>
+        <th>Case Slides Not In Tray</th>
+      </tr>
+      <template v-for="result in slides">        
+      <tr>
+        <td>{{ result.SlideID }}</td>
+        <td>{{ result.CaseSlidesInTray }}</td> 
+        <td>{{ result.CaseSlidesTotal }}</td>
+        <td>{{ result.CaseSlidesNotInTray }}</td>
+      </tr>
+      </template>
+    </table>
+    <ul>
+       
+    </ul>
+  
 
+<br>
+<br>
+<div class="customsubheadertext">
+<h5> Block Count:</h5>
+</div>
 <div class="container">
     <blockcount> </blockcount>
 
@@ -198,6 +217,7 @@ methods: {
         // console.log(apidata)
         let temp = {}
         temp = apidata.data
+        console.log(temp)
         this.slides = temp[1]
         // let aryTmpSlidesInTray = {}
         this.obApiResult02 = temp[2]
@@ -301,8 +321,9 @@ methods: {
                 // console.log(apidata)
                 let temp = {}
                 temp = apidata.data
-
-                // console.log(temp)
+                
+                console.log('Slide Result Object:')
+                console.log(temp)
                 // console.log(temp[0][0].CurrentSlideDistID)
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
                 // console.log('Current Slide Distr id:')
