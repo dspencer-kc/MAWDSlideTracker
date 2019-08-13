@@ -322,8 +322,8 @@ methods: {
                 let temp = {}
                 temp = apidata.data
                 
-                console.log('Slide Result Object:')
-                console.log(temp)
+                // console.log('Slide Result Object:')
+                // console.log(temp)
                 // console.log(temp[0][0].CurrentSlideDistID)
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
                 // console.log('Current Slide Distr id:')
