@@ -577,18 +577,18 @@ function slideDistribution (request, response, callback) {
       WHERE SlideTray = '${strSlideTrayIDExistingST}';      
       SELECT SlideID 
       FROM tblSlides
-      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}');
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');
       SELECT Count(SlideID) AS 'SlidesInTray'
       FROM tblSlides
-      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}');
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
       FROM (SELECT subTblSlides.BlockID AS subBlockID  
             FROM tblSlides as subTblSlides
-            WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}')
+            WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}')
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
       ;`
 
-      // console.log(strSQL)
+      console.log(strSQLExistingST)
       // Connect to the database
       var con5 = mysql.createConnection(mysqlConfig)
       con5.query(strSQLExistingST, function (err, result) {
