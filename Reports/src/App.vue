@@ -11,9 +11,6 @@
           <b-link class="nav-link" to="home">Home</b-link>
       </li>
       <li class="nav-item">
-        <b-link class="nav-link" to="/blockcount">Block Count</b-link>
-      </li>
-      <li class="nav-item">
         <b-link class="nav-link" to="/blocksbytech">Blocks By Tech</b-link>
       </li>
       <li class="nav-item">
