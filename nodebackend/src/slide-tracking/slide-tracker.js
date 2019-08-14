@@ -702,18 +702,18 @@ function reports (request, response, callback) {
       break
   }
 }
-function DBQuery (strSQL, response) {
-  // Connect to the database
-  var con = mysql.createConnection(mysqlConfig)
-  con.query(strSQL, function (err, result) {
-    if (err) {
-      response.send(err)
-      console.log(err)
-      // On Error, close connection
-    } else {
-      // if there is no error, you have the result
-      response.json(result)
-    }
-    con.end()
-  })
-}
+// function DBQuery (strSQL, response) {
+//  // Connect to the database
+//  var con = mysql.createConnection(mysqlConfig)
+//  con.query(strSQL, function (err, result) {
+//    if (err) {
+//      response.send(err)
+//      console.log(err)
+//      // On Error, close connection
+//    } else {
+//      // if there is no error, you have the result
+//      response.json(result)
+//    }
+//    con.end()
+//  })
+//  }
