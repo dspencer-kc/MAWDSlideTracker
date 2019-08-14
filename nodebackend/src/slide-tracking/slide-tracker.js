@@ -10,7 +10,9 @@ module.exports = {
   updateSlideToPrint: updateSlideToPrint,
   pullSlides: pullSlides,
   getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
-  histodata: histoData
+  histodata: histoData,
+  slideDistribution: slideDistribution,
+  reports: reports
 }
 
 function printSlides (request, response, callback) {
@@ -401,6 +403,266 @@ function histoData (request, response, callback) {
     // On Error, close connection
     } else {
     // if there is no error, you have the result
+      response.json(result)
+    }
+    con.end()
+  })
+}
+function slideDistribution (request, response, callback) {
+  // ===========================================================================================
+  //    Slide Distribution
+  // ============================================================================================
+
+  console.log('slide distribution start')
+  let strAction = request.body.action
+  let strUser = request.body.userid
+  let strScanLocation = request.body.scanlocation
+
+  switch (strAction) {
+    case 'CreateNewSlideDistribution':
+      console.log('Create new slide distr')
+      // let strUser = request.body.userid
+      let strSlideTrayID = request.body.slidetray
+      // let strScanLocation = request.body.scanlocation
+
+      let strSQL = `INSERT INTO OPENLIS.tblSlideDistribution
+                    (SlideTray,
+                    Status,
+                    WhoMarkedReadyForCourier,
+                    DTReadyForCourier,
+                    SlideDistributionLocation,
+                    StationSlideTrayScanned,
+                    Audit)
+                    VALUES
+                    ('${strSlideTrayID}',
+                    'PendingLocation',
+                    '${strUser}',
+                    NOW(),
+                    'Location Being Assigned',
+                    '${strScanLocation}',
+                    concat('Initial insert:', now(), ' ')
+                    );`
+
+      // console.log(strSQL)
+      // Connect to the database
+      var con = mysql.createConnection(mysqlConfig)
+      con.query(strSQL, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con.end()
+      })
+      break
+    case 'MarkSlideToBeDistributed':
+      console.log('Mark Slide To Be Distributed')
+      let strSlideDistID = request.body.slidedistid
+      console.log('Slide Distr ID:')
+      console.log(strSlideDistID)
+      let strSlideID = request.body.slideid
+
+      let strSQLMarkToBeDistributed = `UPDATE OPENLIS.tblSlides
+      SET
+      Status = 'InTrayPendingLocation',
+      Audit = CONCAT(Audit, 'Marked in tray:',NOW(), '.'),
+      SlideStatusID = '$itpl',
+      SlideDistributionID = ${strSlideDistID}
+      WHERE SlideID = '${strSlideID}';
+      SELECT SlideID from tblSlides WHERE SlideDistributionID = ${strSlideDistID};
+      SELECT Count(SlideID) AS 'SlidesInTray'
+      FROM tblSlides
+      WHERE SlideDistributionID = ${strSlideDistID};
+      SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
+      FROM (SELECT subTblSlides.BlockID AS subBlockID  
+            FROM tblSlides as subTblSlides
+            WHERE subTblSlides.SlideDistributionID = ${strSlideDistID}
+            GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
+      ;`
+
+      // console.log(strSQLMarkToBeDistributed)
+      // Connect to the database
+      var con2 = mysql.createConnection(mysqlConfig)
+      con2.query(strSQLMarkToBeDistributed, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con2.end()
+      })
+      break
+    case 'MarkSlidesReadyForCourier':
+      console.log('Mark Slide Ready For Courier')
+      let strSlideDistIDMarkForCourier = request.body.slidedistid
+      let strUserMarkForCourier = request.body.userid
+      let strSlideDistrLocID = request.body.slidedistrloc
+      let strScanLocationMarkForCourier = request.body.scanlocation
+
+      let strSQLMarkSlidesReadyForCourier = `UPDATE OPENLIS.tblSlideDistribution
+      SET
+      Status = 'Ready For Courier',
+      DTReadyForCourier = NOW(),
+      SlideDistributionLocation = '${strSlideDistrLocID}',
+      Audit = CONCAT(Audit, 'Assigned location, marked ready for courier:',NOW(), '.'),
+      StationLocationScanned = '${strScanLocationMarkForCourier}',
+      WhoSetLocation = '${strUserMarkForCourier}'
+      WHERE SlideDistributionID = ${strSlideDistIDMarkForCourier};
+      UPDATE OPENLIS.tblSlides
+      SET
+      SlideStatusID = '$rfc'
+      WHERE SlideDistributionID = ${strSlideDistIDMarkForCourier};`
+
+      // console.log(strSQLMarkSlidesReadyForCourier)
+      // Connect to the database
+      var con3 = mysql.createConnection(mysqlConfig)
+      con3.query(strSQLMarkSlidesReadyForCourier, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con3.end()
+      })
+      break
+    case 'AssignTrayNewLocation':
+      console.log('AssignTrayNewLocation')
+      let strUserTrayNewLoc = request.body.userid
+      let strSlideDistrLocIDForST = request.body.slidedistrloc
+      let strScanLocationForST = request.body.scanlocation
+      let strSlideTrayIDForST = request.body.slidetray
+
+      let strSQLAssignNewLoc = `UPDATE OPENLIS.tblSlideDistribution as tblUpdate
+      Inner Join (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDForST}') as tblB ON tblUpdate.SlideDistributionID = tblB.SlideDistID
+      SET
+      tblUpdate.SlideDistributionLocation = '${strSlideDistrLocIDForST}',
+      tblUpdate.Audit = CONCAT(tblUpdate.Audit, 'Assigned location:',NOW(), '.'),
+      tblUpdate.StationLocationScanned = '${strScanLocationForST}',
+      tblUpdate.WhoSetLocation = '${strUserTrayNewLoc}'
+      WHERE tblUpdate.SlideDistributionID = SlideDistID;`
+
+      console.log(strSQLAssignNewLoc)
+      // Connect to the database
+      var con4 = mysql.createConnection(mysqlConfig)
+      con4.query(strSQLAssignNewLoc, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con4.end()
+      })
+      break
+    case 'LoadSlideTray':
+      console.log('Load Existing Slide Tray')
+      // let strUser = request.body.userid
+      let strSlideTrayIDExistingST = request.body.slidetray
+      // let strScanLocation = request.body.scanlocation
+
+      let strSQLExistingST = `
+      SELECT max(subTblSlideDistribution.SlideDistributionID) as CurrentSlideDistID 
+      FROM tblSlideDistribution as subTblSlideDistribution
+      WHERE SlideTray = '${strSlideTrayIDExistingST}';      
+      SELECT SlideID 
+      FROM tblSlides
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}');
+      SELECT Count(SlideID) AS 'SlidesInTray'
+      FROM tblSlides
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}');
+      SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
+      FROM (SELECT subTblSlides.BlockID AS subBlockID  
+            FROM tblSlides as subTblSlides
+            WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '  ${strSlideTrayIDExistingST}')
+            GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
+      ;`
+
+      // console.log(strSQL)
+      // Connect to the database
+      var con5 = mysql.createConnection(mysqlConfig)
+      con5.query(strSQLExistingST, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+          // On Error, close connection
+        } else {
+          // if there is no error, you have the result
+          response.json(result)
+        }
+        con5.end()
+      })
+      break
+    default:
+      break
+  }
+}
+function reports (request, response, callback) {
+// ===========================================================================================
+//    Reports
+// ============================================================================================
+
+  console.log('reports start')
+  let strAction = request.body.action
+
+  switch (strAction) {
+    case 'blockcount':
+      // console.log('Hello report block count')
+
+      let strSQL = `SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
+      FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation
+      FROM tblSlides as subTblSlides
+      INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
+      WHERE subTblSlideDistribution.DTReadyForCourier > DATE_ADD(DATE_FORMAT(DATE(CASE WEEKDAY(CURRENT_DATE) 
+           WHEN 0 THEN SUBDATE(CURRENT_DATE,3)
+           WHEN 6 THEN SUBDATE(CURRENT_DATE,2) 
+           WHEN 5 THEN SUBDATE(CURRENT_DATE,1)
+           ELSE SUBDATE(CURRENT_DATE,1) 
+           END), '%Y-%m-%d %T'), INTERVAL 18 HOUR)
+           GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
+      GROUP BY SlideDistributionLocation;`
+
+      // console.log(strSQL)
+
+      // Connect to the database
+      var con = mysql.createConnection(mysqlConfig)
+      con.query(strSQL, function (err, result) {
+        if (err) {
+          response.send(err)
+          console.log(err)
+        // On Error, close connection
+        } else {
+        // if there is no error, you have the result
+          response.json(result)
+        }
+        con.end()
+      })
+      break
+
+    default:
+      break
+  }
+}
+function DBQuery (strSQL, response) {
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      response.send(err)
+      console.log(err)
+      // On Error, close connection
+    } else {
+      // if there is no error, you have the result
       response.json(result)
     }
     con.end()

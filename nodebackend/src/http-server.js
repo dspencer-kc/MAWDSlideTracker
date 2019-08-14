@@ -50,6 +50,20 @@ app.post('/histodata', function (request, response) {
   })
 })
 
+app.post('/slidedistribution', function (request, response) {
+  slideTracker.slideDistribution(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/reports', function (request, response) {
+  slideTracker.reports(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
 // all routes prefixed with /slidetracker
 app.use('/slidetracker', router)
 console.log('slideTrackerDefault')

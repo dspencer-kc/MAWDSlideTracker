@@ -1,8 +1,8 @@
-// BlocksByTech.vue
+// Block Count.vue
 
 <template>
     <div>
-    <h1>Blocks By Tech</h1>
+    <h1>Block Count</h1>
     <bar-chart :chart-data="ChartData" :width="5" :height="2"></bar-chart>
     </div>
     
@@ -11,8 +11,9 @@
 <script>
 import store from '../store.js'
 import BarChart from './BarChart.js'
+
 export default {
-name: 'BlocksByTech',
+name: 'BlockCount',
 components: {
   BarChart
 },
