@@ -40,6 +40,8 @@ function printSlides (request, response, callback) {
   //
   //= ===========================================================================================
   // print the slides here
+
+  console.log('Hello print slides')
   console.log(request)
   var strLocationID = 'unknown'
   var strSQLUpdateStatement = ''

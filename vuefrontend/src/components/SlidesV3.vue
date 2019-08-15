@@ -287,10 +287,11 @@ export default {
 
       })
       .then(function (response) {
-      console.log(response);
+        console.log('slides printed')
+      console.log(response)
       })
       .catch(function (error) {
-      console.log(error);
+      console.log(error)
       });
 
     //Done printing, scan new block
