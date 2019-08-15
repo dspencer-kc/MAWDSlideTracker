@@ -10,7 +10,6 @@ require('dotenv').load()
 var httpServer = require('./http-server')
 var port = process.env.HttpPort
 
-
 httpServer.start(port, function (err, message) {
   if (err) console.log(err)
   console.log(message)
