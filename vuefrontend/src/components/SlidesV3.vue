@@ -279,7 +279,7 @@ export default {
     //Add printRequestedBy
     console.log(store.state.slideQueuePath)
 
-      axios.post(strApiUrl + '/printslides', {
+      axios.post(store.state.apiURL + '/printslides', {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: store.state.username,
