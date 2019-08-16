@@ -279,7 +279,7 @@ export default {
     //Add printRequestedBy
     console.log(store.state.slideQueuePath)
 
-      axios.post(strApiUrl + '/printslides', {
+      axios.post(store.state.apiURL + '/printslides', {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: store.state.username,
@@ -287,10 +287,11 @@ export default {
 
       })
       .then(function (response) {
-      console.log(response);
+        console.log('slides printed')
+      console.log(response)
       })
       .catch(function (error) {
-      console.log(error);
+      console.log(error)
       });
 
     //Done printing, scan new block

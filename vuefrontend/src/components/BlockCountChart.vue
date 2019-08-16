@@ -8,7 +8,7 @@
 <template>
 <div class="container">
 
-  <b-table striped hover dark :items="arBlockCountTableItems" :fields="arBlockCountTableFields"></b-table>
+  <b-table striped hover dark small borderless :items="arBlockCountTableItems" :fields="arBlockCountTableFields"></b-table>
 
 
 </div>  <!-- /container -->

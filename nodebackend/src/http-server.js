@@ -66,7 +66,7 @@ app.post('/reports', function (request, response) {
 
 // all routes prefixed with /slidetracker
 app.use('/slidetracker', router)
-console.log('slideTrackerDefault')
+console.log('Slide Tracker Default Route')
 // using router.get() to prefix our path
 // url: http://localhost:3000/slidetracker/
 router.get('/', (request, response) => {

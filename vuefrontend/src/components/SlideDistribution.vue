@@ -18,7 +18,6 @@
               id="rdSlideTrayBehavior"
               v-model="rdSlideTrayBehaviorSelected"
               :options="rdSlideTrayBehaviorOptions"
-              :disabled="blRdSlideDisabled"
               buttons
               name="radios-btn-default"
           ></b-form-radio-group>
@@ -38,24 +37,39 @@
   
   <br>
   <div class="customsubheadertext">
-    <h5>Current Slide Tray: {{currentslidetray}} </h5>
-    <h5>Slide Count in Current Tray: {{strInTraySlideCount}}</h5>
-    <h5>Block Count in Current Tray: {{strInTrayBlockCount}}</h5>
-    <h5>Slides in Current Tray: </h5>
-    <ul>
-        <div class="PendingSlides" v-for="result in slides">
-        <li>
-            {{ result.SlideID }}
-        </li>
-        </div>
-    </ul>
+    <p>Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
+    <h5>Slide Details in Current Tray: </h5>
   </div>
 
-<div class="container">
+  <div class='col-xs-6'>
+
+
+    <table  class="table table-dark ">
+      <tr>
+        <th>Slide ID</th>
+        <th>Case Slides In Tray</th> 
+        <th>Case Slides Total</th>
+        <th>Case Slides Not In Tray</th>
+      </tr>
+      <template v-for="result in slides">        
+      <tr>
+        <td>{{ result.SlideID }}</td>
+        <td>{{ result.CaseSlidesInTray }}</td> 
+        <td>{{ result.CaseSlidesTotal }}</td>
+        <td>{{ result.CaseSlidesNotInTray }}</td>
+      </tr>
+      </template>
+    </table>
+    <ul>
+       
+    </ul>
+  
+
     <blockcount> </blockcount>
 
-  </div>
+  
 </div>
+  </div>
 <!-- /container -->
     
 </template>
@@ -90,10 +104,9 @@ return {
   strInTraySlideCount: '',
   rdSlideTrayBehaviorSelected: 'NewSlideTray',
   rdSlideTrayBehaviorOptions: [
-    { text: 'New Slide Tray', value: 'NewSlideTray' },
-    { text: 'Edit Existing Slide Tray', value: 'EditExisting' },
-  ],
-  blRdSlideDisabled: false
+    { text: 'New Slide Tray', value: 'NewSlideTray', disabled: false },
+    { text: 'Edit Existing Slide Tray', value: 'EditExisting', disabled: false },
+  ]
 }
 },
 mounted() {
@@ -200,6 +213,7 @@ methods: {
         // console.log(apidata)
         let temp = {}
         temp = apidata.data
+        console.log(temp)
         this.slides = temp[1]
         // let aryTmpSlidesInTray = {}
         this.obApiResult02 = temp[2]
@@ -280,7 +294,7 @@ methods: {
             this.slidetrayID = strSlideTrayID
             this.currentslidetray = this.slidetrayID
 
-            if (this.rdSlideTrayBehaviorSelected = 'EditExisting') {
+            if (this.rdSlideTrayBehaviorSelected === 'EditExisting') {
              
               // Get slidedistr id from slide tray and load slides
               console.log('Hello Edit Existing')
@@ -303,16 +317,17 @@ methods: {
                 // console.log(apidata)
                 let temp = {}
                 temp = apidata.data
-
-                console.log('Hi Drew')
-                console.log(temp)
-                console.log(temp[0].CurrentSlideDistID)
-                this.SlideDistributionID = temp[0].CurrentSlideDistID
-                console.log('Current Slide Distr id:')
-                console.log(this.SlideDistributionID)
+                
+                // console.log('Slide Result Object:')
+                // console.log(temp)
+                // console.log(temp[0][0].CurrentSlideDistID)
+                this.SlideDistributionID = temp[0][0].CurrentSlideDistID
+                // console.log('Current Slide Distr id:')
+                // console.log(this.SlideDistributionID)
 
                 //Load Slide Tray now
                 this.slides = temp[1]
+                // console.log(this.slides)
                 // let aryTmpSlidesInTray = {}
                 this.obApiResult02 = temp[2]
                 this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
@@ -322,6 +337,10 @@ methods: {
                 // this.SlideDistributionID = temp.insertId
                 // Update block count table
                 console.log('Prior to load table data')
+
+                //disable New Slide Tray Option
+                this.rdSlideTrayBehaviorOptions[0].disabled = true
+
                 this.LoadTableData()
                 
 
@@ -334,11 +353,12 @@ methods: {
               })
 
             } else {
-
+            console.log('Hello new slide tray')
+            //disable Edit Existing Slide Tray Option
+                this.rdSlideTrayBehaviorOptions[1].disabled = true
             }
             this.inputtext = 'Scan Slide to Proceed'
             this.strInputTextLabel = 'Scan Slide: '
-
         } else {
             this.inputtext = 'Scan Slide or Location to close Slide Tray'
         }
@@ -380,6 +400,11 @@ methods: {
             this.slides = {}
             //Clear Slide Distrib ID
             this.SlideDistributionID = null
+            
+            //Enable Radio Buttons
+            this.rdSlideTrayBehaviorOptions[1].disabled = false
+            this.rdSlideTrayBehaviorOptions[0].disabled = false
+
             // console.log('success')
             this.LoadTableData()
         })
@@ -439,6 +464,10 @@ methods: {
       this.strInTraySlideCount = ''
       this.slides = {}
       this.SlideDistributionID = null
+      //unlock radio button
+      //Enable Radio Buttons
+      this.rdSlideTrayBehaviorOptions[1].disabled = false
+      this.rdSlideTrayBehaviorOptions[0].disabled = false
     }
 
 },
