@@ -37,13 +37,14 @@
   
   <br>
   <div class="customsubheadertext">
-    <h5>Current Slide Tray: {{currentslidetray}} </h5>
-    <h5>Slide Count in Current Tray: {{strInTraySlideCount}}</h5>
-    <h5>Block Count in Current Tray: {{strInTrayBlockCount}}</h5>
-    <br>
+    <p>Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
     <h5>Slide Details in Current Tray: </h5>
   </div>
-    <table class="table table-dark">
+
+  <div class='col-xs-6'>
+
+
+    <table  class="table table-dark ">
       <tr>
         <th>Slide ID</th>
         <th>Case Slides In Tray</th> 
@@ -64,16 +65,11 @@
     </ul>
   
 
-<br>
-<br>
-<div class="customsubheadertext">
-<h5> Block Count:</h5>
-</div>
-<div class="container">
     <blockcount> </blockcount>
 
-  </div>
+  
 </div>
+  </div>
 <!-- /container -->
     
 </template>
