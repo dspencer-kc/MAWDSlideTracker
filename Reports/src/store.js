@@ -50,7 +50,11 @@ export default new Vuex.Store({
           }
         ]
       }
+    },
+    SetApiUrl (state, strAPIURL) {
+      state.apiurl = strAPIURL
     }
+
   },
   actions: {
     //  template for Action w Promise
@@ -66,6 +70,44 @@ export default new Vuex.Store({
     LoadChartDataWPromise ({ commit }) {
       return new Promise((resolve, reject) => {
         console.log('Hello LoadHistoData')
+        axios.post(this.state.apiurl, {
+          fromdatetime: this.state.strFromDateTime,
+          todatetime: this.state.strToDateTime
+        })
+          .then(function (response) {
+            // Clear chart arrays
+            commit('ClearChartLabels')
+            commit('ClearChartData')
+
+            console.log(response)
+            for (var i = 0; i < response.data.length; i++) {
+              let strXAxisNames = ''
+              if (response.data[i].WhoPrinted === null) {
+                strXAxisNames = 'Unknown'
+              } else {
+                strXAxisNames = response.data[i].WhoPrinted
+              }
+              // Build Chart Data Array
+              commit('PushChartLabels', strXAxisNames)
+              commit('PushChartData', response.data[i].CountOfBlockID)
+            } // end for
+            // Set Chart Collection Object
+            commit('SetChartDataCollection', 'Blocks Cut', '#f87979')
+            console.log('done test')
+            resolve()
+          })
+          .catch(function (error) {
+            console.log(error)
+            reject(error)
+          })
+        console.log('promise done')
+      })
+    },
+    LoadBlockCountChartData ({ commit }) {
+      console.log('Hello LoadBlockCountChartData')
+      commit('SetApiUrl', 'http://10.24.4.9:2082/reports')
+
+      return new Promise((resolve, reject) => {
         axios.post(this.state.apiurl, {
           fromdatetime: this.state.strFromDateTime,
           todatetime: this.state.strToDateTime
