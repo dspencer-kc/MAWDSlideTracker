@@ -3,6 +3,7 @@ const app = express()
 const router = express.Router()
 var bodyParser = require('body-parser')
 var slideTracker = require('./slide-tracking/slide-tracker')
+var slideTrackerReports = require('./slide-tracking/reports')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -58,7 +59,7 @@ app.post('/slidedistribution', function (request, response) {
 })
 
 app.post('/reports', function (request, response) {
-  slideTracker.reports(request, response, function (err, message) {
+  slideTrackerReports.reports(request, response, function (err, message) {
     if (err) return console.log(err)
     console.log(message)
   })
