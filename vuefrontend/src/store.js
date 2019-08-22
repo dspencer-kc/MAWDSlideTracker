@@ -12,13 +12,13 @@ export default new Vuex.Store({
     stationName: '',
     slideQueuePath: '',
     //  Prod
-    apiURL: 'http://10.24.4.9:2081',
+    // apiURL: 'http://10.24.4.9:2081',
     //  Test
     apiURL: 'http://10.24.4.9:2082',
     //  Local Test
     //  apiURL: 'http://localhost:2081',
     // Note `isActive` is left out and will not appear in the rendered table
-    blockCountTableFields: ['location', 'block_count'],
+    blockCountTableFields: ['location', 'FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
     blockCountTableItems: []
   },
   mutations: {
@@ -47,12 +47,13 @@ export default new Vuex.Store({
   },
   actions: {
     LoadBlockCountTableData ({ commit }) {
+      console.log('Hello LoadBlockCountTableData')
       return new Promise((resolve, reject) => {
         let strFullAPICall = this.state.apiURL + '/reports'
         console.log('Hello LoadBlockCountTableData')
         console.log(strFullAPICall)
         axios.post(strFullAPICall, {
-          action: 'blockcount'
+          action: 'BlockCountAllRunTimesBySortVal'
         })
           .then(function (response) {
             // Clear table data
@@ -61,9 +62,7 @@ export default new Vuex.Store({
             console.log(response)
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
-              let strLocation = response.data[i].SlideDistributionLocation
-              strLocation = strLocation.replace('LOCN', '')
-              commit('PushBlockCountTableItems', { isActive: false, location: strLocation, block_count: response.data[i].BlockCount })
+              commit('PushBlockCountTableItems', { isActive: false, location: response.data[i].LocAbbr, FirstRunBlockCount: response.data[i].FirstRunBlockCount, SecondRunBlockCount: response.data[i].SecondRunBlockCount, ThirdRunBlockCount: response.data[i].ThirdRunBlockCount, FourthRunBlockCount: response.data[i].FourthRunBlockCount, TotalBlockCount: response.data[i].TotalBlockCount })
             } // end for
             // Set Chart Collection Object
             // commit('SetChartDataCollection', 'Blocks Cut', '#f87979')
