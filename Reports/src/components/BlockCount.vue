@@ -29,8 +29,8 @@ mounted() {
 },
 methods: {
   GetChartData (){
-    console.log('Hi get chart data')
-   store.dispatch('LoadBlockCountTableData').then(() => {
+   store.dispatch('LoadBlockCountChartData').then(() => {
+    //    store.dispatch('LoadBlockCountTableData').then(() => {
     console.log('Promise completed')
     this.datacollection = store.state.objChartDataCollection
     console.log(store.state.objChartDataCollection)
