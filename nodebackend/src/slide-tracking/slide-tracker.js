@@ -11,8 +11,7 @@ module.exports = {
   pullSlides: pullSlides,
   getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
   histodata: histoData,
-  slideDistribution: slideDistribution,
-  reports: reports
+  slideDistribution: slideDistribution
 }
 
 function printSlides (request, response, callback) {
@@ -654,51 +653,6 @@ function slideDistribution (request, response, callback) {
         con5.end()
       })
       break
-    default:
-      break
-  }
-}
-function reports (request, response, callback) {
-// ===========================================================================================
-//    Reports
-// ============================================================================================
-
-  console.log('reports start')
-  let strAction = request.body.action
-
-  switch (strAction) {
-    case 'blockcount':
-      // console.log('Hello report block count')
-
-      let strSQL = `/* qryTotalBlockCountWSort
-      Total Block Count: Previous Busines Day Plus Hours set from tbleRunTime 'PreviousDayCutoff*/
-      SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
-      FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation
-              FROM tblSlides as subTblSlides
-              INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
-              WHERE subTblSlideDistribution.DTReadyForCourier > funPreviousWorkDayCutoffDateTime()
-              GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
-      INNER JOIN tblSlideDistributionLocations on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
-      GROUP BY SlideDistributionLocation
-      ORDER BY tblSlideDistributionLocations.SortValue;`
-
-      // console.log(strSQL)
-
-      // Connect to the database
-      var con = mysql.createConnection(mysqlConfig)
-      con.query(strSQL, function (err, result) {
-        if (err) {
-          response.send(err)
-          console.log(err)
-        // On Error, close connection
-        } else {
-        // if there is no error, you have the result
-          response.json(result)
-        }
-        con.end()
-      })
-      break
-
     default:
       break
   }
