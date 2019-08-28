@@ -3,7 +3,7 @@
 <template>
     <div>
     <h1>Block Count</h1>
-    <bar-chart :chart-data="ChartData" :width="5" :height="2"></bar-chart>
+    <bar-chart :chart-data="datacollection" :width="5" :height="2"></bar-chart>
     </div>
     
 </template>
@@ -19,7 +19,7 @@ components: {
 },
 data() {
 return {
-  localdatacollection: null
+  datacollection: null
 }
 },
 mounted() {
@@ -29,7 +29,7 @@ mounted() {
 },
 methods: {
   GetChartData (){
-   store.dispatch('LoadBlockCountChartData').then(() => {
+   store.dispatch('LoadPathConBlockCount').then(() => {
     //    store.dispatch('LoadBlockCountTableData').then(() => {
     console.log('Promise completed')
     this.datacollection = store.state.objChartDataCollection

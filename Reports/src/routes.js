@@ -6,7 +6,7 @@ import BlocksByTechLine from './components/BlocksByTechLine.vue'
 import BlocksCutScatter from './components/BlocksCutScatter.vue'
 import Login from './components/Login.vue'
 import Profile from './components/Profile.vue'
-import BlockCount from './components/BlockCount.vue'
+import BlockCount from './components/BlockCountAll.vue'
 
 const routes = [
   { path: '/', component: Home },

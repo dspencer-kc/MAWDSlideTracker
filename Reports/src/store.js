@@ -12,20 +12,20 @@ export default new Vuex.Store({
     arChartLabels: [],
     arChartData: [],
     objChartDataCollection: null,
-    apiurl: 'http://10.24.4.9:2082/histodata',
+    //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
     chartlabel: 'Blocks Cut',
-    backgroundColor: '#f87979'
+    backgroundColor: '#f87979',
     // slideQueuePath: '',
       //  Prod
       // apiURL: 'http://10.24.4.9:2081',
       //  Test
     //  apiURL: 'http://10.24.4.9:2082',
       //  Local Test
-    //  apiURL: 'http://localhost:2081',
+    apiURL: 'http://localhost:2081',
       // Note `isActive` is left out and will not appear in the rendered table
-    //  blockCountTableFields: ['location', 'FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
-    //  blockCountTableItems: []
+    blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
+    blockCountTableItems: []
   },
   mutations: {
     SetStateMsg (state, strTmp) {
@@ -43,6 +43,12 @@ export default new Vuex.Store({
     PushChartData (state, strTmp) {
       state.arChartData.push(strTmp)
     },
+    PushBlockCountTableItems (state, strTmp) {
+      state.blockCountTableItems.push(strTmp)
+    },
+    ClearBlockCountTableItems (state) {
+      state.blockCountTableItems = []
+    },
     ClearChartLabels (state) {
       state.arChartLabels = []
     },
@@ -57,6 +63,18 @@ export default new Vuex.Store({
             label: strChartLabel,
             backgroundColor: state.backgroundColor,
             data: state.arChartData
+          }
+        ]
+      }
+    },
+    SetChartDataCollectionForBlockCountAll (state, strChartLabel) {
+      state.objChartDataCollection = {
+        labels: state.blockCountTableFields,
+        datasets: [
+          {
+            label: strChartLabel,
+            backgroundColor: state.backgroundColor,
+            data: state.blockCountTableItems
           }
         ]
       }
@@ -141,6 +159,36 @@ export default new Vuex.Store({
             } // end for
             // Set Chart Collection Object
             commit('SetChartDataCollection', 'Blocks Cut', '#f87979')
+            console.log('done test')
+            resolve()
+          })
+          .catch(function (error) {
+            console.log(error)
+            reject(error)
+          })
+        console.log('promise done')
+      })
+    },
+    LoadPathConBlockCount ({ commit }) {
+      console.log('Hello LoadBlockCountTableData')
+      return new Promise((resolve, reject) => {
+        let strFullAPICall = this.state.apiURL + '/reports'
+        console.log('Hello Store LoadPathConBlockCount')
+        console.log(strFullAPICall)
+        axios.post(strFullAPICall, {
+          action: 'BlockCountAllRunTimesBySortVal'
+        })
+          .then(function (response) {
+            // Clear table data
+            commit('ClearBlockCountTableItems')
+            console.log()
+            console.log(response)
+            for (var i = 0; i < response.data.length; i++) {
+              // Build Chart Data Array
+              commit('PushBlockCountTableItems', { data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
+            } // end for
+            // Set Chart Collection Object
+            commit('SetChartDataCollectionForBlockCountAll', 'Blocks Cut', '#f87979')
             console.log('done test')
             resolve()
           })
