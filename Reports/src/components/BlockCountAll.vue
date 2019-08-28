@@ -3,7 +3,7 @@
 <template>
     <div>
     <h1>Block Count All</h1>
-    <bar-chart :chart-data="localdatacollection" :width="5" :height="2"></bar-chart>
+    <bar-chart :chart-data="datacollection" :width="5" :height="2"></bar-chart>
     </div>
     
 </template>
@@ -19,40 +19,12 @@ components: {
 },
 data() {
 return {
-  datacollection: null,
-  localdatacollection: {
-      labels: ['1st Run', '2nd Run', '3rd Run', '4th Run', 'Total'],
-      datasets: [
-        {
-          label: 'AES',
-          data: [55,95,0,23,150],
-          backgroundColor: '#003f5c',
-        },
-        {
-          label: 'JAK',
-          data: [23,0,15,35,100],
-          backgroundColor: '#58508d',
-        },
-        {
-          label: 'SLL',
-          data: [55,23,23,15,75],
-          backgroundColor: '#ffa600',
-        }
-      ]
-  ,
-  options: {
-    scales: {
-      xAxes: [{ stacked: true }],
-      yAxes: [{ stacked: true }]
-    }
-  }
-}
+  datacollection: null
 }
 },
 mounted() {
   console.log('Hello component created')
-  // this.SetChartData()
-  // this.GetChartData()
+  this.GetChartData()
 },
 methods: {
   GetChartData (){

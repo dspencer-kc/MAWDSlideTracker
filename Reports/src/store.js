@@ -24,7 +24,9 @@ export default new Vuex.Store({
       //  Local Test
     apiURL: 'http://localhost:2081',
       // Note `isActive` is left out and will not appear in the rendered table
-    blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
+      blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount'],
+    //  Pulled total count
+    //  blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
     blockCountTableItems: []
   },
   mutations: {
@@ -70,13 +72,7 @@ export default new Vuex.Store({
     SetChartDataCollectionForBlockCountAll (state, strChartLabel) {
       state.objChartDataCollection = {
         labels: state.blockCountTableFields,
-        datasets: [
-          {
-            label: strChartLabel,
-            backgroundColor: state.backgroundColor,
-            data: state.blockCountTableItems
-          }
-        ]
+        datasets: state.blockCountTableItems
       }
     },
     SetApiUrl (state, strAPIURL) {
@@ -185,7 +181,10 @@ export default new Vuex.Store({
             console.log(response)
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
-              commit('PushBlockCountTableItems', { data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
+              let strBackgroundColor = '#f87979'
+              commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
+              // Remove Total count
+              // commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
             } // end for
             // Set Chart Collection Object
             commit('SetChartDataCollectionForBlockCountAll', 'Blocks Cut', '#f87979')
