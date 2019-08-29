@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import colorGenerator from './charts/color-generator.js'
+import * as d3ScaleChromatic from 'd3-scale-chromatic'
 
 Vue.use(Vuex)
 
@@ -179,9 +181,28 @@ export default new Vuex.Store({
             commit('ClearBlockCountTableItems')
             console.log()
             console.log(response)
+
+            // Get Color Array
+            let colorScale = d3ScaleChromatic.interpolateRainbow
+            // See color options here: https://github.com/d3/d3-scale-chromatic works for interpolate, may work for others.
+
+            console.log(colorScale)
+
+            const colorRangeInfo = {
+              colorStart: 0,
+              colorEnd: 0.65,
+              useEndAsStart: false
+            }
+
+            console.log('colors:')
+
+            let arColors = colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo)
+            // console.log(colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo))
+            
+
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
-              let strBackgroundColor = '#f87979'
+              let strBackgroundColor = arColors[i]
               commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
               // Remove Total count
               // commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
