@@ -2,7 +2,7 @@
 
 <template>
     <div>
-    <h1>Block Count All</h1>
+    <h1>Block Count Stacked Bar</h1>
     <bar-chart :chart-data="datacollection" :options="localoptions" :width="5" :height="2"></bar-chart>
     </div>
     

@@ -183,14 +183,18 @@ export default new Vuex.Store({
             console.log(response)
 
             // Get Color Array
-            let colorScale = d3ScaleChromatic.interpolateRainbow
+            let colorScale = d3ScaleChromatic.interpolateTurbo
+            // let colorScale = d3ScaleChromatic.interpolatePlasma
             // See color options here: https://github.com/d3/d3-scale-chromatic works for interpolate, may work for others.
 
             console.log(colorScale)
 
             const colorRangeInfo = {
-              colorStart: 0,
-              colorEnd: 0.65,
+              //  Default settings
+              //  colorStart: 0,
+              //  colorEnd: 0.65,
+              colorStart: 0.05,
+              colorEnd: 0.90,
               useEndAsStart: false
             }
 
@@ -198,10 +202,13 @@ export default new Vuex.Store({
 
             let arColors = colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo)
             // console.log(colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo))
-            
+
+            // Shuffle Color array
+            // ShuffleArray(arColors)
 
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
+
               let strBackgroundColor = arColors[i]
               commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
               // Remove Total count
@@ -226,3 +233,17 @@ export default new Vuex.Store({
     }
   }
 })
+
+// Shuffle array
+function ShuffleArray (array) {
+  let i = 0
+  let j = 0
+  let temp = null
+
+  for (i = array.length - 1; i > 0; i -= 1) {
+    j = Math.floor(Math.random() * (i + 1))
+    temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+}
