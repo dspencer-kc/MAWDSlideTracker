@@ -3,7 +3,7 @@
 <template>
     <div>
     <h1>Block Count All</h1>
-    <bar-chart :chart-data="datacollection" :width="5" :height="2"></bar-chart>
+    <bar-chart :chart-data="datacollection" :options="localoptions" :width="5" :height="2"></bar-chart>
     </div>
     
 </template>
@@ -19,7 +19,13 @@ components: {
 },
 data() {
 return {
-  datacollection: null
+  datacollection: null,
+  localoptions: {
+    scales: {
+      xAxes: [{ stacked: true }],
+      yAxes: [{ stacked: true }]
+    }
+  }
 }
 },
 mounted() {
