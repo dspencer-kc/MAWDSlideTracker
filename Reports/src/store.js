@@ -19,14 +19,14 @@ export default new Vuex.Store({
     chartlabel: 'Blocks Cut',
     backgroundColor: '#f87979',
     // slideQueuePath: '',
-      //  Prod
-      // apiURL: 'http://10.24.4.9:2081',
-      //  Test
+    //  Prod
+    // apiURL: 'http://10.24.4.9:2081',
+    //  Test
     //  apiURL: 'http://10.24.4.9:2082',
-      //  Local Test
+    //  Local Test
     apiURL: 'http://localhost:2081',
-      // Note `isActive` is left out and will not appear in the rendered table
-      blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount'],
+    // Note `isActive` is left out and will not appear in the rendered table
+    blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
     //  Pulled total count
     //  blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
     blockCountTableItems: []
@@ -80,7 +80,6 @@ export default new Vuex.Store({
     SetApiUrl (state, strAPIURL) {
       state.apiurl = strAPIURL
     }
-
   },
   actions: {
     //  template for Action w Promise
@@ -96,7 +95,10 @@ export default new Vuex.Store({
     LoadChartDataWPromise ({ commit }) {
       return new Promise((resolve, reject) => {
         console.log('Hello LoadHistoData')
-        axios.post(this.state.apiurl, {
+        console.log('api call:')
+        let strFullAPICall = this.state.apiURL + '/histodata'
+        console.log(strFullAPICall)
+        axios.post(strFullAPICall, {
           fromdatetime: this.state.strFromDateTime,
           todatetime: this.state.strToDateTime
         })
@@ -104,7 +106,6 @@ export default new Vuex.Store({
             // Clear chart arrays
             commit('ClearChartLabels')
             commit('ClearChartData')
-
             console.log(response)
             for (var i = 0; i < response.data.length; i++) {
               let strXAxisNames = ''
@@ -167,6 +168,7 @@ export default new Vuex.Store({
         console.log('promise done')
       })
     },
+    // BlockCountAllRunTimesBySortVal
     LoadPathConBlockCount ({ commit }) {
       console.log('Hello LoadBlockCountTableData')
       return new Promise((resolve, reject) => {
@@ -186,9 +188,7 @@ export default new Vuex.Store({
             let colorScale = d3ScaleChromatic.interpolateTurbo
             // let colorScale = d3ScaleChromatic.interpolatePlasma
             // See color options here: https://github.com/d3/d3-scale-chromatic works for interpolate, may work for others.
-
             console.log(colorScale)
-
             const colorRangeInfo = {
               //  Default settings
               //  colorStart: 0,
@@ -197,18 +197,11 @@ export default new Vuex.Store({
               colorEnd: 0.90,
               useEndAsStart: false
             }
-
-            console.log('colors:')
-
             let arColors = colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo)
-            // console.log(colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo))
-
-            // Shuffle Color array
+            // Shuffle Color array - not active
             // ShuffleArray(arColors)
-
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
-
               let strBackgroundColor = arColors[i]
               commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
               // Remove Total count
@@ -234,8 +227,8 @@ export default new Vuex.Store({
   }
 })
 
-// Shuffle array
-function ShuffleArray (array) {
+// Shuffle array Not Active
+/* function ShuffleArray (array) {
   let i = 0
   let j = 0
   let temp = null
@@ -246,4 +239,4 @@ function ShuffleArray (array) {
     array[i] = array[j]
     array[j] = temp
   }
-}
+} */
