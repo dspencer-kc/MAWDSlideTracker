@@ -1,4 +1,4 @@
-// Block Count All.vue
+// BlockCountStackedBar.vue
 
 <template>
     <div>
@@ -13,7 +13,7 @@ import store from '../store.js'
 import BarChart from './BarChart.js'
 
 export default {
-name: 'BlockCount',
+name: 'BlockCountStackedBar',
 components: {
   BarChart
 },

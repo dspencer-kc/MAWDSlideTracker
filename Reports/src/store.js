@@ -14,6 +14,7 @@ export default new Vuex.Store({
     arChartLabels: [],
     arChartData: [],
     objChartDataCollection: null,
+    objPieChartFirstRunData: null,
     //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
     chartlabel: 'Blocks Cut',
@@ -73,8 +74,27 @@ export default new Vuex.Store({
     },
     SetChartDataCollectionForBlockCountAll (state, strChartLabel) {
       state.objChartDataCollection = {
-        labels: state.blockCountTableFields,
+        labels: state.blockCountTableFields[0],
         datasets: state.blockCountTableItems
+      }
+    },
+    SetChartDataCollectionForPieChart (state) {
+      //  Loop through block count and pull out just first dataset
+
+      let arFirstRunTableItems = []
+      let arFirstRunBackGroundColor = []
+
+      state.blockCountTableItems.forEach(blockCountTableItem => {
+        arFirstRunTableItems.push(blockCountTableItem.data[0])
+        arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
+      })
+
+      state.objPieChartFirstRunData = {
+        // labels: state.blockCountTableFields,
+        datasets: {
+          backgroundColor: arFirstRunBackGroundColor,
+          data: arFirstRunTableItems
+        }
       }
     },
     SetApiUrl (state, strAPIURL) {
@@ -209,6 +229,10 @@ export default new Vuex.Store({
             } // end for
             // Set Chart Collection Object
             commit('SetChartDataCollectionForBlockCountAll', 'Blocks Cut', '#f87979')
+
+            // Set Pie Chart Data
+            commit('SetChartDataCollectionForPieChart')
+            
             console.log('done test')
             resolve()
           })

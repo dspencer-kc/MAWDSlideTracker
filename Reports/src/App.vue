@@ -11,20 +11,17 @@
           <b-link class="nav-link" to="home">Home</b-link>
       </li>
       <li class="nav-item">
-        <b-link class="nav-link" to="/blockcount">Block Count</b-link>
+        <b-link class="nav-link" to="/blockcountstackedbar">BC Stacked Bar</b-link>
+      </li>
+      <li class="nav-item">
+        <b-link class="nav-link" to="/blockcountpie">BC Pie</b-link>
       </li>
       <li class="nav-item">
         <b-link class="nav-link" to="/blocksbytech">Blocks By Tech</b-link>
       </li>
       <li class="nav-item">
         <b-link class="nav-link" to="/blocksbytechline">Blocks By Tech Line</b-link>
-      </li>      
-      <li class="nav-item">
-        <b-link class="nav-link" to="/blockscutscatter">Blocks Cut Scatter</b-link>
-      </li>
-    <li class="nav-item">
-        <b-link class="nav-link" :to="{name: 'Profile', params: { msg } }">Go to your profile</b-link>
-      </li>       
+      </li>         
          
       </ul>
     </nav>
