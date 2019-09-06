@@ -43,9 +43,9 @@ methods: {
   },
 },
 computed: {
-    ChartData() {
-      this.localdatacollection
-    }
+  //  ChartData() {
+  //    this.localdatacollection
+  //  }
 } 
 }
 </script>

@@ -15,6 +15,10 @@ export default new Vuex.Store({
     arChartData: [],
     objChartDataCollection: null,
     objPieChartFirstRunData: null,
+    arFirstRunTableItems: [],
+    arFirstRunBackGroundColor: [],
+    arFirstRunLabels: [],
+    arFirstRunDatasets: [],
     //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
     chartlabel: 'Blocks Cut',
@@ -74,27 +78,32 @@ export default new Vuex.Store({
     },
     SetChartDataCollectionForBlockCountAll (state, strChartLabel) {
       state.objChartDataCollection = {
-        labels: state.blockCountTableFields[0],
+        labels: state.blockCountTableFields,
         datasets: state.blockCountTableItems
       }
     },
     SetChartDataCollectionForPieChart (state) {
       //  Loop through block count and pull out just first dataset
 
-      let arFirstRunTableItems = []
-      let arFirstRunBackGroundColor = []
+      state.arFirstRunTableItems = []
+      state.arFirstRunBackGroundColor = []
+      state.arFirstRunLabels = []
+      state.arFirstRunDatasets = []
 
       state.blockCountTableItems.forEach(blockCountTableItem => {
-        arFirstRunTableItems.push(blockCountTableItem.data[0])
-        arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
+        state.arFirstRunTableItems.push(blockCountTableItem.data[0])
+        state.arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
+        state.arFirstRunLabels.push(blockCountTableItem.label)
       })
 
+      state.arFirstRunDatasets = {
+        backgroundColor: state.arFirstRunBackGroundColor,
+        data: state.arFirstRunTableItems
+      }
+
       state.objPieChartFirstRunData = {
-        // labels: state.blockCountTableFields,
-        datasets: {
-          backgroundColor: arFirstRunBackGroundColor,
-          data: arFirstRunTableItems
-        }
+        labels: state.arFirstRunLabels,
+        datasets: state.arFirstRunDatasets
       }
     },
     SetApiUrl (state, strAPIURL) {

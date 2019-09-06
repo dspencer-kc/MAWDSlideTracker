@@ -3,7 +3,12 @@
 <template>
     <div>
     <h1>Block Count Pie</h1>
-    <pie-chart :chart-data="datacollection" :options="localoptions" :width="5" :height="2"></pie-chart>
+    <pie-chart 
+    v-if='loaded'
+    :chart-data="localdatacollection" 
+    :options="localoptions" 
+    :width="5" 
+    :height="2"/>
     </div>
     
 </template>
@@ -19,43 +24,81 @@ components: {
 },
 data() {
 return {
-  datacollection: {
+    loaded: false,
+    localdatacollection: null
+    // Sample Data
+    /* {
     datasets: [{
-        data: [10, 20, 30],
+        data: [,33,,,22,29,,,21,,,,3,,,,,,,,,],
         backgroundColor: [        
-      '#41B883',
-      '#E46651',
-      '#00D8FF'
+      'rgb(70, 54, 153)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)',
+      'rgb(75, 81, 211)'
       ]
     }],
 
     // These labels appear in the legend and in the tooltips when hovering different arcs
     labels: [
-      'Red',
-      'Yellow',
-      'Blue'
+      'TBD',
+      'AES',
+      'BJC',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH',
+      'DAH'
     ]
-},
+    }*/,
+  localoptions: {
+  }
 }
 },
 mounted() {
   console.log('Hello component created')
-//  this.GetChartData()
+  this.GetChartData()
 },
 methods: {
-/*  GetChartData (){
+ GetChartData (){
+   this.loaded = false
    store.dispatch('LoadPathConBlockCount').then(() => {
-    //    store.dispatch('LoadBlockCountTableData').then(() => {
     console.log('Promise completed')
-    this.datacollection = store.state.objChartDataCollection
-    console.log(store.state.objChartDataCollection)
+    this.localdatacollection = store.state.objPieChartFirstRunData
+    console.log(store.state.objPieChartFirstRunData)
+    console.log(this.localdatacollection)
+    this.loaded=true
+    
    })   
-  },*/
+  },
 },
 computed: {
-  /*  ChartData() {
-      this.localdatacollection
-    } */
+    
 } 
 }
 </script>
