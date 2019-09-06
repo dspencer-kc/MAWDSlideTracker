@@ -2,13 +2,60 @@
 
 <template>
     <div>
-    <h1>Block Count Pie</h1>
+    <h1>Block Count</h1>
+    <b-container class="bv-example-row">
+  <b-row>
+    <b-col>    
+      <pie-chart 
+        v-if='loaded'
+        :chart-data="objFirstRunData" 
+        :options="objFirstRunOptions" 
+        :width="1" 
+        :height="1"
+      />
+    </b-col>
+    <b-col>    
+      <pie-chart 
+        v-if='loaded'
+        :chart-data="objSecondRunData" 
+        :options="objSecondRunOptions" 
+        :width="1" 
+        :height="1"
+      />
+    </b-col>
+    <b-col>
+      <pie-chart 
+        v-if='loaded'
+        :chart-data="objThirdRunData" 
+        :options="objThirdRunOptions" 
+        :width="1" 
+        :height="1"
+      />
+    </b-col>
+    <b-col>
+      <pie-chart 
+        v-if='loaded'
+        :chart-data="objFourthRunData" 
+        :options="objFourthRunOptions" 
+        :width="1" 
+        :height="1"
+      />
+    </b-col>
+  </b-row>
+</b-container>
+
+
     <pie-chart 
-    v-if='loaded'
-    :chart-data="localdatacollection" 
-    :options="localoptions" 
-    :width="5" 
-    :height="2"/>
+      v-if='loaded'
+      :chart-data="objAllRunData" 
+      :options="objTotalRunOptions" 
+      :width="12" 
+      :height="3"
+    />
+
+
+
+
     </div>
     
 </template>
@@ -24,59 +71,57 @@ components: {
 },
 data() {
 return {
-    loaded: false,
-    localdatacollection: null
-    // Sample Data
-    /* {
-    datasets: [{
-        data: [,33,,,22,29,,,21,,,,3,,,,,,,,,],
-        backgroundColor: [        
-      'rgb(70, 54, 153)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)',
-      'rgb(75, 81, 211)'
-      ]
-    }],
-
-    // These labels appear in the legend and in the tooltips when hovering different arcs
-    labels: [
-      'TBD',
-      'AES',
-      'BJC',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH',
-      'DAH'
-    ]
-    }*/,
-  localoptions: {
+  loaded: false,
+  objFirstRunData: null,
+  objSecondRunData: null,
+  objThirdRunData: null,
+  objFourthRunData: null,
+  objAllRunData: null,
+  objFirstRunOptions: {
+    title: {
+      display: true,
+      text: 'First Run'
+    },
+    legend: {
+      display: false
+    }
+  },
+  objSecondRunOptions: {
+    title: {
+      display: true,
+      text: 'Second Run'
+    },
+    legend: {
+      display: false
+    }
+  },
+  objThirdRunOptions: {
+    title: {
+      display: true,
+      text: 'Third Run'
+    },
+    legend: {
+      display: false
+    }
+  },
+  objFourthRunOptions: {
+      title: {
+        display: true,
+        text: 'Fourth Run'
+      },
+      legend: {
+        display: false
+      }
+  },
+  objTotalRunOptions: {
+      title: {
+        display: true,
+        text: 'Block Count All Runs',
+    },
+    legend: {
+      display: true,
+      position: 'bottom'
+    }
   }
 }
 },
@@ -89,9 +134,11 @@ methods: {
    this.loaded = false
    store.dispatch('LoadPathConBlockCount').then(() => {
     console.log('Promise completed')
-    this.localdatacollection = store.state.objPieChartFirstRunData
-    console.log(store.state.objPieChartFirstRunData)
-    console.log(this.localdatacollection)
+    this.objAllRunData = store.state.objPieChartTotalData
+    this.objFirstRunData = store.state.objPieChartFirstRunData
+    this.objSecondRunData = store.state.objPieChartSecondRunData
+    this.objThirdRunData = store.state.objPieChartThirdRunData
+    this.objFourthRunData = store.state.objPieChartFourthRunData
     this.loaded=true
     
    })   

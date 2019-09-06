@@ -15,6 +15,10 @@ export default new Vuex.Store({
     arChartData: [],
     objChartDataCollection: null,
     objPieChartFirstRunData: null,
+    objPieChartSecondRunData: null,
+    objPieChartThirdRunData: null,
+    objPieChartFourthRunData: null,
+    objPieChartTotalData: null,
     objPieChartFirstRunDataTest: null,
     //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
@@ -28,9 +32,10 @@ export default new Vuex.Store({
     //  Local Test
     apiURL: 'http://localhost:2081',
     // Note `isActive` is left out and will not appear in the rendered table
-    blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
+    // Use below to not include total Runs
+    // blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
     //  Pulled total count
-    //  blockCountTableFields: ['FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
+    blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run', 'Total'],
     blockCountTableItems: []
   },
   mutations: {
@@ -80,31 +85,11 @@ export default new Vuex.Store({
       }
     },
     SetChartDataCollectionForPieChart (state) {
-      //  Loop through block count and pull out just first dataset
-
-      let arFirstRunTableItems = []
-      let arFirstRunBackGroundColor = []
-      let arFirstRunLabels = []
-      let objFirstRunDatasets = null
-      let arFirstRunDataSets = []
-
-      state.blockCountTableItems.forEach(blockCountTableItem => {
-        arFirstRunTableItems.push(blockCountTableItem.data[0])
-        arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
-        arFirstRunLabels.push(blockCountTableItem.label)
-      })
-
-      objFirstRunDatasets = {
-        backgroundColor: arFirstRunBackGroundColor,
-        data: arFirstRunTableItems
-      }
-
-      // Note for pie chart, Chart Data Object Datasets must be an array that contains an object of arrays.
-      arFirstRunDataSets.push(objFirstRunDatasets)
-      state.objPieChartFirstRunData = {
-        labels: arFirstRunLabels,
-        datasets: arFirstRunDataSets
-      }
+      state.objPieChartFirstRunData = FormatPieChartDataObject(0, state.blockCountTableItems)
+      state.objPieChartSecondRunData = FormatPieChartDataObject(1, state.blockCountTableItems)
+      state.objPieChartThirdRunData = FormatPieChartDataObject(2, state.blockCountTableItems)
+      state.objPieChartFourthRunData = FormatPieChartDataObject(3, state.blockCountTableItems)
+      state.objPieChartTotalData = FormatPieChartDataObject(4, state.blockCountTableItems)
     },
     SetApiUrl (state, strAPIURL) {
       state.apiurl = strAPIURL
@@ -232,16 +217,18 @@ export default new Vuex.Store({
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
               let strBackgroundColor = arColors[i]
-              commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
-              // Remove Total count
-              // commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
+              
+              // No total count
+              // commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
+              // Include Total count
+              commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
             } // end for
             // Set Chart Collection Object
             commit('SetChartDataCollectionForBlockCountAll', 'Blocks Cut', '#f87979')
 
             // Set Pie Chart Data
             commit('SetChartDataCollectionForPieChart')
-            
+
             console.log('done test')
             resolve()
           })
@@ -259,6 +246,36 @@ export default new Vuex.Store({
     }
   }
 })
+function FormatPieChartDataObject (intArrayIndex, arTempBlockCountTableItems) {
+  //  Loop through block count and pull out which run needed for chart
+  let arFirstRunTableItems = []
+  let arFirstRunBackGroundColor = []
+  let arFirstRunLabels = []
+  let objFirstRunDatasets = null
+  let arFirstRunDataSets = []
+  let objPieChartDataSet = null
+
+  arTempBlockCountTableItems.forEach(blockCountTableItem => {
+    //  0 = first run, 1 = 2nd run, 2 = 3rd run, 3 = 4th run, 4 = total
+    arFirstRunTableItems.push(blockCountTableItem.data[intArrayIndex])
+    arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
+    arFirstRunLabels.push(blockCountTableItem.label)
+  })
+
+  objFirstRunDatasets = {
+    backgroundColor: arFirstRunBackGroundColor,
+    data: arFirstRunTableItems
+  }
+
+  // Note for pie chart, Chart Data Object Datasets must be an array that contains an object of arrays.
+  arFirstRunDataSets.push(objFirstRunDatasets)
+  objPieChartDataSet = {
+    labels: arFirstRunLabels,
+    datasets: arFirstRunDataSets
+  }
+
+  return objPieChartDataSet
+}
 
 // Shuffle array Not Active
 /* function ShuffleArray (array) {

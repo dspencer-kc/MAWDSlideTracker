@@ -27,7 +27,10 @@
     </nav>
 
     <router-view></router-view>
+ <!--
 
+   Do not show from and to dates
+      
       From Date and Time:
       <input v-model="FromDateTime">
       <br>
@@ -36,6 +39,7 @@
       <br>
       <br>
       <button @click="GetChartData">Refresh Data</button>
+  -->
   </div>
 </template>
 
