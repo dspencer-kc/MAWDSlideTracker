@@ -15,10 +15,7 @@ export default new Vuex.Store({
     arChartData: [],
     objChartDataCollection: null,
     objPieChartFirstRunData: null,
-    arFirstRunTableItems: [],
-    arFirstRunBackGroundColor: [],
-    arFirstRunLabels: [],
-    arFirstRunDatasets: [],
+    objPieChartFirstRunDataTest: null,
     //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
     chartlabel: 'Blocks Cut',
@@ -85,25 +82,28 @@ export default new Vuex.Store({
     SetChartDataCollectionForPieChart (state) {
       //  Loop through block count and pull out just first dataset
 
-      state.arFirstRunTableItems = []
-      state.arFirstRunBackGroundColor = []
-      state.arFirstRunLabels = []
-      state.arFirstRunDatasets = []
+      let arFirstRunTableItems = []
+      let arFirstRunBackGroundColor = []
+      let arFirstRunLabels = []
+      let objFirstRunDatasets = null
+      let arFirstRunDataSets = []
 
       state.blockCountTableItems.forEach(blockCountTableItem => {
-        state.arFirstRunTableItems.push(blockCountTableItem.data[0])
-        state.arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
-        state.arFirstRunLabels.push(blockCountTableItem.label)
+        arFirstRunTableItems.push(blockCountTableItem.data[0])
+        arFirstRunBackGroundColor.push(blockCountTableItem.backgroundColor)
+        arFirstRunLabels.push(blockCountTableItem.label)
       })
 
-      state.arFirstRunDatasets = {
-        backgroundColor: state.arFirstRunBackGroundColor,
-        data: state.arFirstRunTableItems
+      objFirstRunDatasets = {
+        backgroundColor: arFirstRunBackGroundColor,
+        data: arFirstRunTableItems
       }
 
+      // Note for pie chart, Chart Data Object Datasets must be an array that contains an object of arrays.
+      arFirstRunDataSets.push(objFirstRunDatasets)
       state.objPieChartFirstRunData = {
-        labels: state.arFirstRunLabels,
-        datasets: state.arFirstRunDatasets
+        labels: arFirstRunLabels,
+        datasets: arFirstRunDataSets
       }
     },
     SetApiUrl (state, strAPIURL) {
