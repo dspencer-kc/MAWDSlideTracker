@@ -20,6 +20,7 @@ export default new Vuex.Store({
     objPieChartFourthRunData: null,
     objPieChartTotalData: null,
     objPieChartFirstRunDataTest: null,
+    objBarChartFourRuns: null,
     //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
     chartlabel: 'Blocks Cut',
@@ -36,7 +37,9 @@ export default new Vuex.Store({
     // blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
     //  Pulled total count
     blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run', 'Total'],
-    blockCountTableItems: []
+    blockCountTableItems: [],
+    blockCountFourRunsTableItems: [],
+    blockCountFourRunsTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run']
   },
   mutations: {
     SetStateMsg (state, strTmp) {
@@ -57,8 +60,14 @@ export default new Vuex.Store({
     PushBlockCountTableItems (state, strTmp) {
       state.blockCountTableItems.push(strTmp)
     },
+    PushBlockCountFourRunsTableItems (state, strTmp) {
+      state.blockCountFourRunsTableItems.push(strTmp)
+    },
     ClearBlockCountTableItems (state) {
       state.blockCountTableItems = []
+    },
+    ClearBlockCountFourRunsTableItems (state) {
+      state.blockCountFourRunsTableItems = []
     },
     ClearChartLabels (state) {
       state.arChartLabels = []
@@ -82,6 +91,12 @@ export default new Vuex.Store({
       state.objChartDataCollection = {
         labels: state.blockCountTableFields,
         datasets: state.blockCountTableItems
+      }
+    },
+    SetChartDataCollectionForBlockCountFourRuns (state, strChartLabel) {
+      state.objBarChartFourRuns = {
+        labels: state.blockCountFourRunsTableFields,
+        datasets: state.blockCountFourRunsTableItems
       }
     },
     SetChartDataCollectionForPieChart (state) {
@@ -195,11 +210,12 @@ export default new Vuex.Store({
           .then(function (response) {
             // Clear table data
             commit('ClearBlockCountTableItems')
+            commit('ClearBlockCountFourRunsTableItems')
             console.log()
             console.log(response)
 
             // Get Color Array
-            let colorScale = d3ScaleChromatic.interpolateTurbo
+            let colorScale = d3ScaleChromatic.interpolateSinebow
             // let colorScale = d3ScaleChromatic.interpolatePlasma
             // See color options here: https://github.com/d3/d3-scale-chromatic works for interpolate, may work for others.
             console.log(colorScale)
@@ -207,8 +223,8 @@ export default new Vuex.Store({
               //  Default settings
               //  colorStart: 0,
               //  colorEnd: 0.65,
-              colorStart: 0.05,
-              colorEnd: 0.90,
+              colorStart: 0.00,
+              colorEnd: 1,
               useEndAsStart: false
             }
             let arColors = colorGenerator.interpolateColors(response.data.length, colorScale, colorRangeInfo)
@@ -219,12 +235,13 @@ export default new Vuex.Store({
               let strBackgroundColor = arColors[i]
               
               // No total count
-              // commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
+              commit('PushBlockCountFourRunsTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
               // Include Total count
               commit('PushBlockCountTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount, response.data[i].TotalBlockCount] })
             } // end for
             // Set Chart Collection Object
             commit('SetChartDataCollectionForBlockCountAll', 'Blocks Cut', '#f87979')
+            commit('SetChartDataCollectionForBlockCountFourRuns', 'Blocks Cut', '#f87979')
 
             // Set Pie Chart Data
             commit('SetChartDataCollectionForPieChart')

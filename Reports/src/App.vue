@@ -20,7 +20,7 @@
         <b-link class="nav-link" to="/blocksbytech">Blocks By Tech</b-link>
       </li>
       <li class="nav-item">
-        <b-link class="nav-link" to="/blocksbytechline">Blocks By Tech Line</b-link>
+        <b-link class="nav-link" to="/blockcountcharts">Block Count Charts</b-link>
       </li>         
          
       </ul>
