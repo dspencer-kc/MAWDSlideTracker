@@ -1,9 +1,37 @@
-/*qryGetNextSLAddedStainInst*/
-SELECT MAX(staininst) as MaxStainInst  
+/*Query 1 - get StainLabel by ID
+  Query 2 - qryGetNextSLAddedStainInst
+  Query 3 - Get stain details from other slides on block
+ */
+SELECT abbr  as StainLabel FROM OPENLIS.copath_c_d_stainprocess where id = '$hinit';
+/*qryGetNextSLAddedStainInst
+ - To avoid stain instance conflicts with CoPath, any slides added from the SlideTracker not in CoPath will have a stain instance of 100 and incrementing from there*/
+SELECT coalesce(MAX(staininst),99) + 1 as 'NextStainInstAbove100'
 FROM tblSlides
 WHERE
   BlockID = '${strBlockID}' AND
-staininst >= 100
+staininst >= 100;
+SELECT 
+  max(PartInst) as PartInst,
+  max(BlockInst) as BlockInst,
+  max(BlockDesignator) as BlockDesignator, 
+  max(PartDesignator) as PartDesignator, 
+  max(Patient) as Patient,
+  max(SiteLabel) as SiteLabel,
+  max(Specimen_id) as Specimen_id,
+  max(AccessionID) as AccessionID
+FROM
+  tblSlides
+WHERE
+  BlockID = 'HBLKMPS19-99999_A_9'
+GROUP BY
+  PartInst,
+  BlockInst,
+  BlockDesignator,
+  PartDesignator,
+  Patient,
+  SiteLabel,
+  Specimen_id,
+  AccessionID
 
 
 /*Get Details to add stain
@@ -50,70 +78,38 @@ INSERT INTO `OPENLIS`.`tblSlides`
 `BlockDesignator`,
 `PartDesignator`,
 `StainOrderDate`,
-`OrderingPath`,
-`Department`,
 `Patient`,
 `SiteLabel`,
 `StainLabel`,
-`Printed`,
-`DateTimePrinted`,
-`LocationPrinted`,
-`WhoPrinted`,
 `TimesPrinted`,
-`Note`,
 `Specimen_id`,
 `AccessionID`,
 `ToBePrinted`,
 `Audit`,
-`TimesUpdatedFromCoPath`,
-`LastTimeUpdatedFromCoPath`,
 `SyncID`,
-`LinkedEngravedCassette`,
-`DTPrinted`,
-`SlideStatusID`,
-`SlideDistributionID`)
+`SlideStatusID`)
 VALUES
-(${strSlideID},
-${strBlockID},
-${strBlockStainInstID},
-${strPartInst},
-${intBlockInst},
-((/*qryGetNextSLAddedStainInst*/
-  SELECT MAX(staininst) as MaxStainInst  
-  FROM tblSlides
-  WHERE
-    BlockID = '${strBlockID}' AND
-  staininst >= 100) + 1),
-1,
-1,
-<{Status: }>,
-<{StainID: }>,
-<{BlockDesignator: }>,
-<{PartDesignator: }>,
-<{StainOrderDate: }>,
-<{OrderingPath: }>,
-<{Department: }>,
-<{Patient: }>,
-<{SiteLabel: }>,
-<{StainLabel: }>,
-<{Printed: }>,
-<{DateTimePrinted: }>,
-<{LocationPrinted: }>,
-<{WhoPrinted: }>,
-<{TimesPrinted: 0}>,
-<{Note: }>,
-<{Specimen_id: }>,
-<{AccessionID: }>,
-<{ToBePrinted: 1}>,
-<{Audit: }>,
-<{TimesUpdatedFromCoPath: 1}>,
-<{LastTimeUpdatedFromCoPath: }>,
-<{SyncID: }>,
-<{LinkedEngravedCassette: }>,
-<{DTPrinted: }>,
-<{SlideStatusID: $ord}>,
-<{SlideDistributionID: }>);
-
-/* qryUpdateSlideCountofSlidesOnSameBlock
-   
-*/
+(${strSlideID}, /* SlideID */
+${strBlockID}, /* BlockID */
+${strBlockStainInstID}, /*strBlockStainInstID*/
+${strPartInst}, /*strPartInst*/
+${intBlockInst}, /*intBlockInst*/
+${strStainInst}, /*StainInst*/
+${SlideInst}, /*SlideInst*/
+${SlideCount}, /*SlideCount*/
+${Status}, /*Status*/
+${StainID}, /*StainID*/
+${BlockDesignator}, /*BlockDesignator*/
+${PartDesignator}, /*PartDesignator*/
+${StainOrderDate}, /*Status*/
+${strPatient}, /*Patient*/
+${strSiteLabel}, /*SiteLabel*/
+${strStainLabel}, /*StainLabel*/
+0, /*TimesPrinted*/
+${Specimen_id}, /*Specimen_id*/
+${strAccessionID}, /*AccessionID*/
+1, /*ToBePrinted*/
+${strAudit}, /*Audit*/
+0, /*SyncID*/
+'$add' /*SlideStatusID*/
+);
