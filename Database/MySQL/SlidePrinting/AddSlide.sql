@@ -89,27 +89,81 @@ INSERT INTO `OPENLIS`.`tblSlides`
 `SyncID`,
 `SlideStatusID`)
 VALUES
-(${strSlideID}, /* SlideID */
-${strBlockID}, /* BlockID */
-${strBlockStainInstID}, /*strBlockStainInstID*/
-${strPartInst}, /*strPartInst*/
-${intBlockInst}, /*intBlockInst*/
-${strStainInst}, /*StainInst*/
-${SlideInst}, /*SlideInst*/
-${SlideCount}, /*SlideCount*/
-${Status}, /*Status*/
-${StainID}, /*StainID*/
-${BlockDesignator}, /*BlockDesignator*/
-${PartDesignator}, /*PartDesignator*/
-${StainOrderDate}, /*Status*/
-${strPatient}, /*Patient*/
-${strSiteLabel}, /*SiteLabel*/
-${strStainLabel}, /*StainLabel*/
+('${strSlideID}', /* SlideID */
+'${strBlockID}', /* BlockID */
+'${strBlockStainInstID}', /*strBlockStainInstID*/
+${intPartInst}, /*PartInst*/
+${intBlockInst}, /*BlockInst*/
+${intStainInst}, /*StainInst*/
+${intSlideInst}, /*SlideInst*/
+${intSlideCount}, /*SlideCount*/
+'${Status}', /*Status*/
+'${StainID}', /*StainID*/
+'${BlockDesignator}', /*BlockDesignator*/
+'${PartDesignator}', /*PartDesignator*/
+NOW(), /*StainOrderDate*/
+'${strPatient}', /*Patient*/
+'${strSiteLabel}', /*SiteLabel*/
+'${strStainLabel}', /*StainLabel*/
 0, /*TimesPrinted*/
-${Specimen_id}, /*Specimen_id*/
-${strAccessionID}, /*AccessionID*/
+'${Specimen_id}', /*Specimen_id*/
+'${strAccessionID}', /*AccessionID*/
 1, /*ToBePrinted*/
-${strAudit}, /*Audit*/
+'${strAudit}', /*Audit*/
+0, /*SyncID*/
+'$add' /*SlideStatusID*/
+);
+
+
+/* W SAMPLE DATA
+
+qryAddSlide */
+INSERT INTO `OPENLIS`.`tblSlides`
+(`SlideID`, /*Block Stain Inst ID Plus Slide Inst*/
+`BlockID`,
+`BlockStainInstID`, /*Block ID Plus stain inst*/
+`PartInst`,
+`BlockInst`,
+`StainInst`,
+`SlideInst`,
+`SlideCount`,
+`Status`,
+`StainID`,
+`BlockDesignator`,
+`PartDesignator`,
+`StainOrderDate`,
+`Patient`,
+`SiteLabel`,
+`StainLabel`,
+`TimesPrinted`,
+`Specimen_id`,
+`AccessionID`,
+`ToBePrinted`,
+`Audit`,
+`SyncID`,
+`SlideStatusID`)
+VALUES
+('HSLDMPS19-99999_A_2.100.1', /* SlideID */
+'HBLKMPS19-99999_A_2', /* BlockID */
+'MPS19-99999_A_2.100', /*strBlockStainInstID*/
+1, /*PartInst*/
+9, /*BlockInst*/
+100, /*StainInst*/
+1, /*SlideInst*/
+1, /*SlideCount*/
+'Added', /*Status*/
+'$hinit', /*StainID*/
+'9', /*BlockDesignator*/
+'A', /*PartDesignator*/
+NOW(), /*StainOrderDate*/
+'TEST,TEST', /*Patient*/
+'MAWD', /*SiteLabel*/
+'H&E', /*StainLabel*/
+0, /*TimesPrinted*/
+'mwd6554812', /*Specimen_id*/
+'MPS19-99999', /*AccessionID*/
+1, /*ToBePrinted*/
+'Test', /*Audit*/
 0, /*SyncID*/
 '$add' /*SlideStatusID*/
 );
