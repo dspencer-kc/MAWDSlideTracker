@@ -12,8 +12,34 @@ function caseblockslidecount (request, response, callback) {
   // ============================================================================================
 
   console.log('caseblockslidecount')
-  let strSlideDistributionLocation = request.body.slidedistributionlocation
+  let strURLHash = null
+  //  let strSlideDistributionLocation = ''
+  let strSlideDistributionLocation = 'LOCNDERM'
   let strSQL = null
+  let strLocnIDLookupSQL = null
+  strURLHash = request.body.URLHash
+
+  //  MySQL Call to get location id based off of hash
+  if (strURLHash !== null) {
+    strLocnIDLookupSQL = `SELECT LocationID FROM OPENLIS.tblSlideDistributionLocations where URLHash = '${strURLHash}';`
+
+    // Connect to the database
+    var conLocnIDLookup = mysql.createConnection(mysqlConfig)
+    conLocnIDLookup.query(strLocnIDLookupSQL, function (err, result) {
+      if (err) {
+        response.send(err)
+        console.log(err)
+      // On Error, close connection
+      } else {
+      // if there is no error, you have the result
+        // response.json(result)
+        console.log('result')
+        console.log(result)
+        strSlideDistributionLocation = result
+      }
+      conLocnIDLookup.end()
+    })
+  }
 
   console.log(strSlideDistributionLocation)
 
