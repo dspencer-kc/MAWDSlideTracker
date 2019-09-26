@@ -90,6 +90,13 @@ app.post('/caseblockslidecount', (request, response) => {
   })
 })
 
+app.post('/caseblockslidecountdetails', (request, response) => {
+  slideTrackerCaseBlockSlideCounts.caseblockslidecountdetails(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
 module.exports = {
   start: start
 }

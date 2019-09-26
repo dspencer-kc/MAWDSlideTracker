@@ -3,7 +3,8 @@ var mysqlConfig = require('../mysqlConfig')
 
 module.exports = {
 
-  caseblockslidecount: caseblockslidecount
+  caseblockslidecount: caseblockslidecount,
+  caseblockslidecountdetails: caseblockslidecountdetails
 }
 
 function caseblockslidecount (request, response, callback) {
@@ -33,8 +34,8 @@ function caseblockslidecount (request, response, callback) {
       } else {
       // if there is no error, you have the result
         // response.json(result)
-        console.log('result found')
-        console.log(LocnIDLookupResult)
+        // console.log('result found')
+        // console.log(LocnIDLookupResult)
         if (LocnIDLookupResult.length > 0) {
           strSlideDistributionLocation = LocnIDLookupResult[0].LocationID
         }
@@ -45,7 +46,7 @@ function caseblockslidecount (request, response, callback) {
         CaseBlockSlideSQL('Third', 'funCurrentDaySecondRunCutoff()', 'funCurrentDayThirdRunCutoff()', strSlideDistributionLocation) +
         CaseBlockSlideSQL('Fourth', 'funCurrentDayThirdRunCutoff()', 'funCurrentDayFourthRunCutoff()', strSlideDistributionLocation) +
         CaseBlockSlideSQL('Total', 'funPreviousWorkDayCutoffDateTime()', 'now()', strSlideDistributionLocation)
-        console.log(strSQL)
+        // console.log(strSQL)
 
         if (strSlideDistributionLocation !== null) {
           if (strSQL !== null) {
@@ -73,6 +74,40 @@ function caseblockslidecount (request, response, callback) {
     })
   } else {
     response.send('Error: Check Paremeters in API Request')
+  }
+}
+function caseblockslidecountdetails (request, response, callback) {
+  let strSlideDistributionLocation = null
+  let strSQL = null
+
+  strSlideDistributionLocation = request.body.SLIDEDISTLOCID
+  strSlideDistributionLocation = 'LOCN' + strSlideDistributionLocation
+  console.log(strSlideDistributionLocation)
+
+  strSQL = `/*qrySlideDetails*/
+    SELECT DTReadyForCourier, SlideID, StainLabel, SlideTray
+    FROM tblSlides as subTblSlides
+    INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
+    WHERE subTblSlideDistribution.DTReadyForCourier >= funPreviousWorkDayCutoffDateTime() AND
+      subTblSlideDistribution.DTReadyForCourier < funCurrentDayFirstRunCutoff() AND
+      SlideDistributionLocation = '${strSlideDistributionLocation}'
+      Order By DTReadyForCourier desc;`
+
+  console.log(strSQL)
+  if (strSQL !== null) {
+    // Connect to the database
+    var con = mysql.createConnection(mysqlConfig)
+    con.query(strSQL, function (err, result) {
+      if (err) {
+        response.send(err)
+        console.log(err)
+      // On Error, close connection
+      } else {
+      // if there is no error, you have the result
+        response.json(result)
+      }
+      con.end()
+    })
   }
 }
 
