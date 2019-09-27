@@ -89,7 +89,7 @@ function caseblockslidecountdetails (request, response, callback) {
     FROM tblSlides as subTblSlides
     INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
     WHERE subTblSlideDistribution.DTReadyForCourier >= funPreviousWorkDayCutoffDateTime() AND
-      subTblSlideDistribution.DTReadyForCourier < funCurrentDayFirstRunCutoff() AND
+      subTblSlideDistribution.DTReadyForCourier < now() AND
       SlideDistributionLocation = '${strSlideDistributionLocation}'
       Order By DTReadyForCourier desc;`
 
