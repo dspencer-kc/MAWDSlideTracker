@@ -1,9 +1,9 @@
-// Block Count.vue
+// BlockCountStackedBar.vue
 
 <template>
     <div>
-    <h1>Block Count</h1>
-    <bar-chart :chart-data="datacollection" :width="5" :height="2"></bar-chart>
+    <h1>Block Count Stacked Bar</h1>
+    <bar-chart :chart-data="datacollection" :options="localoptions" :width="5" :height="2"></bar-chart>
     </div>
     
 </template>
@@ -13,18 +13,23 @@ import store from '../store.js'
 import BarChart from './BarChart.js'
 
 export default {
-name: 'BlockCount',
+name: 'BlockCountStackedBar',
 components: {
   BarChart
 },
 data() {
 return {
-  datacollection: null
+  datacollection: null,
+  localoptions: {
+    scales: {
+      xAxes: [{ stacked: true }],
+      yAxes: [{ stacked: true }]
+    }
+  }
 }
 },
 mounted() {
   console.log('Hello component created')
-  // this.SetChartData()
   this.GetChartData()
 },
 methods: {
@@ -38,9 +43,9 @@ methods: {
   },
 },
 computed: {
-    ChartData() {
-      return this.$store.getters.ChartDataCollection
-    }
+  //  ChartData() {
+  //    this.localdatacollection
+  //  }
 } 
 }
 </script>

@@ -11,26 +11,26 @@
           <b-link class="nav-link" to="home">Home</b-link>
       </li>
       <li class="nav-item">
-        <b-link class="nav-link" to="/blockcount">Block Count</b-link>
+        <b-link class="nav-link" to="/blockcountstackedbar">BC Stacked Bar</b-link>
+      </li>
+      <li class="nav-item">
+        <b-link class="nav-link" to="/blockcountpie">BC Pie</b-link>
       </li>
       <li class="nav-item">
         <b-link class="nav-link" to="/blocksbytech">Blocks By Tech</b-link>
       </li>
       <li class="nav-item">
-        <b-link class="nav-link" to="/blocksbytechline">Blocks By Tech Line</b-link>
-      </li>      
-      <li class="nav-item">
-        <b-link class="nav-link" to="/blockscutscatter">Blocks Cut Scatter</b-link>
-      </li>
-    <li class="nav-item">
-        <b-link class="nav-link" :to="{name: 'Profile', params: { msg } }">Go to your profile</b-link>
-      </li>       
+        <b-link class="nav-link" to="/blockcountcharts">Block Count Charts</b-link>
+      </li>         
          
       </ul>
     </nav>
 
     <router-view></router-view>
+ <!--
 
+   Do not show from and to dates
+      
       From Date and Time:
       <input v-model="FromDateTime">
       <br>
@@ -39,6 +39,7 @@
       <br>
       <br>
       <button @click="GetChartData">Refresh Data</button>
+  -->
   </div>
 </template>
 

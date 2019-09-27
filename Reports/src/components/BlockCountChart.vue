@@ -24,17 +24,17 @@ return {
 mounted() {
   console.log('Hello component created')
   // this.SetChartData()
-  this.GetChartDataLocal()
+  // this.GetChartDataLocal()
 },
 methods: {
-  GetChartDataLocal (){
-       console.log('Hello getchartdatalocal')
-    store.dispatch('LoadChartDataWPromise').then(() => {
-     console.log('Show after promise blah')
-     this.localdatacollection = store.state.objChartDataCollection
-     console.log('after store data')
-    })   
-   },
+  // GetChartDataLocal (){
+  //     console.log('Hello getchartdatalocal')
+  //  store.dispatch('LoadChartDataWPromise').then(() => {
+  //   console.log('Show after promise blah')
+  //   this.localdatacollection = store.state.objChartDataCollection
+  //   console.log('after store data')
+  //  })   
+  // },
 },
 computed: {
     ChartData() {
