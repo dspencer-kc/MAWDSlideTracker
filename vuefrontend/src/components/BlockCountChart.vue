@@ -32,11 +32,11 @@ export default {
         items: store.state.blockCountTableItems
     }
   },
-  methods: {
-      created () {
-          console.log('Hello mounted')
+  created() {
+          console.log('Hello created')
           this.LoadTableData()
-      },
+  },
+  methods: {
       LoadTableData() {
         store.dispatch('LoadBlockCountTableData').then(() => {
         console.log('Show after promise blah')
