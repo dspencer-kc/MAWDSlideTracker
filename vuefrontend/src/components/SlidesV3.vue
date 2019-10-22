@@ -283,7 +283,8 @@ export default {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: store.state.username,
-      slideQueuePath: store.state.slideQueuePath
+      slideQueuePath: store.state.slideQueuePath,
+      printLocation: store.state.stationName
 
       })
       .then(function (response) {
