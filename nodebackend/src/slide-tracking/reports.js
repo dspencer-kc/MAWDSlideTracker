@@ -25,7 +25,7 @@ function reports (request, response, callback) {
     case 'blockcount':
       // console.log('Hello report block count')
 
-      strSQL = `/* qryTotalBlockCountWSort*/
+      strSQL = `/* qryTotalBlockCountWSort
       Total Block Count: Previous Busines Day Plus Hours set from tbleRunTime 'PreviousDayCutoff*/
       SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
       FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation

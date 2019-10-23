@@ -50,6 +50,7 @@ function printSlides (request, response, callback) {
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
   var strSlideQueuePath = request.body.slideQueuePath
+  strLocationID = request.body.printLocation
   var strOrderPathInitials = ''
 
   console.log('Hello PrintSlides')
@@ -468,7 +469,7 @@ function slideDistribution (request, response, callback) {
 
       let strSQLMarkToBeDistributed = `UPDATE OPENLIS.tblSlides
       SET
-      Status = 'InTrayPendingLocation',
+      Status = 'ReadyForCourier',
       Audit = CONCAT(Audit, 'Marked in tray:',NOW(), '.'),
       SlideStatusID = '$itpl',
       SlideDistributionID = ${strSlideDistID}
