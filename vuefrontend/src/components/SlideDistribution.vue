@@ -238,19 +238,19 @@ methods: {
       }      
     },
     CreateNewSlideDistribution(strSlideID){
-      //Only create new slide distribution if New Slide Tray, otherwise, load existing slide tray.  
-
-      //Clear Slide Distrib ID
-      this.SlideDistributionID = null
-
+      //Only create new slide distribution if New Slide Tray, otherwise, existing tray has already been loaded. 
 
       switch (this.rdSlideTrayBehaviorSelected) {
         case 'EditExisting':
-          console.log('hello edit existing')
-
+          console.log('hello edit existing at create new slide distribution')
+          // Already have slide distribution ID, do not get new one.
+          this.blFirstSlideScanned = true
+          this.MarkSlideToBeDistributed(strSlideID, temp.insertId)          
           break
       
         default:
+          // Clear Slide Distrib ID
+          this.SlideDistributionID = null
           // Call API to create new slide distribution for slide tray.
           console.log('Hello Create New Slide Dsitribution')
           axios.post(store.state.apiURL + '/slidedistribution', {
@@ -297,7 +297,7 @@ methods: {
             if (this.rdSlideTrayBehaviorSelected === 'EditExisting') {
              
               // Get slidedistr id from slide tray and load slides
-              console.log('Hello Edit Existing')
+              console.log('Hello Edit Existing Scan Slide Tray')
               this.loading = 'true'
               axios.post(store.state.apiURL + '/slidedistribution', {
               action: 'LoadSlideTray',
@@ -309,12 +309,12 @@ methods: {
                 this.loading = false;
                 this.error_message = '';
                 if (apidata.errorcode) {
-                this.error_message = `Error loading existing slide distr.`
-                console.log('error')
-                return
+                  this.error_message = `Error loading existing slide distr.`
+                  console.log('error')
+                  return
                 }
-                // console.log('apidata:')
-                // console.log(apidata)
+                console.log('Scan Slide Tray edit existing apidata:')
+                console.log(apidata)
                 let temp = {}
                 temp = apidata.data
                 
@@ -322,8 +322,9 @@ methods: {
                 // console.log(temp)
                 // console.log(temp[0][0].CurrentSlideDistID)
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
-                // console.log('Current Slide Distr id:')
-                // console.log(this.SlideDistributionID)
+                
+                console.log('Current Slide Distr id:')
+                console.log(this.SlideDistributionID)
 
                 //Load Slide Tray now
                 this.slides = temp[1]
