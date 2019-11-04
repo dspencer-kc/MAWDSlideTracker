@@ -20,7 +20,7 @@
       <a class="navbar-brand" href="#">
           Slide Tracker
       </a>
-      <a class="nav-link" href="#">v 3.04 Test Environment</a>
+      <a class="nav-link" href="#">v 3.05</a>
       <ul class="navbar-nav ml-auto">
       <li class="nav-item">
         <b-link class="nav-link" to="/">Home</b-link>
