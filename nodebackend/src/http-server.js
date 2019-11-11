@@ -5,6 +5,7 @@ var bodyParser = require('body-parser')
 var slideTracker = require('./slide-tracking/slide-tracker')
 var slideTrackerReports = require('./slide-tracking/reports')
 var slideTrackerCaseBlockSlideCounts = require('./slide-tracking/CaseBlockSlideCount.js')
+var updateLocationStatusAndComments = require('./path-console/LocStatusAndComments')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -61,6 +62,20 @@ app.post('/slidedistribution', function (request, response) {
 
 app.post('/reports', function (request, response) {
   slideTrackerReports.reports(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/closeslidedisloc', function (request, response) {
+  updateLocationStatusAndComments.updatelocationstatusandcomments(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/insertpathcomments', function (request, response) {
+  updateLocationStatusAndComments.insertpathcomments(request, response, function (err, message) {
     if (err) return console.log(err)
     console.log(message)
   })
