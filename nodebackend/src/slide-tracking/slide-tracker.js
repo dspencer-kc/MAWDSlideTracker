@@ -94,7 +94,10 @@ function printSlides (request, response, callback) {
     } else {
       // console.log(result)
       // iterate for all the rows in result
+      let intRowCounter = 0
+
       Object.keys(result).forEach(function (key) {
+        intRowCounter++
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
@@ -154,7 +157,48 @@ function printSlides (request, response, callback) {
           }
           // Do not end connection, as you need to go through the entire loop
         }) // end update query
-      })
+      }) //  End For Each
+
+      //  Update block status and Update tblActionTracking
+      let strTempSQL = `
+        /*qryUpdateBlockSlidesPrinted*/
+        UPDATE OPENLIS.tblBlock
+        SET
+        BlockStatus = 'Cut',
+        TimesSlidesPrintedAtMicrotomy = COALESCE(TimesSlidesPrintedAtMicrotomy, 0) + ${intRowCounter},
+        FirstSlidePrintedDT = IF( AnySlidesPrinted = 1, FirstSlidePrintedDT, NOW()),
+        LastSlidePrintedDT = IF( AnySlidesPrinted = 1, NOW(), LastSlidePrintedDT),
+        AnySlidesPrinted = 1,
+        Audit = CONCAT(COALESCE(Audit), ' ', NOW(), ' ${intRowCounter} slide(s) printed off block by ${strPrintRequestBy} at ${strLocationID}.')
+        WHERE BlockID = '${strBlockID}';
+        /*qryUpdatetblActionTrackingSlidesPrinted*/
+          INSERT INTO OPENLIS.tblActionTracking (
+            Action,
+            IDOfMaterial,
+            User,
+            Station,
+            ActionDateTime,
+            Count
+          )
+          VALUES (
+            'SlidesPrintedOffBlock',
+            '${strBlockID}',
+            '${strPrintRequestBy}',
+            '${strLocationID}',
+            NOW(),
+            ${intRowCounter}
+          );
+        `
+
+      con.query(strTempSQL, function (updateerr, updateresult) {
+        if (updateerr) {
+          console.log('updateerror:', updateerr)
+        } else {
+          // console.log(strSQLUpdateStatement)
+          // console.log(updateresult.affectedRows + ' record(s) updated')
+        }
+        // Do not end connection, as you need to go through the entire loop
+      }) // end update query
     }
     con.end()
   }) // end qury
