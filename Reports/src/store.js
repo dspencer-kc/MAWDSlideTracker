@@ -39,7 +39,9 @@ export default new Vuex.Store({
     blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run', 'Total'],
     blockCountTableItems: [],
     blockCountFourRunsTableItems: [],
-    blockCountFourRunsTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run']
+    blockCountFourRunsTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
+    blocksCutByTimeTableItems: [],
+    blocksCutByTimeTableFields: ['Time Cut']
   },
   mutations: {
     SetStateMsg (state, strTmp) {
@@ -63,6 +65,9 @@ export default new Vuex.Store({
     PushBlockCountFourRunsTableItems (state, strTmp) {
       state.blockCountFourRunsTableItems.push(strTmp)
     },
+    PushBlockCutsLineTableItems (state, strTmp) {
+      state.blocksCutByTimeTableItems.push(strTmp)
+    },
     ClearBlockCountTableItems (state) {
       state.blockCountTableItems = []
     },
@@ -74,6 +79,9 @@ export default new Vuex.Store({
     },
     ClearChartData (state) {
       state.arChartData = []
+    },
+    blocksCutByTimeTableItems (state) {
+      state.blocksCutByTimeTableItems = []
     },
     SetChartDataCollection (state, strChartLabel) {
       state.objChartDataCollection = {
@@ -87,10 +95,10 @@ export default new Vuex.Store({
         ]
       }
     },
-    SetChartDataCollectionForBlockCountAll (state, strChartLabel) {
+    SetChartDataCollectionForBlocksCutByTime (state) {
       state.objChartDataCollection = {
-        labels: state.blockCountTableFields,
-        datasets: state.blockCountTableItems
+        labels: state.blocksCutByTimeTableFields,
+        datasets: state.blocksCutByTimeTableItems
       }
     },
     SetChartDataCollectionForBlockCountFourRuns (state, strChartLabel) {
@@ -105,6 +113,12 @@ export default new Vuex.Store({
       state.objPieChartThirdRunData = FormatPieChartDataObject(2, state.blockCountTableItems)
       state.objPieChartFourthRunData = FormatPieChartDataObject(3, state.blockCountTableItems)
       state.objPieChartTotalData = FormatPieChartDataObject(4, state.blockCountTableItems)
+    },
+    SetChartDataCollectionBlockCountLine (state, strChartLabel) {
+      state.objChartDataCollection = {
+        labels: state.blockCountTableFields,
+        datasets: state.blockCountTableItems
+      }
     },
     SetApiUrl (state, strAPIURL) {
       state.apiurl = strAPIURL
@@ -247,6 +261,43 @@ export default new Vuex.Store({
             commit('SetChartDataCollectionForPieChart')
 
             console.log('done test')
+            resolve()
+          })
+          .catch(function (error) {
+            console.log(error)
+            reject(error)
+          })
+        console.log('promise done')
+      })
+    },
+
+    LoadBlockCutsLine ({ commit }) {
+      console.log('Hello LoadBlockCutsLine')
+      return new Promise((resolve, reject) => {
+        let strFullAPICall = this.state.apiURL + '/reports'
+        console.log('Hello Store LoadBlockCutsLine')
+        console.log(strFullAPICall)
+        axios.post(strFullAPICall, {
+          action: 'LoadBlockCutsLine'
+        })
+          .then(function (response) {
+            // console.log(response)
+            // Clear table data
+            
+            commit('blocksCutByTimeTableItems')
+            for (var i = 0; i < response.data[1].length; i++) {
+              // Build Chart Data Array
+              // console.log(response.data[1][i].FirstOfActionDateTime)
+              // commit('PushBlockCutsLineTableItems', { labels: [response.data[1][i].FirstOfActionDateTime], data: [i] })
+              console.log(new Date(response.data[1][i].FirstOfActionDateTime))
+              commit('PushBlockCutsLineTableItems', { data: [{ t: new Date(response.data[1][i].FirstOfActionDateTime), y: i }] })
+              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
+            } // end for
+            // Set Chart Collection Object
+            
+            commit('SetChartDataCollectionForBlocksCutByTime')
+            
+            console.log('LoadBlockCutsLine')
             resolve()
           })
           .catch(function (error) {

@@ -21,7 +21,10 @@
       </li>
       <li class="nav-item">
         <b-link class="nav-link" to="/blockcountcharts">Block Count Charts</b-link>
-      </li>         
+      </li>
+      <li class="nav-item">
+        <b-link class="nav-link" to="/blockscutlinechart">Blocks Cut Line</b-link>
+      </li>          
          
       </ul>
     </nav>

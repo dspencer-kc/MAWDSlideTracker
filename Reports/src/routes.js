@@ -9,6 +9,7 @@ import Profile from './components/Profile.vue'
 import BlockCountStackedBar from './components/BlockCountStackedBar.vue'
 import BlockCountPie from './components/BlockCountPie.vue'
 import BlockCountCharts from './components/BlockCountCharts.vue'
+import BlocksCutLineChart from './components/BlocksCutLineChart.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -17,7 +18,9 @@ const routes = [
   { path: '/blockcountcharts', component: BlockCountCharts, name: 'BlockCountCharts', props: true },
   { path: '/blockcountpie', component: BlockCountPie, name: 'BlockCountPie', props: true },
   { path: '/blocksbytechline', component: BlocksByTechLine, name: 'BlocksByTechLine', props: true },
+  { path: '/blocksbytechline', component: BlocksByTechLine, name: 'BlocksByTechLine', props: true },
   { path: '/blockscutscatter', component: BlocksCutScatter, name: 'BlocksCutScatter', props: true },
+  { path: '/blockscutlinechart', component: BlocksCutLineChart, name: 'BlocksCutLineChart', props: true },
   { path: '/login', component: Login },
   { path: '/profile', component: Profile, name: 'Profile', props: true }
 ]
