@@ -19,26 +19,55 @@ components: {
 },
 data() {
 return {
-  localdatacollection: null,
-  localoptions:   {
-    /*scales:   {
-    xAxes: [{
-      type: "time",
-      time: {
-        unit: 'hour',
-        unitStepSize: 0.5,
-        tooltipFormat: "h:mm:ss a",
-        displayFormats: {
-          hour: 'MMM D, h:mm A'
-        }
+  localdatacollection: {
+    
+    datasets: [{
+      label: 'Blocks Cut',
+      data: 
+        [
+          {
+            t: new Date('2019-12-12 3:41'),
+            y: 1
+          }, 
+          {
+            t: new Date('2019-12-12 14:41'),
+            y: 10
+          }
+        ],
+    },
+      {
+        label: 'Slides Distributed',
+      data: [{
+    x: new Date('2019-12-12 4:41'),
+    y: 1
+}, {
+    t: new Date('2019-12-12 16:41'),
+    y: 5
+}]
+      
       }
-    }],
-    },*/
+      
+    ]
+  
+  },
+  localoptions:   {
     legend: {
-      display: false,
-      position: 'bottom'
+      display: true
+    },
+    title: {
+      display: true,
+      text: "Correct Usage of Time Scale (Passing Labels as Integers/Dates/Moments)",
+    },
+    scales: {
+      xAxes: [{
+        type: 'time',
+        time: {
+          unit: 'month',
+          tooltipFormat: 'lll',
+        }
+      }]
     }
-    }
+  }
 }
 },
 mounted() {

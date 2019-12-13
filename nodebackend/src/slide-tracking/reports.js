@@ -15,7 +15,7 @@ function reports (request, response, callback) {
 // ============================================================================================
 
   console.log('reports start')
-  let strReportName = request.body.action
+  const strReportName = request.body.action
   let strSQL = null
 
   console.log(strReportName)
