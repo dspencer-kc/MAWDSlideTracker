@@ -56,13 +56,13 @@ return {
     },
     title: {
       display: true,
-      text: "Correct Usage of Time Scale (Passing Labels as Integers/Dates/Moments)",
+      text: "Time Today's Blocks were Cut and Slides Marked Distributed to Couriers (count off of block)",
     },
     scales: {
       xAxes: [{
         type: 'time',
         time: {
-          unit: 'month',
+          unit: 'hour',
           tooltipFormat: 'lll',
         }
       }]

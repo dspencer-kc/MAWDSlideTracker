@@ -24,7 +24,7 @@ export default new Vuex.Store({
     objBarChartFourRuns: null,
     //  apiurl: 'http://10.24.4.9:2082/histodata',
     title: 'Blocks By Tech',
-    chartlabel: 'Blocks Cut',
+    chartlabel: 'Block Times',
     backgroundColor: '#f87979',
     // slideQueuePath: '',
     //  Prod
@@ -42,6 +42,7 @@ export default new Vuex.Store({
     blockCountFourRunsTableItems: [],
     blockCountFourRunsTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
     blocksCutByTimeTableItems: [],
+    blocksDistributedByTimeTableItems: [],
     blocksCutByTimeTableFields: ['Time Cut']
   },
   mutations: {
@@ -69,6 +70,9 @@ export default new Vuex.Store({
     PushBlockCutsLineTableItems (state, strTmp) {
       state.blocksCutByTimeTableItems.push(strTmp)
     },
+    PushBlocksDistributedByTimeTableItems (state, strTmp) {
+      state.blocksDistributedByTimeTableItems.push(strTmp)
+    },
     ClearBlockCountTableItems (state) {
       state.blockCountTableItems = []
     },
@@ -83,6 +87,7 @@ export default new Vuex.Store({
     },
     ClearBlocksCutByTimeTableItems (state) {
       state.blocksCutByTimeTableItems = []
+      state.blocksDistributedByTimeTableItems = []
     },
     SetChartDataCollection (state, strChartLabel) {
       state.objChartDataCollection = {
@@ -139,8 +144,15 @@ export default new Vuex.Store({
         datasets: [
           {
             label: 'Blocks Cut',
-            data: state.blocksCutByTimeTableItems
-          }]
+            data: state.blocksCutByTimeTableItems,
+            pointRadius: 0
+          },
+          {
+            label: 'Block has Slide Distributed',
+            data: state.blocksDistributedByTimeTableItems,
+            pointRadius: 0
+          }
+        ]
       }
     },
     SetApiUrl (state, strAPIURL) {
@@ -331,14 +343,46 @@ export default new Vuex.Store({
               }
               */
               
-              console.log(new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')))
+              // console.log(new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')))
               // commit('PushBlockCutsLineTableItems', { data: [{ x: String(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
               
               commit('PushBlockCutsLineTableItems', { t: new Date(response.data[1][i].FirstOfActionDateTime), y: response.data[1][i].BlockCutSeq })
+              // commit('PushBlocksDistributedByTimeTableItems', { t: new Date(response.data[3][i].FirstDTReadyForCourier), y: response.data[3][i].BlockDistSeq })
               // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
               // commit('PushBlockCutsLineTableItems', { data: [{ t: new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('MM-DD-YYYY hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
               // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
             } // end for
+
+            for (var j = 0; j < response.data[3].length; j++) {
+              // Build Chart Data Array
+              // console.log(response.data[1][i].FirstOfActionDateTime)
+              // commit('PushBlockCutsLineTableItems', { labels: [response.data[1][i].FirstOfActionDateTime], data: [i] })
+              /*
+                Format Chart data needs to be in below:
+                datasets: [{
+                label: 'Blocks Cut',
+                  data: 
+                    [
+                      {
+                        t: new Date('2019-12-12 3:41'),
+                        y: 1
+                      }, 
+                      {
+                        t: new Date('2019-12-12 14:41'),
+                        y: 10
+                      }
+                    ],
+              }
+              */
+              
+              // console.log(new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')))
+              // commit('PushBlockCutsLineTableItems', { data: [{ x: String(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
+            
+              commit('PushBlocksDistributedByTimeTableItems', { t: new Date(response.data[3][j].FirstDTReadyForCourier), y: response.data[3][j].BlockDistSeq })
+              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
+              // commit('PushBlockCutsLineTableItems', { data: [{ t: new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('MM-DD-YYYY hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
+              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
+            } //  end for
             // Set Chart Collection Object
             
             commit('SetChartDataCollectionBlockCountLine')
