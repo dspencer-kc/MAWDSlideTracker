@@ -1,4 +1,9 @@
-/*qryEstimatedBlocksBySpecClass.sql*/
+/*qryEstimatedBlocksBySpecClass.sql
+For this to work, we need to utilize tblBlock.Cancelled and tblBlock.HoldOver, and also add same day blocks
+Engrave Time should be from 8:00 pm two previous day to 8:00 pm previous day.
+If marked hold over, it should be 3 previous day to 2 previous day.
+If cancelled, do not include.
+*/
 SET @varBlockDTEngravedGreaterThan = '2019-12-12 22:00';
 SET @varBlockDTEngravedLessThanEqualTo = '2019-12-13 22:00';
 SET @varHoldOverBlockDTEngravedGreaterThan = '2019-12-11 22:00';

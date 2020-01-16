@@ -39,3 +39,4 @@ tblActionTracking.Count>0 AND
 ActionDateTime >= funPreviousWorkDayCutoffDateTime()
 GROUP BY tblActionTracking.IDOfMaterial
 ORDER BY FirstOfActionDateTime
+
