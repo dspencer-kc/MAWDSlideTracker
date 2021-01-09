@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.13",
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.21.2",
     "socket.io": "^2.2.0",
-    "vue": "^2.6.6",
+    "vue": "^2.6.12",
     "vue-axios": "^2.1.4",
     "vue-router": "^3.0.7",
     "vue-socket-io": "^0.3.2",
@@ -25,7 +25,7 @@
     "@vue/cli-service": "^3.0.0",
     "eslint-loader": "^2.1.2",
     "vue-cli-plugin-bootstrap": "^1.0.0-alpha.1",
-    "vue-template-compiler": "^2.6.6"
+    "vue-template-compiler": "^2.6.12"
   },
   "eslintConfig": {
     "root": true,
