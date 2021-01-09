@@ -7,12 +7,19 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     count: 0,
-    username: '',
-    validuser: false,
+    
+    /*  Hardcoded for testing
+      username: '',
+      validuser: false,
+    */
+
+    username: 'dspencer',
+    validuser: true,
+
     stationName: '',
     slideQueuePath: '',
     //  Prod
-    apiURL: 'http://10.24.4.9:2081',
+    //  apiURL: 'http://10.24.4.9:2081',
     //  Test
     //  apiURL: 'http://10.24.4.9:2082',
     //  Local Test
