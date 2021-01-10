@@ -5,20 +5,21 @@ var dateFormat = require('dateformat')
 var fs = require('fs')
 
 module.exports = {
-querySlideLocation: querySlideLocation
+  querySlideLocation: querySlideLocation,
+  pullSlidesWithStorageDetails: pullSlidesWithStorageDetails
 }
 
 function querySlideLocation (request, response, callback) {
 //= ==========================================================================================
 //
-//    Function getUserInfo
-//      Get User Info
+//    Function xxx
+//      xxx
 //
 //    Author: Drew Spencer
 //
 //
 //    When to call:
-//      To get userinfo based on badge barcode
+//      xxx
 //= ===========================================================================================
 var strUserID = request.body.slideid
 
@@ -66,43 +67,43 @@ function pullSlidesWithStorageDetails (request, response, callback) {
 //    Returns:    JSON with all slide information
 //
 //= ===========================================================================================
-var urlParts = url.parse(request.url, true)
-var parameters = urlParts.query
-var strAccessionID = parameters.accessionid
+  let urlParts = url.parse(request.url, true)
+  let strAccessionID = request.body.accessionid
 
 // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
 // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-var strSQL = `SELECT tblSlides.AccessionID,
-tblSlides.PartDesignator,
-tblSlides.BlockDesignator,
-tblSlides.Patient,
-tblSlides.StainLabel,
-tblSlides.ToBePrinted,
-tblSlides.SlideInst,
-tblSlides.slidecount,
-tblSlides.StainOrderDate,
-tblSlides.SiteLabel,
-tblSlides.SlideID,
-tblSlides.Status
-FROM   tblSlides  
-WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
-// console.log(strSQL)
+var strSQL = `
+SELECT s.AccessionID,
+s.PartDesignator,
+s.BlockDesignator,
+s.Patient,
+s.StainLabel,
+s.SlideInst,
+s.slidecount,
+s.SiteLabel,
+s.SlideID,
+ss.slidestoragestatus,
+ss.slidelocationid,
+ss.slideowner,
+ss.updateddatetime
+FROM   tblSlides as s
+  LEFT JOIN tblslidestorage as ss
+  on s.SlideID = ss.SlideID
+WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
+console.log(strSQL)
 
-var con = mysql.createConnection(mysqlConfig)
+  var con = mysql.createConnection(mysqlConfig)
 
-con.query(strSQL, function (err, result) {
+  con.query(strSQL, function (err, result) {
     if (err) {
-    console.log(err)
+      console.log(err)
     } else {
     // if there is no error, you have the result
     // iterate for all the rows in result
     Object.keys(result).forEach(function (key) {
         var row = result[key]
         // Format Date
-        row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        if (row.OrderingPath === 'null') {
-        row.OrderingPath = ''
-        }
+        row.updateddatetime = dateFormat(row.updateddatetime, 'mm/dd/yyyy h:MM:ss TT')
     })
 
     // console.log(result)
@@ -112,5 +113,5 @@ con.query(strSQL, function (err, result) {
 })
 // });
 // con.end();
-console.log(`${strBlockID}`)
+console.log(`Inquire storage on ${strAccessionID}`)
 }

@@ -5,6 +5,8 @@ var bodyParser = require('body-parser')
 var slideTracker = require('./slide-tracking/slide-tracker')
 var slideTrackerReports = require('./slide-tracking/reports')
 var slideTrackerCaseBlockSlideCounts = require('./slide-tracking/CaseBlockSlideCount.js')
+var slideTrackerStorage = require('./slide-tracking/slide-storage')
+
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -92,6 +94,13 @@ app.post('/caseblockslidecount', (request, response) => {
 
 app.post('/caseblockslidecountdetails', (request, response) => {
   slideTrackerCaseBlockSlideCounts.caseblockslidecountdetails(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/slidestorage', function (request, response) {
+  slideTrackerStorage.pullSlidesWithStorageDetails(request, response, function (err, message) {
     if (err) return console.log(err)
     console.log(message)
   })

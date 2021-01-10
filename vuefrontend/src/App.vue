@@ -27,7 +27,10 @@
       </li>          
       <li class="nav-item">
         <b-link class="nav-link" to="/slidedistribution"> Slide Distribution </b-link>
-      </li>      
+      </li>
+      <li class="nav-item">
+        <b-link class="nav-link" to="/slidestorage"> Slide Storage </b-link>
+      </li>        
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
       </li>
