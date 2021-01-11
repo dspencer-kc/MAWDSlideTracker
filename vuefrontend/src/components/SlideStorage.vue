@@ -35,68 +35,9 @@
   <div v-else-if="error_message">
     <h3>{{ error_message }}</h3>
   </div>
-  <b-collapse id="collapse-manualbockid" class="mt-2">        
-    <b-card>
-      <p class="card-text">If you cannot scan the barcode, you can manually input the full block ID in the fields below:<br>**Double check the slides that pull up correspond to the block**</p>
-      <b-row>
-          <b-col> 
-            <label>Case Prefix:</label>
-          </b-col>
-          <b-col> 
-           <b-input id="InputCasePrefix" v-model="manualcaseprefix" />
-          </b-col>
-      </b-row>
-            <b-row>
-          <b-col> 
-            <label>Year:</label>
-          </b-col>
-          <b-col> 
-           <b-input id="InputCaseTwoDigitYear" v-model="manualcasetwodigityear" />
-          </b-col>
-      </b-row>
-      <b-row>
-          <b-col> 
-            <label>Case Number:</label>
-          </b-col>
-          <b-col> 
-           <b-input id="InputCaseNo" v-model="manualcasenumber" />
-          </b-col>
-      </b-row>
-            <b-row>
-          <b-col> 
-            <label> Part:</label>
-          </b-col>
-          <b-col> 
-           <b-input id="InputPart" v-model="manualpart" />
-          </b-col>
-      </b-row>
-      <b-row>
-          <b-col> 
-            <label> Block: </label>
-          </b-col>
-          <b-col> 
-           <b-input id="InputBlock" v-model="manualblock" />
-          </b-col>
-      </b-row>
-      <b-row>
-          <b-col> 
-            <label> Full Block ID:</label>
-          </b-col>
-          <b-col> 
-              <label> HBLK{{manualcaseprefix}}{{manualcasetwodigityear}}-{{manualcasenumber}}_{{manualpart}}_{{manualblock}} </label>
-          </b-col>
-      </b-row>
-      <b-row>
-          <div class="col-md-12 text-center">
-           <!-- <b-button type="submit" variant="secondary lg" @click="manuallyLoadBlockID()"> Pull Slides From Manual Block ID</b-button>-->
-          </div>
-      </b-row>
-    </b-card>
-  </b-collapse>
   <br>
   <div class="customsubheadertext">
-    <!--<h5>Block {{ this.currentBlock }} of {{ this.totalBlocks }}</h5>
-    <h5>Slides on this block: {{ slides.length }}</h5>-->
+    <h5>Slides on this Case: {{ slides.length }}</h5>
   </div>
 
 <div class="container">
@@ -115,29 +56,29 @@
                       <div class=slidebody>
                       {{ result.StainLabel }}<br>
                       Level {{ result.SlideInst}} of {{ result.slidecount}}<br>
-                      {{ result.updateddatetime}}<br>
-                      {{ result.slideowner}}<br>
+                      <br>
+
                       </div>
+                                          
 
                       <div class=slidefooter>
-                      {{ result.SiteLabel}}
+                     Location Status:
+                     <br>
+                      {{ result.slidestoragestatus}}
 
                       </div>
             </div> <!-- /Slidelabel -->
               <p>
-            {{ result.SlideDistributionKeyword}}
-              <br>
-
-
-                <br><br>
-                Print Slide <!--<input type="checkbox"
-                              v-model=result.ToBePrinted
-                              @change="updateSlideToPrintValue(result.SlideID, result.ToBePrinted)"
-                              >-->
-                  <br><br>
-                  Status:
+                Current Slide Owner:
+                <br>
+                  {{ result.slideowner}}<br><br>
+                  Location:
                   <br>
-                  {{ result.slidestoragestatus}}
+                      {{ result.slidelocationid}}
+                  <br>
+                  Most Recent Update:
+                  {{ result.updateddatetime}}
+                  
               </p>
             </label>
 
@@ -155,15 +96,8 @@
 import axios from 'axios'
 import store from '../store.js'
 
-// define the external API URL
-//const API_URL = 'http://localhost:3000/slidetracker/slideparameters?blockid='
-const API_URLWithSlideParameters = store.state.apiURL + '/slidetracker/slideparameters?blockid='  //For Get Call
-// Helper function to help build urls to fetch slide details from blockid
-function buildUrl(blockID) {
-  return `${API_URLWithSlideParameters}${blockID}`
-}
 export default {
-  name: 'slidestorage', // component name
+  name: 'slidestorage', // component name 
   props: {
     // username: String,  access through store
     // firstname: String,
@@ -175,29 +109,17 @@ export default {
     },
     data() {
     return {
-      blockID: '',
+      accID: '',
       error_message: '',
       loading: false, // to track when app is retrieving data
       slides: {},
       formstatus: 'loadslides',
-      formstatuslabel: 'Load Slides',
-      info: null,
-      // slideQueuePath: '', moved to store
-      // stationName: '', moved to store
-      totalBlocks: null,
-      currentBlock: null,
-      totalParts: null,
-      manualblockid: null,
-      manualcaseprefix: null,
-      manualcasetwodigityear: '19',
-      manualcasenumber: null,
-      manualaccid: null,
-      manualpart: null,
-      manualblock: null
+      formstatuslabel: 'Check Slide Availability',
+      info: null
     }
   },
 
-
+/*
   sockets: {
       connect: function () {
           console.log('socket connected within slide')
@@ -211,9 +133,9 @@ export default {
           //validate scan data
           this.validateScanData(data)
       }
-  },
+  },*/
   methods: {
-    validateScanData(data){
+    /*validateScanData(data){
       if (store.state.validuser) {
         console.log('Slide Queue Path: ', data.slideQueuePath)
         store.commit('SetSlideQueuePath', data.slideQueuePath)
@@ -245,51 +167,19 @@ export default {
         this.blockID = ''
       }
 
-    },
+    },*/
     pullOrPrintSlides()
     {
 
       if (this.formstatus == 'loadslides') {
         this.pullSlides();
       }
-    else if (this.formstatus == 'readytoprint') {
-      console.log('goto print slides');
-      this.printSlides();
+    else if (this.formstatus == 'readytorequest') {
+      console.log('goto request slides');
     }{
 
     }
 
-  },
-
-  printSlides()
-  {
-    console.log('start print slides')
-
-    //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-    //Add printRequestedBy
-    console.log(store.state.slideQueuePath)
-
-      axios.post(store.state.apiURL + '/printslides', {
-      action: 'PrintSlides',
-      blockID: this.blockID,
-      printRequestedBy: store.state.username,
-      slideQueuePath: store.state.slideQueuePath,
-      printLocation: store.state.stationName
-
-      })
-      .then(function (response) {
-        console.log('slides printed')
-      console.log(response)
-      })
-      .catch(function (error) {
-      console.log(error)
-      });
-
-    //Done printing, scan new block
-    this.formstatus = 'loadslides'
-    this.formstatuslabel = 'Load Slides'
-    this.clearCurrentSlide()
-    console.log("Done printing slides")
   },
 
     pullSlides() {
@@ -307,13 +197,19 @@ export default {
         accessionid: accID,
         userid: store.state.username
         })
-        .then(data => {
-          console.log(data)
-          this.slides = data;
-          this.formstatus = 'readytoprint';
+        .then(apidata => {
+          console.log(apidata)
+          
+          let temp = {}
+                temp = apidata.data
+          console.log('temp:')
+          console.log(temp)
+          this.slides = temp;
+          this.formstatus = 'readytorequest';
           // document.getElementById("InputaccID").disabled = true;
-          this.formstatuslabel = 'Print Slides';
+          this.formstatuslabel = 'Request Slides';
           console.log("Made it to this.slide=data");
+          this.loading = false
           //console.log(data);
         })
         .catch((error) => {
@@ -400,7 +296,7 @@ export default {
       console.log("hellocancelbutton")
       this.accID =""
       this.formstatus = 'loadslides'
-      this.formstatuslabel = 'Load Slides'
+      this.formstatuslabel = 'Check Slide Availability'
       this.totalBlocks = ''
       this.totalParts = ''
       //Always disable input textbox now that we're scanning
