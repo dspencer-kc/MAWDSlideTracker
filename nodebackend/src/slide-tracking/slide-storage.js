@@ -85,7 +85,8 @@ s.SlideID,
 ss.slidestoragestatus,
 ss.slidelocationid,
 ss.slideowner,
-ss.updateddatetime
+ss.updateddatetime,
+ss.CanBeRequested
 FROM   tblSlides as s
   LEFT JOIN tblslidestorage as ss
   on s.SlideID = ss.SlideID

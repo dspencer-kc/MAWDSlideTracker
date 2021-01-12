@@ -15,7 +15,7 @@
   <div class="mx-auto">
 
 <!--Scan Block......................-->
-    <b-form v-on:submit.prevent="pullOrPrintSlides()" inline>
+    <b-form v-on:submit.prevent="pullOrRequestSlides()" inline>
     <div class="customheadertext">
         <h3>Case No:  </h3>
     </div>
@@ -37,7 +37,7 @@
   </div>
   <br>
   <div class="customsubheadertext">
-    <h5>Slides on this Case: {{ slides.length }}</h5>
+    <h5>{{formtextlabel}} {{ slides.length }}</h5>
   </div>
 
 <div class="container">
@@ -69,6 +69,11 @@
                       </div>
             </div> <!-- /Slidelabel -->
               <p>
+                Request  Slide 
+                <input type="checkbox"
+                              checked = true
+                              >
+                <br><br>
                 Current Slide Owner:
                 <br>
                   {{ result.slideowner}}<br><br>
@@ -115,7 +120,8 @@ export default {
       slides: {},
       formstatus: 'loadslides',
       formstatuslabel: 'Check Slide Availability',
-      info: null
+      info: null,
+      formtextlabel: ''
     }
   },
 
@@ -168,14 +174,15 @@ export default {
       }
 
     },*/
-    pullOrPrintSlides()
+    pullOrRequestSlides()
     {
 
       if (this.formstatus == 'loadslides') {
         this.pullSlides();
       }
-    else if (this.formstatus == 'readytorequest') {
+    else if (this.formstatus === 'readytorequest') {
       console.log('goto request slides');
+      this.requestSlides()
     }{
 
     }
@@ -208,6 +215,7 @@ export default {
           this.formstatus = 'readytorequest';
           // document.getElementById("InputaccID").disabled = true;
           this.formstatuslabel = 'Request Slides';
+          this.formtextlabel = "Slides on this Case:"
           console.log("Made it to this.slide=data");
           this.loading = false
           //console.log(data);
@@ -246,6 +254,12 @@ export default {
         })
         */
         // this.GetPartBlockCurrentAndTotals()
+    },
+    requestSlides() {
+    console.log('Hello requestSlides')
+    this.formstatuslabel = "Check Slide Availability"
+    this.formtextlabel = "Slide Request Has Been Submitted."
+    this.clearCurrentSlide()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
