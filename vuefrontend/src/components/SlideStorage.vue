@@ -70,7 +70,7 @@
             </div> <!-- /Slidelabel -->
               <p>
                 Request  Slide 
-                <input type="checkbox"
+                <input id="requestslide" type="checkbox"
                               checked = true
                               >
                 <br><br>
