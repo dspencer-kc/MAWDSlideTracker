@@ -70,9 +70,9 @@
             </div> <!-- /Slidelabel -->
               <p>
                 Request  Slide 
-                <input id="requestslide" type="checkbox"
-                              checked = true
-                              >
+                <input type="checkbox"
+                v-model=result.ToBeRequested
+                >
                 <br><br>
                 Current Slide Owner:
                 <br>
@@ -257,6 +257,16 @@ export default {
     },
     requestSlides() {
     console.log('Hello requestSlides')
+
+    // For each slide, submit graphql request
+    var i;
+    for (i = 0; i < this.slides.length; i++) {
+      if (this.slides[i].ToBeRequested) {
+        // Put in logic to send to apollo here
+      }
+    }
+    
+
     this.formstatuslabel = "Check Slide Availability"
     this.formtextlabel = "Slide Request Has Been Submitted."
     this.clearCurrentSlide()
