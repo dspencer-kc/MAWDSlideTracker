@@ -100,6 +100,7 @@
 <script>
 import axios from 'axios'
 import store from '../store.js'
+import gql from 'graphql-tag'
 
 export default {
   name: 'slidestorage', // component name 
@@ -118,12 +119,15 @@ export default {
       error_message: '',
       loading: false, // to track when app is retrieving data
       slides: {},
+      rarsslides: {},
       formstatus: 'loadslides',
       formstatuslabel: 'Check Slide Availability',
       info: null,
-      formtextlabel: ''
+      formtextlabel: '',
+      static_slide_name: 'KL20-11898_A_3.3.1'
     }
   },
+
 
 /*
   sockets: {
@@ -190,6 +194,8 @@ export default {
   },
 
     pullSlides() {
+          this.getSlideArchiveStatus(this.accID)
+          
            console.log('start pull slides revised for slide storage');
       //this.GetPartBlockCurrentAndTotals()
       let accID = this.accID
@@ -263,13 +269,15 @@ export default {
     for (i = 0; i < this.slides.length; i++) {
       if (this.slides[i].ToBeRequested) {
         // Put in logic to send to apollo here
+        console.log('Slide ',i,'requested')
+        this.submitSlideRequest(this.slides[i].SlideID, 'TestUserName', Date.now())
+
       }
     }
-    
-
-    this.formstatuslabel = "Check Slide Availability"
+        this.formstatuslabel = "Check Slide Availability"
     this.formtextlabel = "Slide Request Has Been Submitted."
-    this.clearCurrentSlide()
+    // Need to wait until submitted to clear.
+    // this.clearCurrentSlide()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
@@ -331,7 +339,64 @@ export default {
     setFocusToInputAccID(){
       document.getElementById("InputAccID").focus();
     },
+    getSlideArchiveStatus(accessionid) {
+      console.log('start get static')
+      this.$apollo.query({
+        query: gql`query getslidesbycase($accessionid: String!) {
+          slides(where: {accessionid: {_eq: $accessionid}}) {
+            slideid
+            accessionid
+            blockid
+            box_id
+            casetype
+            location
+            requestedby
+            requestts
+            retrievalrequest
+            sitelabel
+            stain
+            stainorderdate
+            ts
+            year
+          }
+        }`,
+
+        variables: {
+          accessionid
+        }
+      }).then((response) => {
+        console.log('Graphql  response:')
+        console.log(response)
+        this.rarsslides = response.data.slides
+      })
+    },
+      submitSlideRequest(slide, strRequestedBy, varTimeStamp) {
+      console.log('SubmitSlideRequestStart',slide)
+      this.$apollo.mutate({
+        mutation: gql`mutation UpdateRetrievalRequest($slide: String!, $strRequestedBy: String!, $varTimeStamp: Float) {
+          update_slides_by_pk(
+          pk_columns: {slideid: $slide}, 
+          _set: {retrievalrequest: true, requestedby: $strRequestedBy, requestts: ${varTimeStamp}})
+          {
+          slideid
+          requestedby
+          retrievalrequest
+          requestts
+          }
+        }
+        `,
+        variables: {
+          slide,
+          strRequestedBy,
+          varTimeStamp
+        }
+      }).then((response) => {
+        console.log('Slide Submitted')
+        console.log(response)
+      })
+    },
   },
+
   computed:{
     inputButtonDisabled(){
       if (store.state.validuser && this.accID) {
