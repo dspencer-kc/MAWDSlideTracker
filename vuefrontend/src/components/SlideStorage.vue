@@ -120,6 +120,7 @@ export default {
       loading: false, // to track when app is retrieving data
       slides: {},
       rarsslides: {},
+      //combinedslides: {},
       formstatus: 'loadslides',
       formstatuslabel: 'Check Slide Availability',
       info: null,
@@ -194,7 +195,7 @@ export default {
   },
 
     pullSlides() {
-          this.getSlideArchiveStatus(this.accID)
+          this.getSlideArchiveStatus(this.accID)          
           
            console.log('start pull slides revised for slide storage');
       //this.GetPartBlockCurrentAndTotals()
@@ -270,14 +271,14 @@ export default {
       if (this.slides[i].ToBeRequested) {
         // Put in logic to send to apollo here
         console.log('Slide ',i,'requested')
-        this.submitSlideRequest(this.slides[i].SlideID, 'TestUserName', Date.now())
+        this.submitSlideRequest(this.slides[i].SlideID.substring(4), 'TestUserName', Date.now())
 
       }
     }
         this.formstatuslabel = "Check Slide Availability"
     this.formtextlabel = "Slide Request Has Been Submitted."
     // Need to wait until submitted to clear.
-    // this.clearCurrentSlide()
+    this.clearCurrentSlide()
     },
     updateSlideToPrintValue(strSlideID, blChecked)
     {
@@ -370,6 +371,18 @@ export default {
         this.rarsslides = response.data.slides
       })
     },
+    /*combineRARsSmdSlideData() {
+      this.slides.forEach(slide => {
+        this.rarsslides.forEach(rarsslide => {
+          if (slide.slideId.substring(4) === rarsslide.slideId) 
+          {
+
+
+          }
+        })
+      });
+
+    },*/
       submitSlideRequest(slide, strRequestedBy, varTimeStamp) {
       console.log('SubmitSlideRequestStart',slide)
       this.$apollo.mutate({
