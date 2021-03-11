@@ -289,7 +289,7 @@ return {
   // blockid:''
 }
 },
-
+/*
 sockets: {
     connect: function () {
         console.log('socket connected')
@@ -304,7 +304,7 @@ sockets: {
         this.validateScanData(data)
 
     }
-},
+},  */
 methods: {
   validateScanData(data){
     //this.stationname = data.stationName

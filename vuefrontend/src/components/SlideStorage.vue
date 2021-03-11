@@ -195,7 +195,7 @@ export default {
   },
 
     pullSlides() {
-          this.getSlideArchiveStatus(this.accID)          
+         
           
            console.log('start pull slides revised for slide storage');
       //this.GetPartBlockCurrentAndTotals()
@@ -205,18 +205,18 @@ export default {
         return
       }
       this.loading = true
-
+      // this.getSlideArchiveStatus(this.accID) 
       //Axios Template
       axios.post(store.state.apiURL + '/slidestorage', {
         accessionid: accID,
         userid: store.state.username
         })
         .then(apidata => {
-          console.log(apidata)
+          // console.log(apidata)
           
           let temp = {}
                 temp = apidata.data
-          console.log('temp:')
+          // console.log('temp:')
           console.log(temp)
           this.slides = temp;
           this.formstatus = 'readytorequest';
@@ -369,20 +369,22 @@ export default {
         console.log('Graphql  response:')
         console.log(response)
         this.rarsslides = response.data.slides
+        combineRARsandSlideData()
       })
     },
-    /*combineRARsSmdSlideData() {
+    combineRARsandSlideData() {
       this.slides.forEach(slide => {
         this.rarsslides.forEach(rarsslide => {
-          if (slide.slideId.substring(4) === rarsslide.slideId) 
+          consol.log('Looking')
+          if (slide.SlideID.substring(4) === rarsslide.SlideID) 
           {
-
+            consol.log('match')
 
           }
         })
       });
 
-    },*/
+    },
       submitSlideRequest(slide, strRequestedBy, varTimeStamp) {
       console.log('SubmitSlideRequestStart',slide)
       this.$apollo.mutate({

@@ -6,7 +6,7 @@ import VueAxios from 'vue-axios'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import VueSocketIO from 'vue-socket.io'
+// import VueSocketIO from 'vue-socket.io'
 import VueRouter from 'vue-router'
 import routes from './routes'
 import VueApollo from 'vue-apollo'
@@ -58,10 +58,10 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
-Vue.use(new VueSocketIO({
-  debug: true,
-  connection: 'http://localhost:8001'
-}))
+// Vue.use(new VueSocketIO({
+//  debug: true,
+//  connection: 'http://localhost:8001'
+// }))
 
 const client = new ApolloClient({
   link: link,

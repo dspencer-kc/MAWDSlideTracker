@@ -1,3 +1,4 @@
+const fetch = require("node-fetch");
 var mysql = require('mysql')
 var mysqlConfig = require('../mysqlConfig')
 const url = require('url')
@@ -69,10 +70,64 @@ function pullSlidesWithStorageDetails (request, response, callback) {
 //= ===========================================================================================
   let urlParts = url.parse(request.url, true)
   let strAccessionID = request.body.accessionid
+  /*
+  fetch('https://jsonplaceholder.typicode.com/todos/1')
+    .then(response => response.json())
+    .then(json => console.log(json))
+  */ 
+  fetch("http://localhost:8080/v1/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "x-hasura-admin-secret": "myadminsecretkey"
+    },
+    body: JSON.stringify({
+      query: `query qryGetSlideDetails {
+        slides(where: {accessionid: {_eq: "${strAccessionID}"}}) {
+          accessionid
+          blockid
+          box_id
+          casetype
+          location
+          requestts
+          requestedby
+          retrievalrequest
+          sitelabel
+          slideid
+          stain
+          stainorderdate
+          ts
+          year
+        }
+      }
+      `
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      console.log('hello')
+      // Insert Slide Tracking Data here, or just join?
+      InsertSlideStorageDetails(data)
+      response.json(data)
+      
 
+    })
+  /*
+    .then(result => {
+      // return result.json();
+      console.log(result.json())
+      return result
+    })
+    .then(data => {
+      console.log("data returned:\n", data)
+      response.json(data)*/
+      // res.send(data);
+//    });
+// */
 // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
 // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-var strSQL = `
+/* var strSQL = `
 SELECT s.AccessionID,
 s.PartDesignator,
 s.BlockDesignator,
@@ -115,5 +170,64 @@ console.log(strSQL)
 })
 // });
 // con.end();
-console.log(`Inquire storage on ${strAccessionID}`)
+console.log(`Inquire storage on ${strAccessionID}`)  
+*/
+}
+
+function InsertSlideStorageDetails(arSlideStorageDetails) {
+  console.log('InsertSlideStorageDetails Start')
+  var con = mysql.createConnection(mysqlConfig)
+  
+  // console.log('apidata:', arSlideStorageDetails);
+  let slides = {}
+  slides = arSlideStorageDetails.data.slides
+  // console.log(arSlideStorageDetails.data.slides[0].casetype)
+  //  console.log(temp[0].casetype)
+  // console.log(temp.blockid)
+
+  let strTempSQL = ''
+  slides.forEach(slide => {
+    console.log(slide.blockid)
+
+    // let strSlideID = slide.slideid
+    strTempSQL += `
+    INSERT INTO openlis.tblslidestorage
+    (SlideID,
+    SlideStorageStatus,
+    SlideLocationID,
+    SlideOwner,
+    UpdatedDateTime,
+    User,
+    BlockID,
+    AccessionID,
+    CanBeRequested,
+    RequestSlide)
+    VALUES
+    ('${slide.slideid}',
+    'Unknown',
+    '${slide.location}',
+    'SomeOwner',
+    CURRENT_TIMESTAMP,
+    'dspencer',
+    '${slide.blockid}',
+    '${slide.accessionid}',
+    1,
+    0);  
+  `
+  })
+  
+  console.log(strTempSQL)
+
+  
+  con.query(strTempSQL, function (updateerr, updateresult) {
+    if (updateerr) {
+      console.log('updateerror:', updateerr)
+    } else {
+      // console.log(strSQLUpdateStatement)
+      // console.log(updateresult.affectedRows + ' record(s) updated')
+    }
+    // Do not end connection, as you need to go through the entire loop
+  }) // end update query
+  
+  con.end()
 }
