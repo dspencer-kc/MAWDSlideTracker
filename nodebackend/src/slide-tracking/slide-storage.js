@@ -109,7 +109,47 @@ function pullSlidesWithStorageDetails (request, response, callback) {
       console.log('hello')
       // Insert Slide Tracking Data here, or just join?
       InsertSlideStorageDetails(data)
-      response.json(data)
+      
+      var strSQL = `
+        SELECT s.AccessionID,
+        s.PartDesignator,
+        s.BlockDesignator,
+        s.Patient,
+        s.StainLabel,
+        s.SlideInst,
+        s.slidecount,
+        s.SiteLabel,
+        s.SlideID,
+        s.ToBeRequested,
+        ss.slidestoragestatus,
+        ss.slidelocationid,
+        ss.slideowner,
+        ss.updateddatetime,
+        ss.CanBeRequested
+        FROM   tblSlides as s
+          LEFT JOIN tblslidestorage as ss
+          on s.SlideID = ss.SlideID
+        WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
+      console.log(strSQL)
+
+      var con = mysql.createConnection(mysqlConfig)
+
+      con.query(strSQL, function (err, result) {
+        if (err) {
+          console.log(err)
+        } else {
+          // if there is no error, you have the result
+          // iterate for all the rows in result
+          Object.keys(result).forEach(function (key) {
+            var row = result[key]
+            // Format Date
+            row.updateddatetime = dateFormat(row.updateddatetime, 'mm/dd/yyyy h:MM:ss TT')
+          })
+
+          // console.log(result)
+          response.json(result)
+        }
+        con.end()
       
 
     })
@@ -127,51 +167,12 @@ function pullSlidesWithStorageDetails (request, response, callback) {
 // */
 // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
 // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-/* var strSQL = `
-SELECT s.AccessionID,
-s.PartDesignator,
-s.BlockDesignator,
-s.Patient,
-s.StainLabel,
-s.SlideInst,
-s.slidecount,
-s.SiteLabel,
-s.SlideID,
-s.ToBeRequested,
-ss.slidestoragestatus,
-ss.slidelocationid,
-ss.slideowner,
-ss.updateddatetime,
-ss.CanBeRequested
-FROM   tblSlides as s
-  LEFT JOIN tblslidestorage as ss
-  on s.SlideID = ss.SlideID
-WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
-console.log(strSQL)
 
-  var con = mysql.createConnection(mysqlConfig)
-
-  con.query(strSQL, function (err, result) {
-    if (err) {
-      console.log(err)
-    } else {
-    // if there is no error, you have the result
-    // iterate for all the rows in result
-    Object.keys(result).forEach(function (key) {
-        var row = result[key]
-        // Format Date
-        row.updateddatetime = dateFormat(row.updateddatetime, 'mm/dd/yyyy h:MM:ss TT')
-    })
-
-    // console.log(result)
-    response.json(result)
-    }
-    con.end()
 })
 // });
 // con.end();
-console.log(`Inquire storage on ${strAccessionID}`)  
-*/
+console.log(`Inquire storage on ${strAccessionID}`)
+
 }
 
 function InsertSlideStorageDetails(arSlideStorageDetails) {
