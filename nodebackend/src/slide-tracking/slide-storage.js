@@ -122,7 +122,7 @@ function pullSlidesWithStorageDetails (request, response, callback) {
         s.SlideID,
         s.ToBeRequested,
         ss.slidestoragestatus,
-        ss.slidelocationid,
+        ss.Location,
         ss.slideowner,
         ss.updateddatetime,
         ss.CanBeRequested
@@ -195,25 +195,34 @@ function InsertSlideStorageDetails(arSlideStorageDetails) {
     INSERT INTO openlis.tblslidestorage
     (SlideID,
     SlideStorageStatus,
-    SlideLocationID,
+    Location,
     SlideOwner,
     UpdatedDateTime,
     User,
     BlockID,
     AccessionID,
     CanBeRequested,
-    RequestSlide)
+    RetrievalRequest)
     VALUES
     ('${slide.slideid}',
-    'Unknown',
+    'Archived',
     '${slide.location}',
-    'SomeOwner',
+    'RARS',
     CURRENT_TIMESTAMP,
-    'dspencer',
+    'RARS',
     '${slide.blockid}',
     '${slide.accessionid}',
     1,
-    0);  
+    0)
+    ON DUPLICATE KEY UPDATE 
+    SlideStorageStatus = 'Archived',
+    Location = '${slide.location}',
+    SlideOwner = 'RARS',
+    UpdatedDateTime = CURRENT_TIMESTAMP,
+    User = 'RARS',
+    BlockID = '${slide.blockid}',
+    AccessionID = '${slide.accessionid}'
+    ;     
   `
   })
   
