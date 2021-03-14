@@ -55,7 +55,7 @@
                         </div>
                       <div class=slidebody>
                       {{ result.StainLabel }}<br>
-                      Level {{ result.SlideInst}} of {{ result.slidecount}}<br>
+                      Level {{ result.SlideInst }} of {{ result.slidecount }}<br>
                       <br>
 
                       </div>
@@ -76,13 +76,17 @@
                 <br><br>
                 Current Slide Owner:
                 <br>
-                  {{ result.slideowner}}<br><br>
+                  {{ result.slideowner }}<br>
                   Location:
                   <br>
-                      {{ result.slidelocationid}}
+                      {{ result.Location }}
                   <br>
-                  Most Recent Update:
-                  {{ result.updateddatetime}}
+                  Box:
+                  <br>
+                      {{ result.BoxID }}
+                  <br>
+                  Updated:
+                  {{ result.updateddatetime }}
                   
               </p>
             </label>

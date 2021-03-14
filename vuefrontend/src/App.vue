@@ -280,7 +280,8 @@ return {
   lastname: "lastnameinitialvalue",
   userid: "useridinitialvalue",
   background: "backgroundinitialvalue",
-  scannedbadgeinput: "Scan Badge To Start",
+  // scannedbadgeinput: "Scan Badge To Start",
+  scannedbadgeinput: store.state.username,
   // validuser: false, moved to store
   scannedbadgebuttontext: "Scan Badge",
   userstate: "no active user",

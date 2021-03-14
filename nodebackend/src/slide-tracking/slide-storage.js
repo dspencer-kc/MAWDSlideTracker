@@ -125,10 +125,12 @@ function pullSlidesWithStorageDetails (request, response, callback) {
         ss.Location,
         ss.slideowner,
         ss.updateddatetime,
-        ss.CanBeRequested
+        ss.CanBeRequested,
+        ss.User,
+        ss.BoxID
         FROM   tblSlides as s
           LEFT JOIN tblslidestorage as ss
-          on s.SlideID = ss.SlideID
+          on s.SlideID = concat('HSLD',ss.SlideID)
         WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
       console.log(strSQL)
 

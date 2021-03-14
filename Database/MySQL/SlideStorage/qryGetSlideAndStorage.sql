@@ -8,7 +8,7 @@ s.slidecount,
 s.SiteLabel,
 s.SlideID,
 ss.slidestoragestatus,
-ss.slidelocationid,
+ss.Location,
 ss.slideowner,
 ss.updateddatetime
 FROM   tblSlides as s
