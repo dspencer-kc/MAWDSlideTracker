@@ -27,7 +27,8 @@ export default new Vuex.Store({
     // Note `isActive` is left out and will not appear in the rendered table
     // blockCountTableFields: ['location', 'FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
     blockCountTableFields: ['location', 'block_count'],
-    blockCountTableItems: []
+    blockCountTableItems: [],
+    RARSapiURL: 'http://localhost:2081'
   },
   mutations: {
     increment (state) {

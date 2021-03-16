@@ -271,14 +271,18 @@ export default {
 
     // For each slide, submit graphql request
     var i;
+    let arSlideIDs = []
     for (i = 0; i < this.slides.length; i++) {
       if (this.slides[i].ToBeRequested) {
         // Put in logic to send to apollo here
         console.log('Slide ',i,'requested')
-        this.submitSlideRequest(this.slides[i].SlideID.substring(4), 'TestUserName', Date.now())
+        arSlideIDs.push(slides[i].SlideID.substring(4))
+        // this.submitSlideRequest(this.slides[i].SlideID.substring(4), 'TestUserName', Date.now())
 
       }
     }
+
+    this.submitSlideRequest(arSlideIDs)
         this.formstatuslabel = "Check Slide Availability"
     this.formtextlabel = "Slide Request Has Been Submitted."
     // Need to wait until submitted to clear.
@@ -389,8 +393,41 @@ export default {
       });
 
     },
-      submitSlideRequest(slide, strRequestedBy, varTimeStamp) {
+      submitSlideRequest(arSlideIDs) {
       console.log('SubmitSlideRequestStart',slide)
+      
+      //Axios Template
+      axios.post(store.state.RARSapiURL, {
+      requested_by:store.state.username,
+      timestampp:Date.now(),
+      request_type:slideid,
+      request: arSlideIDs
+        })
+        .then(apidata => {
+          // console.log(apidata)
+          
+          let temp = {}
+                temp = apidata.data
+          // console.log('temp:')
+          console.log(temp)
+          this.slides = temp;
+          this.formstatus = 'readytorequest';
+          // document.getElementById("InputaccID").disabled = true;
+          this.formstatuslabel = 'Request Slides';
+          this.formtextlabel = "Slides on this Case:"
+          console.log("Made it to this.slide=data");
+          this.loading = false
+          //console.log(data);
+        })
+        .catch((error) => {
+            console.log(error)
+            this.error_message = ''
+            this.loading = false
+            this.error_message = `Sorry, no case found with Case No '${accID}' not found.`
+            console.log('error')
+        })
+
+      /* Hasura Update Slide
       this.$apollo.mutate({
         mutation: gql`mutation UpdateRetrievalRequest($slide: String!, $strRequestedBy: String!, $varTimeStamp: Float) {
           update_slides_by_pk(
@@ -413,6 +450,7 @@ export default {
         console.log('Slide Submitted')
         console.log(response)
       })
+      */
     },
   },
 
