@@ -105,6 +105,7 @@
 import axios from 'axios'
 import store from '../store.js'
 import gql from 'graphql-tag'
+const https = require('https')
 
 export default {
   name: 'slidestorage', // component name 
@@ -271,18 +272,19 @@ export default {
 
     // For each slide, submit graphql request
     var i;
-    let arSlideIDs = []
+    // let arSlideIDs = []
     for (i = 0; i < this.slides.length; i++) {
       if (this.slides[i].ToBeRequested) {
         // Put in logic to send to apollo here
         console.log('Slide ',i,'requested')
-        arSlideIDs.push(slides[i].SlideID.substring(4))
-        // this.submitSlideRequest(this.slides[i].SlideID.substring(4), 'TestUserName', Date.now())
+        // arSlideIDs.push(this.slides[i].SlideID.substring(4))
+        // this.submitSlideRequest(this.slides[i].SlideID.substring(4))
+        this.submitSlideRequestV3(this.slides[i].SlideID.substring(4))
 
       }
     }
 
-    this.submitSlideRequest(arSlideIDs)
+    // this.submitSlideRequest(arSlideIDs)
         this.formstatuslabel = "Check Slide Availability"
     this.formtextlabel = "Slide Request Has Been Submitted."
     // Need to wait until submitted to clear.
@@ -393,7 +395,72 @@ export default {
       });
 
     },
-      submitSlideRequest(arSlideIDs) {
+      submitSlideRequest(strSlideID) {
+
+
+// Direct GET using HTTPS
+/*
+        var options = {
+  "method": "GET",
+  "hostname": "nervous-bear-74.loca.lt",
+  "port": null,
+  "path": "/retrieve_slide/%7BKL20-11898_A_4.4.1%7D",
+  "headers": {
+    "cache-control": "no-cache"
+  }
+};
+
+var req = https.request(options, function (res) {
+  var chunks = [];
+
+  res.on("data", function (chunk) {
+    chunks.push(chunk);
+  });
+
+  res.on("end", function () {
+    var body = Buffer.concat(chunks);
+    console.log(body.toString());
+  });
+});
+
+req.end();
+*/
+
+        /*
+        let strAxiosGetCall = store.state.RARSapiURL + '{' + strSlideID + '}'
+        strAxiosGetCall = 'http://evil-dragonfly-55.loca.lt/retrieve_slide/{KL20-11898_A_3.3.1}'
+        // http://evil-dragonfly-55.loca.lt/retrieve_slide/{KL20-11898_A_3.3.1}
+        console.log(strAxiosGetCall)
+
+     // const headers = {Access-Control-Allow-Origin: "*"};
+    //header(“Access-Control-Allow-Origin: *”);
+      axios.get('https://evil-dragonfly-55.loca.lt/retrieve_slide/{KL20-11898_A_4.4.1}')
+          .then(apidata => {
+          console.log(apidata)
+          
+          let temp = {}
+                temp = apidata.data
+          // console.log('temp:')
+          console.log(temp)
+          // this.slides = temp;
+          this.formstatus = 'readytorequest';
+          // document.getElementById("InputaccID").disabled = true;
+          this.formstatuslabel = 'Request Slides';
+          this.formtextlabel = "Slides on this Case:"
+          console.log("Made it to this.slide=data");
+          this.loading = false
+          //console.log(data);
+        })
+        .catch((error) => {
+            console.log(error)
+            this.error_message = ''
+            this.loading = false
+            this.error_message = `API Call Error:`
+            console.log('error')
+        })
+        */
+      },
+      submitSlideRequestV2(arSlideIDs) {
       console.log('SubmitSlideRequestStart',slide)
       
       //Axios Template
@@ -452,6 +519,32 @@ export default {
       })
       */
     },
+    submitSlideRequestV3(strSlideID) {
+      console.log('start submitSlideRequestV3',strSlideID)
+      axios.post(store.state.apiURL + '/sliderequest', {
+      slideID: strSlideID
+    })
+    .then(apidata => {
+      this.loading = false;
+      this.error_message = '';
+      if (apidata.errorcode) {
+        this.error_message = `Error.`
+        console.log('error')
+        return
+      }
+      console.log('apidata:', apidata);
+      let temp = {}
+      temp = apidata.data
+      console.log(temp)
+
+    }).catch((e) => {
+      console.log(e)
+    })
+    .catch(function (error) {
+      console.log("error:")
+      console.log(error)
+    })
+    }
   },
 
   computed:{

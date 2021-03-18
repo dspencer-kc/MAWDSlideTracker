@@ -28,7 +28,9 @@ export default new Vuex.Store({
     // blockCountTableFields: ['location', 'FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
     blockCountTableFields: ['location', 'block_count'],
     blockCountTableItems: [],
-    RARSapiURL: 'http://localhost:2081'
+    // RARSapiURL: 'http://localhost:2081'
+    RARSapiURL: 'https://evil-dragonfly-55.loca.lt/retrieve_slide/',
+    storageGraphQLURL: 'https://pink-fish-21.loca.lt/v1/graphql'
   },
   mutations: {
     increment (state) {

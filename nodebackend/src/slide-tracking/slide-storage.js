@@ -1,3 +1,5 @@
+const strROBOTRequestURL = 'https://fresh-moose-35.loca.lt'
+// old http://nervous-bear-74.loca.lt/retrieve_slide/
 const fetch = require("node-fetch");
 var mysql = require('mysql')
 var mysqlConfig = require('../mysqlConfig')
@@ -7,7 +9,8 @@ var fs = require('fs')
 
 module.exports = {
   querySlideLocation: querySlideLocation,
-  pullSlidesWithStorageDetails: pullSlidesWithStorageDetails
+  pullSlidesWithStorageDetails: pullSlidesWithStorageDetails,
+  requestSlide: requestSlide
 }
 
 function querySlideLocation (request, response, callback) {
@@ -43,6 +46,25 @@ con.query(strSQL, function (err, result) {
     }
     con.end()
 }) // End query
+}
+
+function requestSlide (request, response, callback) {
+  const strSlideID = request.body.slideID
+  const strGetURL = strROBOTRequestURL + '/retrieve_slide/' + strSlideID + '/'
+  console.log('Hello request slide')
+  console.log('Slide ID' + strSlideID)
+  console.log(strGetURL)
+  fetch(strGetURL, {
+    method: "GET",
+    headers: {
+    }
+  })
+    // .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      console.log('hello from request slide')
+      // Insert respone here?
+    })
 }
 
 function pullSlidesWithStorageDetails (request, response, callback) {

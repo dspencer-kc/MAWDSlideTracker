@@ -22,6 +22,8 @@ Vue.config.productionTip = false
 const httpLink = createHttpLink({
   // You should use an absolute URL here
   uri: 'ws://localhost:8080/v1/graphql',
+  // uri: store.state.storageGraphQLURL,
+  // uri: 'ws://pink-fish-21.loca.lt/v1/graphql'
 })
 
 const getHeaders = () => {

@@ -106,6 +106,13 @@ app.post('/slidestorage', function (request, response) {
   })
 })
 
+app.post('/sliderequest', function (request, response) {
+  slideTrackerStorage.requestSlide(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
 module.exports = {
   start: start
 }
