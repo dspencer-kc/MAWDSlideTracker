@@ -1,4 +1,4 @@
-const strROBOTRequestURL = 'https://fresh-moose-35.loca.lt'
+const strROBOTRequestURL = 'https://nervous-donkey-89.loca.lt'
 // old http://nervous-bear-74.loca.lt/retrieve_slide/
 const fetch = require("node-fetch");
 var mysql = require('mysql')
