@@ -110,7 +110,7 @@ return {
 }
 },
 mounted() {
-  console.log('Hello component created')
+  console.log('MOUNTED - LOADING TABLE DATA')
   this.LoadTableData()
   
 },
@@ -223,7 +223,7 @@ methods: {
         // console.log(temp)
         // this.SlideDistributionID = temp.insertId
         // Update block count table
-        console.log('Prior to load table data')
+        console.log('MarkSlideToBeDistributed - LOADING TABLE DATA')
         this.LoadTableData()
 
       }).catch((e) => {
@@ -341,7 +341,7 @@ methods: {
 
                 //disable New Slide Tray Option
                 this.rdSlideTrayBehaviorOptions[0].disabled = true
-
+				console.log('ScanSlideTray - LOADING TABLE DATA')
                 this.LoadTableData()
                 
 
@@ -406,7 +406,7 @@ methods: {
             this.rdSlideTrayBehaviorOptions[1].disabled = false
             this.rdSlideTrayBehaviorOptions[0].disabled = false
 
-            // console.log('success')
+            console.log('MarkSlidesReadyForCourier - LOADING TABLE DATA')
             this.LoadTableData()
         })
         .catch((error) => {
@@ -433,8 +433,8 @@ methods: {
             this.loading = false
           //Clear Slide Distrib ID
           this.SlideDistributionID = null
-          // console.log('success')
-          this.LoadTableData()
+          console.log('else - NOT LOADING TABLE DATA')
+          //this.LoadTableData()
         })
         .catch((error) => {
             console.log(error)
