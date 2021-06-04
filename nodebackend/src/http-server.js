@@ -6,7 +6,7 @@ var slideTracker = require('./slide-tracking/slide-tracker')
 var slideTrackerReports = require('./slide-tracking/reports')
 var slideTrackerCaseBlockSlideCounts = require('./slide-tracking/CaseBlockSlideCount.js')
 var slideTrackerStorage = require('./slide-tracking/slide-storage')
-
+var intDebugLevel = 1 // 1 = all console logs
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -108,6 +108,11 @@ app.post('/slidestorage', function (request, response) {
 
 app.post('/sliderequest', function (request, response) {
   slideTrackerStorage.requestSlide(request, response, function (err, message) {
+    if (intDebugLevel < 5) {
+      console.log('Start Slide Request')
+      console.log(message)
+    }
+
     if (err) return console.log(err)
     console.log(message)
   })

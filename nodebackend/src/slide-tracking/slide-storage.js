@@ -6,6 +6,7 @@ var mysqlConfig = require('../mysqlConfig')
 const url = require('url')
 var dateFormat = require('dateformat')
 var fs = require('fs')
+var intDebugLvel = 1
 
 module.exports = {
   querySlideLocation: querySlideLocation,
@@ -25,9 +26,9 @@ function querySlideLocation (request, response, callback) {
 //    When to call:
 //      xxx
 //= ===========================================================================================
-var strUserID = request.body.slideid
+  var strUserID = request.body.slideid
 
-var strSQL = `SELECT * FROM OPENLIS.tblslidestorage
+  var strSQL = `SELECT * FROM OPENLIS.tblslidestorage
             WHERE \`slide_id\` = '` + slideid + `';`
 
 console.log(strSQL)
@@ -68,6 +69,7 @@ function requestSlide (request, response, callback) {
 }
 
 function pullSlidesWithStorageDetails (request, response, callback) {
+  console.log('Start Pull Slides with Storage Details')
 //= ==========================================================================================
 //
 //    app.get slidetracker
@@ -97,108 +99,166 @@ function pullSlidesWithStorageDetails (request, response, callback) {
     .then(response => response.json())
     .then(json => console.log(json))
   */ 
-  fetch("http://localhost:8080/v1/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "x-hasura-admin-secret": "myadminsecretkey"
-    },
-    body: JSON.stringify({
-      query: `query qryGetSlideDetails {
-        slides(where: {accessionid: {_eq: "${strAccessionID}"}}) {
-          accessionid
-          blockid
-          box_id
-          casetype
-          location
-          requestts
-          requestedby
-          retrievalrequest
-          sitelabel
-          slideid
-          stain
-          stainorderdate
-          ts
-          year
+
+  try {
+    console.log('start fetch')
+    fetch("http://localhost:8080/v1/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "x-hasura-admin-secret": "myadminsecretkey"
+      },
+      body: JSON.stringify({
+        query: `query qryGetSlideDetails {
+          slides(where: {accessionid: {_eq: "${strAccessionID}"}}) {
+            accessionid
+            blockid
+            box_id
+            casetype
+            location
+            requestts
+            requestedby
+            retrievalrequest
+            sitelabel
+            slideid
+            stain
+            stainorderdate
+            ts
+            year
+          }
         }
-      }
-      `
+        `
+      })
     })
+
+    console.log('fetch ended')
+      .then(response => response.json())
+      console.log('response sent start .then')
+      .then(data => {
+        console.log('second .then')
+        console.log(data)
+        console.log('next call insert slide storage details')
+        // Insert Slide Tracking Data here, or just join?
+        InsertSlideStorageDetails(data)
+
+        // Query database for slide details
+        // console.log('Start query database for slide details')
+        var strSQL = `
+          SELECT s.AccessionID,
+          s.PartDesignator,
+          s.BlockDesignator,
+          s.Patient,
+          s.StainLabel,
+          s.SlideInst,
+          s.slidecount,
+          s.SiteLabel,
+          s.SlideID,
+          s.ToBeRequested,
+          ss.slidestoragestatus,
+          ss.Location,
+          ss.slideowner,
+          ss.updateddatetime,
+          ss.CanBeRequested,
+          ss.User,
+          ss.BoxID
+          FROM   tblSlides as s
+            LEFT JOIN tblslidestorage as ss
+            on s.SlideID = concat('HSLD',ss.SlideID)
+          WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
+        console.log(strSQL)
+
+        var con = mysql.createConnection(mysqlConfig)
+
+        con.query(strSQL, function (err, result) {
+          if (err) {
+            console.log(err)
+          } else {
+            // if there is no error, you have the result
+            // iterate for all the rows in result
+            Object.keys(result).forEach(function (key) {
+              var row = result[key]
+              // Format Date
+              row.updateddatetime = dateFormat(row.updateddatetime, 'mm/dd/yyyy h:MM:ss TT')
+            })
+
+            // console.log(result)
+            response.json(result)
+          }
+          con.end()
+      })
+      // End query database
+    /*
+      .then(result => {
+        // return result.json();
+        console.log(result.json())
+        return result
+      })
+      .then(data => {
+        console.log("data returned:\n", data)
+        response.json(data)*/
+        // res.send(data);
+  //    });
+  // */
+  // SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
+  // strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
   })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data)
-      console.log('hello')
-      // Insert Slide Tracking Data here, or just join?
-      InsertSlideStorageDetails(data)
-      
-      var strSQL = `
-        SELECT s.AccessionID,
-        s.PartDesignator,
-        s.BlockDesignator,
-        s.Patient,
-        s.StainLabel,
-        s.SlideInst,
-        s.slidecount,
-        s.SiteLabel,
-        s.SlideID,
-        s.ToBeRequested,
-        ss.slidestoragestatus,
-        ss.Location,
-        ss.slideowner,
-        ss.updateddatetime,
-        ss.CanBeRequested,
-        ss.User,
-        ss.BoxID
-        FROM   tblSlides as s
-          LEFT JOIN tblslidestorage as ss
-          on s.SlideID = concat('HSLD',ss.SlideID)
-        WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
-      console.log(strSQL)
+  } catch (error) {
+    // error updating slide details
+    console.log('catch exception')
+    console.log('Unable to load updated slide distribution details')
+    console.log(error)
+  } finally {
+    // Query database for slide details
+    // console.log('Start query database for slide details')
+    var strSQL = `
+      SELECT s.AccessionID,
+      s.PartDesignator,
+      s.BlockDesignator,
+      s.Patient,
+      s.StainLabel,
+      s.SlideInst,
+      s.slidecount,
+      s.SiteLabel,
+      s.SlideID,
+      s.ToBeRequested,
+      ss.slidestoragestatus,
+      ss.Location,
+      ss.slideowner,
+      ss.updateddatetime,
+      ss.CanBeRequested,
+      ss.User,
+      ss.BoxID
+      FROM   tblSlides as s
+        LEFT JOIN tblslidestorage as ss
+        on s.SlideID = concat('HSLD',ss.SlideID)
+      WHERE  (( ( s.AccessionID ) = '${strAccessionID}' ));`
+    console.log(strSQL)
 
-      var con = mysql.createConnection(mysqlConfig)
+    var con = mysql.createConnection(mysqlConfig)
 
-      con.query(strSQL, function (err, result) {
-        if (err) {
-          console.log(err)
-        } else {
-          // if there is no error, you have the result
-          // iterate for all the rows in result
-          Object.keys(result).forEach(function (key) {
-            var row = result[key]
-            // Format Date
-            row.updateddatetime = dateFormat(row.updateddatetime, 'mm/dd/yyyy h:MM:ss TT')
-          })
+    con.query(strSQL, function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        // if there is no error, you have the result
+        // iterate for all the rows in result
+        Object.keys(result).forEach(function (key) {
+          var row = result[key]
+          // Format Date
+          row.updateddatetime = dateFormat(row.updateddatetime, 'mm/dd/yyyy h:MM:ss TT')
+        })
 
-          // console.log(result)
-          response.json(result)
-        }
-        con.end()
-      
-
+        // console.log(result)
+        response.json(result)
+      }
+      con.end()
     })
-  /*
-    .then(result => {
-      // return result.json();
-      console.log(result.json())
-      return result
-    })
-    .then(data => {
-      console.log("data returned:\n", data)
-      response.json(data)*/
-      // res.send(data);
-//    });
-// */
-// SELECT * FROM OPENLIS.tblSlides where BlockID = "D18-99999_B_1";
-// strSQL = `SELECT * FROM OPENLIS.tblSlides where BlockID = '${strBlockID}';`;
-
-})
+  }
 // });
 // con.end();
 console.log(`Inquire storage on ${strAccessionID}`)
 
 }
-
 function InsertSlideStorageDetails(arSlideStorageDetails) {
   console.log('InsertSlideStorageDetails Start')
   var con = mysql.createConnection(mysqlConfig)

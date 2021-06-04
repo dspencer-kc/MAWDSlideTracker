@@ -1,1 +1,6 @@
 To start, from nodebackend folder, call node src/index.js
+
+
+
+docker build -t stbe .   
+docker run -p 8083:8083 -e 3306 stbe

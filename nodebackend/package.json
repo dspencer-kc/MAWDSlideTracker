@@ -9,7 +9,8 @@
   "author": "Drew",
   "license": "ISC",
   "devDependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nodemon": "^1.19.4"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -18,7 +19,6 @@
     "graphql-request": "^3.4.0",
     "mysql": "^2.16.0",
     "node-fetch": "^2.6.1",
-    "nodemon": "^1.18.9",
     "serialport": "^7.1.4",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",

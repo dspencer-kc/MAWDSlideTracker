@@ -23,7 +23,7 @@ export default new Vuex.Store({
     //  Test
     //  apiURL: 'http://10.24.4.9:2082',
     //  Local Test
-    apiURL: 'http://localhost:2081',
+    apiURL: 'http://localhost:8083',
     // Note `isActive` is left out and will not appear in the rendered table
     // blockCountTableFields: ['location', 'FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
     blockCountTableFields: ['location', 'block_count'],
