@@ -341,8 +341,8 @@ methods: {
 
                 //disable New Slide Tray Option
                 this.rdSlideTrayBehaviorOptions[0].disabled = true
-				console.log('ScanSlideTray - LOADING TABLE DATA')
-                this.LoadTableData()
+				console.log('ScanSlideTray - NOT LOADING TABLE DATA')
+                //this.LoadTableData()
                 
 
               }).catch((e) => {
