@@ -77,6 +77,7 @@ function printSlides (request, response, callback) {
                          and copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id
                          and copath_p_stainprocess.wkdept_id = copath_c_d_department.id)
   WHERE (((tblSlides.BlockID) = 'HBLKB18-107_A_1') AND tblSlides.ToBePrinted = TRUE);`
+  WHERE (((tblSlides.BlockID) = '${strBlockID}') AND tblSlides.ToBePrinted = TRUE);`
 
   // console.log(strSQL)
 
@@ -129,8 +130,6 @@ function printSlides (request, response, callback) {
           })
 
         // Update query to say slide has been printed
-        strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\` 
-                                                    SET 
         strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\`
                                                     SET
                                                         \`Status\` = 'Printed',
@@ -320,7 +319,6 @@ function updateSlideToPrint (request, response, callback) {
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
 
-  var strSQL = `UPDATE \`OPENLIS\`.\`tblSlides\` 
   var strSQL = `UPDATE \`OPENLIS\`.\`tblSlides\`
             SET
               \`ToBePrinted\` = ` + blToPrintStatus +
@@ -390,7 +388,6 @@ function pullSlides (request, response, callback) {
   tblSlides.SiteLabel,
   tblSlides.SlideID,
   tblSlides.Status
-FROM   tblSlides  
 FROM   tblSlides
 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
   // console.log(strSQL)
@@ -519,7 +516,6 @@ function slideDistribution (request, response, callback) {
       SlideDistributionID = ${strSlideDistID}
       WHERE SlideID = '${strSlideID}';
       /*qrySlideCountInTrayBySlideDistr*/
-        SELECT 
         SELECT
             tblSlides.SlideID,
             qrySubSlideCountsByAcc.CaseSlidesInTray,
@@ -528,14 +524,12 @@ function slideDistribution (request, response, callback) {
         FROM
             tblSlides
                 INNER JOIN
-            (SELECT 
             (SELECT
                 qrySlideCountInTrayByCase.AccessionID,
                     qrySlideCountInTrayByCase.CaseSlidesInTray,
                     vwSlideCountByCase.CaseSlidesTotal,
                     (vwSlideCountByCase.CaseSlidesTotal - qrySlideCountInTrayByCase.CaseSlidesInTray) AS CaseSlidesNotInTray
             FROM
-                (SELECT 
                 (SELECT
                 tblSlides.AccessionID,
                     COUNT(tblSlides.SlideID) AS CaseSlidesInTray
@@ -551,7 +545,6 @@ function slideDistribution (request, response, callback) {
       FROM tblSlides
       WHERE SlideDistributionID = ${strSlideDistID};
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
-      FROM (SELECT subTblSlides.BlockID AS subBlockID  
       FROM (SELECT subTblSlides.BlockID AS subBlockID
             FROM tblSlides as subTblSlides
             WHERE subTblSlides.SlideDistributionID = ${strSlideDistID}
@@ -648,13 +641,12 @@ function slideDistribution (request, response, callback) {
 
       let strSQLExistingST = `
       /*Query01*/
-      SELECT max(subTblSlideDistribution.SlideDistributionID) as CurrentSlideDistID 
       SELECT max(subTblSlideDistribution.SlideDistributionID) as CurrentSlideDistID
       FROM tblSlideDistribution as subTblSlideDistribution
-      WHERE SlideTray = '${strSlideTrayIDExistingST}'; 
       WHERE SlideTray = '${strSlideTrayIDExistingST}';
       /*qrySlideCountInTrayBySlideTray*/
       SELECT 
+      SELECT
           tblSlides.SlideID,
           qrySubSlideCountsByAcc.CaseSlidesInTray,
           qrySubSlideCountsByAcc.CaseSlidesTotal,
@@ -662,14 +654,12 @@ function slideDistribution (request, response, callback) {
       FROM
           tblSlides
               INNER JOIN
-          (SELECT 
           (SELECT
               qrySlideCountInTrayByCase.AccessionID,
                   qrySlideCountInTrayByCase.CaseSlidesInTray,
                   vwSlideCountByCase.CaseSlidesTotal,
                   (vwSlideCountByCase.CaseSlidesTotal - qrySlideCountInTrayByCase.CaseSlidesInTray) AS CaseSlidesNotInTray
           FROM
-              (SELECT 
               (SELECT
               tblSlides.AccessionID,
                   COUNT(tblSlides.SlideID) AS CaseSlidesInTray
@@ -680,13 +670,11 @@ function slideDistribution (request, response, callback) {
           GROUP BY tblSlides.AccessionID , tblSlides.SlideCount) AS qrySlideCountInTrayByCase
           INNER JOIN vwSlideCountByCase ON qrySlideCountInTrayByCase.AccessionID = vwSlideCountByCase.AccessionID) AS qrySubSlideCountsByAcc ON qrySubSlideCountsByAcc.AccessionID = tblSlides.AccessionID
       WHERE
-          tblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');     
           tblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');
       SELECT Count(SlideID) AS 'SlidesInTray'
       FROM tblSlides
       WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
-      FROM (SELECT subTblSlides.BlockID AS subBlockID  
       FROM (SELECT subTblSlides.BlockID AS subBlockID
             FROM tblSlides as subTblSlides
             WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}')
