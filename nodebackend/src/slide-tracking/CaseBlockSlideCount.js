@@ -88,10 +88,10 @@ function caseblockslidecountdetails (request, response, callback) {
     SELECT DTReadyForCourier, SlideID, StainLabel, SlideTray
     FROM tblSlides as subTblSlides
     INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
-    WHERE subTblSlideDistribution.DTReadyForCourier >= funPreviousWorkDayCutoffDateTime() AND
-      subTblSlideDistribution.DTReadyForCourier < now() AND
-      SlideDistributionLocation = '${strSlideDistributionLocation}'
-      Order By DTReadyForCourier desc;`
+    WHERE subTblSlideDistribution.DTReadyForCourier >= date_format(curdate() - if((6+weekday(@dat))%7 > 4, (6+weekday(@dat))%7-3, 1),'%Y-%m-%d 18:00:00') AND
+    subTblSlideDistribution.DTReadyForCourier < now() AND
+    SlideDistributionLocation = '${strSlideDistributionLocation}'
+    Order By DTReadyForCourier desc;`
 
   console.log(strSQL)
   if (strSQL !== null) {
