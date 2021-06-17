@@ -26,23 +26,23 @@ function reports (request, response, callback) {
       // console.log('Hello report block count')
 
       strSQL = `/* qryTotalBlockCountWSort
-      Total Block Count: Previous Busines Day Plus Hours set from tbleRunTime 'PreviousDayCutoff*/
-      SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
-   FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation
-           FROM tblSlides as subTblSlides
-           INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
-           WHERE subTblSlideDistribution.DTReadyForCourier > date_format(curdate() - if((6+weekday(@dat))%7 > 4, (6+weekday(@dat))%7-3, 1),'%Y-%m-%d 18:00:00')
-           GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
-   INNER JOIN tblSlideDistributionLocations on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
-   GROUP BY SlideDistributionLocation
-   ORDER BY tblSlideDistributionLocations.SortValue;`
+        Total Block Count: Previous Busines Day Plus Hours set from tbleRunTime 'PreviousDayCutoff*/
+        SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
+        FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation
+        FROM tblSlides as subTblSlides
+        INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
+        WHERE subTblSlideDistribution.DTReadyForCourier > date_format(curdate() - if((6+weekday(@dat))%7 > 4, (6+weekday(@dat))%7-3, 1),'%Y-%m-%d 18:00:00')
+        GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
+        INNER JOIN tblSlideDistributionLocations on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
+        GROUP BY SlideDistributionLocation
+        ORDER BY tblSlideDistributionLocations.SortValue;`
       break
 
     case 'BlockCountAllRunTimesBySortVal':
       // console.log('Hello report block count')
 
       strSQL = `/*qryBlockCountAllRunTimesBySortVal*/
-      SELECT
+        SELECT
         LocAbbr,
         FirstRunBlockCount,
         SecondRunBlockCount,
