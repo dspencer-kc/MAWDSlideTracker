@@ -30,8 +30,11 @@ function reports (request, response, callback) {
       SELECT Count(qrySubBlockCountWLocation.subBlockID) AS BlockCount, SlideDistributionLocation
       FROM (SELECT subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation
               FROM tblSlides as subTblSlides
-              INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
-              WHERE subTblSlideDistribution.DTReadyForCourier > funPreviousWorkDayCutoffDateTime()
+                       INNER JOIN tblSlideDistribution as subTblSlideDistribution
+                                  on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
+              WHERE subTblSlideDistribution.DTReadyForCourier >
+                    date_format(curdate() - if(weekday(curdate()) >= 5, if(weekday(curdate()) = 6, 2, 1), 1),
+                                '%Y-%m-%d 18:00:00')
               GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
       INNER JOIN tblSlideDistributionLocations on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
       GROUP BY SlideDistributionLocation

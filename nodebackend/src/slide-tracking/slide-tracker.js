@@ -56,31 +56,27 @@ function printSlides (request, response, callback) {
   console.log('Hello PrintSlides')
 
   // Get all required information from blockID, only include slides that are marked 'to be printed'
-  var strSQL = `SELECT tblSlides.*, 
-                       tblCassetteColorHopperLookup.Color   AS SlideDistributionKeyword, 
-                       copath_c_d_stainstatus.name          AS CopathStainOrderStatus, 
-                       copath_c_d_person_1.initials         AS OrderPathInitials, 
-                       copath_c_d_person_1.prettyprint_name AS OrderingPathName, 
-                       copath_c_d_person_1.prettyprint_name AS CopathStainOrderStatusUpdatedBy, 
-                       copath_c_d_department.name           AS StainDept 
-                  FROM   ((((((tblSlides 
-                           INNER JOIN copath_p_stainprocess 
-                                   ON tblSlides.BlockStainInstID = 
-                                      copath_p_stainprocess._blockstaininstid) 
-                          INNER JOIN tblBlock  
-                                  ON tblSlides.BlockID = tblBlock.BlockID)  
-                         LEFT JOIN tblCassetteColorHopperLookup  
-                                ON tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID) 
-                        LEFT JOIN copath_c_d_stainstatus 
-                               ON copath_p_stainprocess.stainstatus_id = 
-                                  copath_c_d_stainstatus.id) 
-                       LEFT JOIN copath_c_d_person 
-                              ON copath_p_stainprocess.status_who_id = copath_c_d_person.id) 
-                      LEFT JOIN copath_c_d_person AS copath_c_d_person_1 
-                             ON copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id) 
-                     LEFT JOIN copath_c_d_department 
-                            ON copath_p_stainprocess.wkdept_id = copath_c_d_department.id 
-                  WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}') AND  tblSlides.ToBePrinted = TRUE );`
+  var strSQL = ` SELECT tblSlides.StainOrderDate,
+         tblSlides.SlideID,
+         tblSlides.AccessionID,
+         tblSlides.SlideInst,
+         tblSlides.PartDesignator,
+         tblSlides.BlockDesignator,
+         tblSlides.Patient,
+         tblSlides.SiteLabel,
+         tblSlides.StainLabel,
+         tblCassetteColorHopperLookup.Color AS SlideDistributionKeyword,
+         copath_c_d_person_1.initials       AS OrderPathInitials
+  FROM tblSlides
+           LEFT JOIN (copath_p_stainprocess,tblBlock,tblCassetteColorHopperLookup,copath_c_d_stainstatus,copath_c_d_person,copath_c_d_person AS copath_c_d_person_1,copath_c_d_department)
+                     ON (tblSlides.BlockStainInstID = copath_p_stainprocess._blockstaininstid
+                         and tblSlides.BlockID = tblBlock.BlockID
+                         and tblBlock.Hopper = tblCassetteColorHopperLookup.HopperID
+                         and copath_p_stainprocess.stainstatus_id = copath_c_d_stainstatus.id
+                         and copath_p_stainprocess.status_who_id = copath_c_d_person.id
+                         and copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id
+                         and copath_p_stainprocess.wkdept_id = copath_c_d_department.id)
+  WHERE (((tblSlides.BlockID) = '${strBlockID}') AND tblSlides.ToBePrinted = TRUE);`
 
   // console.log(strSQL)
 
