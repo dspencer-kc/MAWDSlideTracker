@@ -33,7 +33,7 @@ function reports (request, response, callback) {
                        INNER JOIN tblSlideDistribution as subTblSlideDistribution
                                   on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
               WHERE subTblSlideDistribution.DTReadyForCourier >
-                    date_format(curdate() - if(weekday(curdate()) = 5, if(weekday(curdate()) = 6, 2, 1), 1),
+                    date_format(curdate() - if(weekday(curdate()) >= 5, if(weekday(curdate()) = 6, 2, 1), 1),
                                 '%Y-%m-%d 18:00:00')
               GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
                  INNER JOIN tblSlideDistributionLocations
