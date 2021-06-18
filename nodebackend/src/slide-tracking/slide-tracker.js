@@ -318,7 +318,7 @@ function updateSlideToPrint (request, response, callback) {
   var strSlideID = request.body.slideId
   var blToPrintStatus = request.body.toPrintStatus
 
-  var strSQL = `UPDATE \`OPENLIS\`.\`tblSlides\`
+  var strSQL = `UPDATE \`OPENLIS\`.\`tblSlides\` 
             SET
               \`ToBePrinted\` = ` + blToPrintStatus +
             ` WHERE \`SlideID\` = '` + strSlideID + `';`
@@ -674,7 +674,7 @@ function slideDistribution (request, response, callback) {
       FROM tblSlides
       WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}');
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
-      FROM (SELECT subTblSlides.BlockID AS subBlockID  
+      FROM (SELECT subTblSlides.BlockID AS subBlockID
             FROM tblSlides as subTblSlides
             WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}')
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
