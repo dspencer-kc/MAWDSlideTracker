@@ -45,7 +45,7 @@ function reports (request, response, callback) {
       // console.log('Hello report block count')
 
       strSQL = `/*qryBlockCountAllRunTimesBySortVal*/
-        SELECT
+        SELECT 
         LocAbbr,
         FirstRunBlockCount,
         SecondRunBlockCount,
