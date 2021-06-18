@@ -644,7 +644,7 @@ function slideDistribution (request, response, callback) {
       FROM tblSlideDistribution as subTblSlideDistribution
       WHERE SlideTray = '${strSlideTrayIDExistingST}'; 
       /*qrySlideCountInTrayBySlideTray*/
-      SELECT
+      SELECT 
           tblSlides.SlideID,
           qrySubSlideCountsByAcc.CaseSlidesInTray,
           qrySubSlideCountsByAcc.CaseSlidesTotal,
