@@ -38,7 +38,8 @@ function reports (request, response, callback) {
               GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
                  INNER JOIN tblSlideDistributionLocations
                             on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
-        GROUP BY SlideDistributionLocation;`
+        GROUP BY SlideDistributionLocation
+        ORDER BY tblSlideDistributionLocations.SortValue;`
       break
 
     case 'BlockCountAllRunTimesBySortVal':
@@ -46,6 +47,7 @@ function reports (request, response, callback) {
 
       strSQL = `/*qryBlockCountAllRunTimesBySortVal*/
       SELECT 
+      SELECT
         LocAbbr,
         FirstRunBlockCount,
         SecondRunBlockCount,
