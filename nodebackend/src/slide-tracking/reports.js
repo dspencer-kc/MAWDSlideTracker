@@ -36,8 +36,7 @@ function reports (request, response, callback) {
                     date_format(curdate() - if(weekday(curdate()) >= 5, if(weekday(curdate()) = 6, 2, 1), 1),
                                 '%Y-%m-%d 18:00:00')
               GROUP BY subTblSlides.BlockID, SlideDistributionLocation) as qrySubBlockCountWLocation
-                 INNER JOIN tblSlideDistributionLocations
-                            on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
+        INNER JOIN tblSlideDistributionLocations on SlideDistributionLocation = tblSlideDistributionLocations.LocationID
         GROUP BY SlideDistributionLocation
         ORDER BY tblSlideDistributionLocations.SortValue;`
       break
@@ -47,6 +46,7 @@ function reports (request, response, callback) {
 
       strSQL = `/*qryBlockCountAllRunTimesBySortVal*/
       SELECT 
+      
       SELECT
         LocAbbr,
         FirstRunBlockCount,
