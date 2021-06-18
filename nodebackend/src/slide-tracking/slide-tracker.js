@@ -76,7 +76,6 @@ function printSlides (request, response, callback) {
                          and copath_p_stainprocess.status_who_id = copath_c_d_person.id
                          and copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id
                          and copath_p_stainprocess.wkdept_id = copath_c_d_department.id)
-  WHERE (((tblSlides.BlockID) = 'HBLKB18-107_A_1') AND tblSlides.ToBePrinted = TRUE);`
   WHERE (((tblSlides.BlockID) = '${strBlockID}') AND tblSlides.ToBePrinted = TRUE);`
 
   // console.log(strSQL)
