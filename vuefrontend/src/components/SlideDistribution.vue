@@ -35,9 +35,9 @@
     <h3>{{ error_message }}</h3>
   </div>
   
+
   <br>
   <div class="customsubheadertext">
-    <p>Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
     <h5>Slide Details in Current Tray: </h5>
   </div>
 
@@ -48,13 +48,16 @@
       <tr>
         <th>Slide ID</th>
         <th>Case Slides In Tray</th> 
+        <th>Case Slides In Tray</th>
         <th>Case Slides Total</th>
         <th>Case Slides Not In Tray</th>
       </tr>
       <template v-for="result in slides">        
+      <template v-for="result in slides">
       <tr>
         <td>{{ result.SlideID }}</td>
         <td>{{ result.CaseSlidesInTray }}</td> 
+        <td>{{ result.CaseSlidesInTray }}</td>
         <td>{{ result.CaseSlidesTotal }}</td>
         <td>{{ result.CaseSlidesNotInTray }}</td>
       </tr>
@@ -62,16 +65,20 @@
     </table>
     <ul>
        
+
     </ul>
   
+
 
     <blockcount> </blockcount>
 
   
+
 </div>
   </div>
 <!-- /container -->
     
+
 </template>
 
 <script>
@@ -83,6 +90,7 @@ export default {
 name: 'SlideDistribution',
 components: {
     blockcount  
+    blockcount
 },
 data() {
 return {
@@ -113,6 +121,7 @@ mounted() {
   console.log('MOUNTED - LOADING TABLE DATA')
   this.LoadTableData()
   
+
 },
   sockets: {
       connect: function () {
@@ -233,12 +242,15 @@ methods: {
         console.log("error:")
         console.log(error)
       })          
+      })
       } else {
           this.inputtext = 'Scan Slide Tray Before Slide'
       }      
+      }
     },
     CreateNewSlideDistribution(strSlideID){
       //Only create new slide distribution if New Slide Tray, otherwise, existing tray has already been loaded. 
+      //Only create new slide distribution if New Slide Tray, otherwise, existing tray has already been loaded.
 
       switch (this.rdSlideTrayBehaviorSelected) {
         case 'EditExisting':
@@ -246,8 +258,10 @@ methods: {
           // Already have slide distribution ID, do not get new one.
           this.blFirstSlideScanned = true
           this.MarkSlideToBeDistributed(strSlideID, temp.insertId)          
+          this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
           break
       
+
         default:
           // Clear Slide Distrib ID
           this.SlideDistributionID = null
@@ -288,6 +302,10 @@ methods: {
           break
       }
     },
+    getInputColor (text) {
+if(text != "No Slide Tray Active" ) return { 'background-color' : '#96ceb4' };
+if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
+},
     ScanSlideTray(strSlideTrayID){
         if (this.blSlideTrayLoaded === false) {
             this.blSlideTrayLoaded = true
@@ -296,6 +314,7 @@ methods: {
 
             if (this.rdSlideTrayBehaviorSelected === 'EditExisting') {
              
+
               // Get slidedistr id from slide tray and load slides
               console.log('Hello Edit Existing Scan Slide Tray')
               this.loading = 'true'
@@ -318,11 +337,13 @@ methods: {
                 let temp = {}
                 temp = apidata.data
                 
+
                 // console.log('Slide Result Object:')
                 // console.log(temp)
                 // console.log(temp[0][0].CurrentSlideDistID)
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
                 
+
                 console.log('Current Slide Distr id:')
                 console.log(this.SlideDistributionID)
 
@@ -344,6 +365,7 @@ methods: {
 				console.log('ScanSlideTray - NOT LOADING TABLE DATA')
                 //this.LoadTableData()
                 
+
 
               }).catch((e) => {
                 console.log(e)
@@ -373,6 +395,7 @@ methods: {
         }
         
 
+
     },
     MarkSlidesReadyForCourier(strLocID){
       //  Need to handle if first slide has not been scanned, tray needs to be assigned new location
@@ -394,6 +417,7 @@ methods: {
             this.currentslidetray = 'Waiting for Next Slide Tray'
             this.inputtext = 'Scan Slide Tray to Proceed'
             this.strInputTextLabel = 'Scan Slide Tray:'      
+            this.strInputTextLabel = 'Scan Slide Tray:'
             this.slidedistid = null
             this.loading = false
             this.strInTrayBlockCount = ''
@@ -402,6 +426,7 @@ methods: {
             //Clear Slide Distrib ID
             this.SlideDistributionID = null
             
+
             //Enable Radio Buttons
             this.rdSlideTrayBehaviorOptions[1].disabled = false
             this.rdSlideTrayBehaviorOptions[0].disabled = false
@@ -430,6 +455,7 @@ methods: {
             this.currentslidetray = 'Waiting for Next Slide Tray'
             this.inputtext = 'Scan Slide Tray to Proceed'
             this.strInputTextLabel = 'Scan Slide Tray:'      
+            this.strInputTextLabel = 'Scan Slide Tray:'
             this.loading = false
           //Clear Slide Distrib ID
           this.SlideDistributionID = null
@@ -441,8 +467,10 @@ methods: {
             this.loading = false
             this.inputtext = 'Error'
         })  
+        })
       }
       
+
     },
     LoadTableData() {
         store.dispatch('LoadBlockCountTableData').then(() => {
@@ -450,6 +478,7 @@ methods: {
         // this.datacollection = store.state.objChartDataCollection
         // console.log(store.state.blockCountTableItems)
         }) 
+        })
     },
     Cancel() {
       console.log('hello cancel')
@@ -459,6 +488,7 @@ methods: {
       this.currentslidetray = 'Waiting for Next Slide Tray'
       this.inputtext = 'Scan Slide Tray to Proceed'
       this.strInputTextLabel = 'Scan Slide Tray:'      
+      this.strInputTextLabel = 'Scan Slide Tray:'
       this.slidedistid = null
       this.loading = false
       this.strInTrayBlockCount = ''
@@ -475,4 +505,4 @@ methods: {
 computed: {
 } 
 }
-</script>
+</script>}
