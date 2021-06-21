@@ -34,7 +34,7 @@
   <div v-else-if="error_message">
     <h3>{{ error_message }}</h3>
   </div>
-    
+  
   <br>
   <div class="customsubheadertext">
     <p v-bind:style="getColor(currentslidetray)" >Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
