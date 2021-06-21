@@ -515,36 +515,21 @@ function slideDistribution (request, response, callback) {
       SlideDistributionID = ${strSlideDistID}
       WHERE SlideID = '${strSlideID}';
       /*qrySlideCountInTrayBySlideDistr*/
-        SELECT 
-            tblSlides.SlideID,
-            qrySubSlideCountsByAcc.CaseSlidesInTray,
-            qrySubSlideCountsByAcc.CaseSlidesTotal,
-            qrySubSlideCountsByAcc.CaseSlidesNotInTray
-        FROM
-            tblSlides
-                INNER JOIN
-            (SELECT 
-                qrySlideCountInTrayByCase.AccessionID,
-                    qrySlideCountInTrayByCase.CaseSlidesInTray,
-                    vwSlideCountByCase.CaseSlidesTotal,
-                    (vwSlideCountByCase.CaseSlidesTotal - qrySlideCountInTrayByCase.CaseSlidesInTray) AS CaseSlidesNotInTray
-            FROM
-                (SELECT 
-                tblSlides.AccessionID,
-                    COUNT(tblSlides.SlideID) AS CaseSlidesInTray
-            FROM
-                tblSlides
-            WHERE
-                (((tblSlides.SlideDistributionID) = ${strSlideDistID}))
-            GROUP BY tblSlides.AccessionID , tblSlides.SlideCount) AS qrySlideCountInTrayByCase
-            INNER JOIN vwSlideCountByCase ON qrySlideCountInTrayByCase.AccessionID = vwSlideCountByCase.AccessionID) AS qrySubSlideCountsByAcc ON qrySubSlideCountsByAcc.AccessionID = tblSlides.AccessionID
-        WHERE
-            tblSlides.SlideDistributionID = ${strSlideDistID};
-      SELECT Count(SlideID) AS 'SlidesInTray'
-      FROM tblSlides
-      WHERE SlideDistributionID = ${strSlideDistID};
+      SELECT 	distinct ts3.SlideID,
+  			ts1.CaseSlidesInTray,
+        ts2.CaseSlidesTotal,
+        ts2.CaseSlidesTotal-ts1.CaseSlidesInTray
+  	from
+  			(SELECT AccessionID,COUNT(SlideID) AS CaseSlidesInTray FROM tblSlides where SlideDistributionID = ${strSlideDistID} GROUP BY AccessionID, SlideCount) ts1
+      inner join
+  			(SELECT AccessionID,COUNT(tblSlides.SlideID) AS CaseSlidesTotal FROM tblSlides where AccessionID IN (select distinct AccessionID from tblSlides where SlideDistributionID = ${strSlideDistID}) GROUP BY AccessionID) ts2
+              on ts1.AccessionID = ts2.AccessionID
+  	inner join
+  			(SELECT SlideID,AccessionID FROM tblSlides where tblSlides.SlideDistributionID = ${strSlideDistID} GROUP BY SlideID,AccessionID) ts3
+              on ts1.AccessionID = ts3.AccessionID
+  	order by ts3.SlideID;
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
-      FROM (SELECT subTblSlides.BlockID AS subBlockID  
+      FROM (SELECT subTblSlides.BlockID AS subBlockID
             FROM tblSlides as subTblSlides
             WHERE subTblSlides.SlideDistributionID = ${strSlideDistID}
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
