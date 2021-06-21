@@ -34,7 +34,6 @@
   <div v-else-if="error_message">
     <h3>{{ error_message }}</h3>
   </div>
-  
 
   <br>
   <div class="customsubheadertext">
@@ -47,16 +46,13 @@
     <table  class="table table-dark ">
       <tr>
         <th>Slide ID</th>
-        <th>Case Slides In Tray</th> 
         <th>Case Slides In Tray</th>
         <th>Case Slides Total</th>
         <th>Case Slides Not In Tray</th>
       </tr>
-      <template v-for="result in slides">        
       <template v-for="result in slides">
       <tr>
         <td>{{ result.SlideID }}</td>
-        <td>{{ result.CaseSlidesInTray }}</td> 
         <td>{{ result.CaseSlidesInTray }}</td>
         <td>{{ result.CaseSlidesTotal }}</td>
         <td>{{ result.CaseSlidesNotInTray }}</td>
@@ -64,20 +60,16 @@
       </template>
     </table>
     <ul>
-       
 
     </ul>
-  
 
 
     <blockcount> </blockcount>
 
-  
 
 </div>
   </div>
 <!-- /container -->
-    
 
 </template>
 
@@ -89,7 +81,6 @@ import blockcount from './BlockCountChart.vue'
 export default {
 name: 'SlideDistribution',
 components: {
-    blockcount  
     blockcount
 },
 data() {
@@ -120,7 +111,6 @@ return {
 mounted() {
   console.log('MOUNTED - LOADING TABLE DATA')
   this.LoadTableData()
-  
 
 },
   sockets: {
@@ -241,15 +231,12 @@ methods: {
       .catch(function (error) {
         console.log("error:")
         console.log(error)
-      })          
       })
       } else {
           this.inputtext = 'Scan Slide Tray Before Slide'
-      }      
       }
     },
     CreateNewSlideDistribution(strSlideID){
-      //Only create new slide distribution if New Slide Tray, otherwise, existing tray has already been loaded. 
       //Only create new slide distribution if New Slide Tray, otherwise, existing tray has already been loaded.
 
       switch (this.rdSlideTrayBehaviorSelected) {
@@ -257,10 +244,8 @@ methods: {
           console.log('hello edit existing at create new slide distribution')
           // Already have slide distribution ID, do not get new one.
           this.blFirstSlideScanned = true
-          this.MarkSlideToBeDistributed(strSlideID, temp.insertId)          
           this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
           break
-      
 
         default:
           // Clear Slide Distrib ID
@@ -313,7 +298,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             this.currentslidetray = this.slidetrayID
 
             if (this.rdSlideTrayBehaviorSelected === 'EditExisting') {
-             
 
               // Get slidedistr id from slide tray and load slides
               console.log('Hello Edit Existing Scan Slide Tray')
@@ -336,13 +320,11 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
                 console.log(apidata)
                 let temp = {}
                 temp = apidata.data
-                
 
                 // console.log('Slide Result Object:')
                 // console.log(temp)
                 // console.log(temp[0][0].CurrentSlideDistID)
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
-                
 
                 console.log('Current Slide Distr id:')
                 console.log(this.SlideDistributionID)
@@ -364,7 +346,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
                 this.rdSlideTrayBehaviorOptions[0].disabled = true
 				console.log('ScanSlideTray - NOT LOADING TABLE DATA')
                 //this.LoadTableData()
-                
 
 
               }).catch((e) => {
@@ -393,7 +374,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
         } else {
             this.inputtext = 'Scan Slide Tray Before Location'
         }
-        
 
 
     },
@@ -416,7 +396,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             this.blFirstSlideScanned = false
             this.currentslidetray = 'Waiting for Next Slide Tray'
             this.inputtext = 'Scan Slide Tray to Proceed'
-            this.strInputTextLabel = 'Scan Slide Tray:'      
             this.strInputTextLabel = 'Scan Slide Tray:'
             this.slidedistid = null
             this.loading = false
@@ -425,7 +404,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             this.slides = {}
             //Clear Slide Distrib ID
             this.SlideDistributionID = null
-            
 
             //Enable Radio Buttons
             this.rdSlideTrayBehaviorOptions[1].disabled = false
@@ -454,7 +432,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             this.blSlideTrayLoaded = false
             this.currentslidetray = 'Waiting for Next Slide Tray'
             this.inputtext = 'Scan Slide Tray to Proceed'
-            this.strInputTextLabel = 'Scan Slide Tray:'      
             this.strInputTextLabel = 'Scan Slide Tray:'
             this.loading = false
           //Clear Slide Distrib ID
@@ -466,10 +443,8 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             console.log(error)
             this.loading = false
             this.inputtext = 'Error'
-        })  
         })
       }
-      
 
     },
     LoadTableData() {
@@ -477,7 +452,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
         // console.log('Show after promise blah')
         // this.datacollection = store.state.objChartDataCollection
         // console.log(store.state.blockCountTableItems)
-        }) 
         })
     },
     Cancel() {
@@ -487,7 +461,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
       this.blFirstSlideScanned = false
       this.currentslidetray = 'Waiting for Next Slide Tray'
       this.inputtext = 'Scan Slide Tray to Proceed'
-      this.strInputTextLabel = 'Scan Slide Tray:'      
       this.strInputTextLabel = 'Scan Slide Tray:'
       this.slidedistid = null
       this.loading = false
@@ -503,6 +476,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
 
 },
 computed: {
-} 
 }
-</script>}
+}
+</script>
