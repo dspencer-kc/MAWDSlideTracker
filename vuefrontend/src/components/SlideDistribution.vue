@@ -477,6 +477,6 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
 
 },
 computed: {
+} 
 }
-}
-</script>
+</script> 
