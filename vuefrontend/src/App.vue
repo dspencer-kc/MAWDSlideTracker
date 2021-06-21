@@ -25,14 +25,16 @@
       <li class="nav-item">
         <b-link class="nav-link" to="/">Home</b-link>
       </li>          
+      </li>
       <li class="nav-item">
         <b-link class="nav-link" to="/slidedistribution"> Slide Distribution </b-link>
       </li>      
+      </li>
         <li class="nav-item">
         <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
       </li>
           <form  v-on:submit.prevent="scanbadge()" class="form-inline my-2 my-lg-0">
-          <b-input id="InputBadge" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=true v-model="scannedbadgeinput" placeholder="Scan Badge" />
+          <b-input id="InputBadge" v-bind:style="getColor(scannedbadgebuttontext)" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=true v-model="scannedbadgeinput" placeholder="Scan Badge" />
            <button class="btn btn-sm btn-outline-secondary" type="submit">{{scannedbadgebuttontext}}</button>
          </form>
       </ul>
@@ -400,7 +402,13 @@ methods: {
     }
   }
     console.log("end scanbadge");
-  }
+  },
+  getColor (text) {
+    if(text != "Scan Badge" && !/\d/.test(text) && text.length > 0) return { 'background-color' : '#96ceb4' };
+    if(text != "Scan Badge" && /\d/.test(text) && text.length > 0) return { 'background-color' : '#ffcc5c' };
+    if(text == "Scan Badge" ) return { 'background-color' : '#ff6f69' };
+    return { 'background-color' : '#ffcc5c' };
+}
 
 },
 
@@ -413,15 +421,6 @@ computed:{
       return true
     }
   }
-  //,
-  //inputTextBoxDisabled(){
-  //  //Disable input text if no valid user
-  //  if (this.userstate=="no active user") {
-  //    return false
-  //  } else {
-  //    return true
-  //  }
-  //}
 }
 }
 
