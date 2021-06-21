@@ -529,7 +529,7 @@ function slideDistribution (request, response, callback) {
               on ts1.AccessionID = ts3.AccessionID
   	order by ts3.SlideID;
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
-      FROM (SELECT subTblSlides.BlockID AS subBlockID
+      FROM (SELECT subTblSlides.BlockID AS subBlockID  
             FROM tblSlides as subTblSlides
             WHERE subTblSlides.SlideDistributionID = ${strSlideDistID}
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
