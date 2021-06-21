@@ -297,9 +297,9 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             this.blSlideTrayLoaded = true
             this.slidetrayID = strSlideTrayID
             this.currentslidetray = this.slidetrayID
-   
+
             if (this.rdSlideTrayBehaviorSelected === 'EditExisting') {
-          
+             
               // Get slidedistr id from slide tray and load slides
               console.log('Hello Edit Existing Scan Slide Tray')
               this.loading = 'true'
@@ -321,12 +321,12 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
                 console.log(apidata)
                 let temp = {}
                 temp = apidata.data
-               
+                
                 // console.log('Slide Result Object:')
                 // console.log(temp)
                 // console.log(temp[0][0].CurrentSlideDistID)
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
-               
+                
                 console.log('Current Slide Distr id:')
                 console.log(this.SlideDistributionID)
 
@@ -347,7 +347,7 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
                 this.rdSlideTrayBehaviorOptions[0].disabled = true
 				console.log('ScanSlideTray - NOT LOADING TABLE DATA')
                 //this.LoadTableData()
-          
+                
 
               }).catch((e) => {
                 console.log(e)
@@ -375,7 +375,7 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
         } else {
             this.inputtext = 'Scan Slide Tray Before Location'
         }
-      
+        
 
     },
     MarkSlidesReadyForCourier(strLocID){
@@ -446,7 +446,7 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
             this.inputtext = 'Error'
         })  
       }
-     
+      
     },
     LoadTableData() {
         store.dispatch('LoadBlockCountTableData').then(() => {
@@ -479,3 +479,4 @@ if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
 computed: {
 }
 </script>
+\
