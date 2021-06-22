@@ -207,7 +207,7 @@ td {
 }
 
 th {
-  text-align: inherit;
+  text-align: left;
 }
 
 thead {
