@@ -188,7 +188,6 @@ color: black;
 
 table {
   width: 1100px;
-  border-collapse: separate;
   border-spacing: 10px 2px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -208,7 +207,7 @@ td {
 }
 
 th {
-  text-align: left;
+  text-align: inherit;
 }
 
 thead {
