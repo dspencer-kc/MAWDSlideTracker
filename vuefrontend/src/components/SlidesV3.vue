@@ -28,7 +28,7 @@
     </b-form>
   </div>
   <div v-if="loading" class="loader">
-    <img src="../assets/loader-large.gif" alt="loader">
+    <b-spinner variant="primary" label="Spinning"></b-spinner>
   </div>
 
   <div v-else-if="error_message">

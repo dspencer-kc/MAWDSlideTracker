@@ -28,7 +28,7 @@
     </b-form>
   </div>
   <div v-if="loading" class="loader">
-    <img src="../assets/loader-large.gif" alt="loader">
+    <b-spinner variant="primary" label="Spinning"></b-spinner>
   </div>
 
   <div v-else-if="error_message">
@@ -37,7 +37,7 @@
   
   <br>
   <div class="customsubheadertext">
-    <p>Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
+    <p v-bind:style="getColor(currentslidetray)" >Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
     <h5>Slide Details in Current Tray: </h5>
   </div>
 
@@ -288,6 +288,10 @@ methods: {
           break
       }
     },
+    getInputColor (text) {
+if(text != "No Slide Tray Active" ) return { 'background-color' : '#96ceb4' };
+if(text == "No Slide Tray Active" ) return { 'background-color' : '#ff6f69' };
+},
     ScanSlideTray(strSlideTrayID){
         if (this.blSlideTrayLoaded === false) {
             this.blSlideTrayLoaded = true
