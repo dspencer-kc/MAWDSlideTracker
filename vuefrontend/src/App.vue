@@ -28,12 +28,9 @@
       <li class="nav-item">
         <b-link class="nav-link" to="/slidedistribution"> Slide Distribution </b-link>
       </li>
-        <li class="nav-item">
-        <a class="nav-link" href="#">You must badge in prior to printing slides.</a>
-      </li>
           <form  v-on:submit.prevent="scanbadge()" class="form-inline my-2 my-lg-0">
           <b-input id="InputBadge" v-bind:style="getInputColor(scannedbadgebuttontext)" class="mb-2 mr-sm-2 mb-sm-0" onfocus="this.value=''" read-only="true" autocomplete="false"  :disabled=true v-model="scannedbadgeinput" placeholder="Scan Badge" />
-           <button class="btn btn-sm btn-outline-secondary" type="submit">{{scannedbadgebuttontext}}</button>
+           <button :class="{active: badgeInputTextBoxDisabled}" class="btn btn-sm btn-outline-secondary" type="submit">{{scannedbadgebuttontext}}</button>
          </form>
       </ul>
     </nav>
@@ -346,6 +343,7 @@ methods: {
     this.scannedbadgeinput = "Please Scan Badge"
     this.scannedbadgebuttontext = "Scan Badge"
     this.badgeInputTextBoxDisabled = false
+    this.makeToast("Logging out user","Logged Out","warning")
 
   } else {
     //validate scanned Badge
@@ -363,6 +361,8 @@ methods: {
               this.error_message = '';
               if (userinfodata.errorcode) {
                 this.error_message = `Error looking up badge.`
+                this.makeToast("invalid badge prefix or badge error","invalid badge","danger")
+
                 console.log('error')
                 return
               }
@@ -382,6 +382,7 @@ methods: {
                  this.scannedbadgebuttontext = "Log Out";
                  this.scannedbadgeinput = store.state.username
                  this.badgeInputTextBoxDisabled = true
+                 this.makeToast("User Logged In","Logged In","success")
                }
 
             }).catch((e) => {
@@ -396,6 +397,7 @@ methods: {
     } else {
         //Invalid badge
         console.log("invalid badge prefix or badge error");
+        this.makeToast("invalid badge prefix or badge error","invalid badge","danger")
     }
   }
     console.log("end scanbadge");
@@ -405,7 +407,16 @@ methods: {
     if(text != "Scan Badge" && /\d/.test(text) && text.length > 0) return { 'background-color' : '#ffcc5c' };
     if(text == "Scan Badge" ) return { 'background-color' : '#ff6f69' };
     return { 'background-color' : '#ffcc5c' };
-}
+},
+makeToast(content,title,variant = null) {
+        this.$bvToast.toast(content, {
+          title: title,
+          variant: variant,
+          solid: true,
+          autoHideDelay: 1000,
+          toaster: "b-toaster-bottom-right"
+        })
+      }
 
 },
 
