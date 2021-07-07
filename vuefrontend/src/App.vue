@@ -1,20 +1,6 @@
-<!-- ===========================================================================================
-
-    File: App.vue
-
-    Authors: Drew Spencer
-
-    Description: App.vue handles the login actions, and pulls in the slide component (also passses
-        the login variables to this component.  The CSS also is contained here.  This is probably
-        not the right spot for it, but I'm not sure with vue the best place for it to go.
-
-    Notes: Working towards StandardJS.
-============================================================================================ -->
-
-
-
 <template>
   <div id="app">
+<<<<<<< Updated upstream
 
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <a class="navbar-brand" href="#">
@@ -44,16 +30,45 @@
       <br>
       <div class="row">
           <router-view></router-view>
+=======
+      <b-navbar class="navbar navbar-dark bg-dark fixed-top">
+          <a class="navbar-brand" href="#">Slide Tracker</a>
+          <b-nav-item>v 3.07 </b-nav-item>
+          <span class="navbar-brand m-auto" style="background:red" v-if="$store.getters.GetTestmode">TESTMODE</span>
+          <b-navbar-nav class="ml-auto">
+              <b-link class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
+              <b-link class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
+              <b-link class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
+              <b-link class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
+              <b-nav-item-dropdown no-caret>
+                  <template #button-content>
+                      <h5>
+                      <b-badge v-model="scannedbadgeinput" :style="getInputColor(scannedbadgeinput)" :model="scannedbadgeinput">  {{scannedbadgeinput}}</b-badge>
+                      <b-icon shift-h="3" shift-v="-3" v-if="$store.getters.GetValidUser"   icon="person-check" variant="success">    </b-icon>
+                      <b-icon shift-h="3" shift-v="-3" v-if="!$store.getters.GetValidUser"  icon="person-x"     variant="danger">     </b-icon>
+                    </h5>
+                  </template>
+                  <b-dd-item v-if="$store.getters.GetValidUser" to="/settings">Settings</b-dd-item>
+                  <b-dd-item v-if="$store.getters.GetValidUser" @click="logout()">Log Out</b-dd-item>
+              </b-nav-item-dropdown>
+          </b-navbar-nav>
+      </b-navbar>
+      <div class="container">
+        <br>
+        <div class="row">
+            <router-view></router-view>
+        </div>
+>>>>>>> Stashed changes
       </div>
     </div>
-  </div>
-</template>
+  </template>
 
 
 <script>
 export default {
 }
 </script>
+<<<<<<< Updated upstream
 
 <style lang="css">
 
@@ -239,93 +254,26 @@ tbody {
   }
 }
 
+=======
+<style >
+@import './assets/app_style.css';
+>>>>>>> Stashed changes
 </style>
-
-
-
-<script>
-
-//import Slides from './components/Slides'
-//import Slides from './components/SlidesV2'
-import Slides from './components/SlidesV3'
+<script >
 import axios from 'axios'
 import store from './store.js'
-//const strApiUrl = process.env.VUE_APP_API_URL
-//Prod
-// const strApiUrl = Set in store
-//Test
-// const strApiUrl = Set in store
-//Local Test
-//const strApiUrl = Set in store
-console.log('APIURL: ', store.state.apiURL)
-//import io from 'socket.io-client' //Not sure if this needs done here or just in main.js
 
-export default
-{
-  name: 'app',
-  components:
-      {
-        Slides
-      },
-data() {
-return {
-
-  userinfo: {},
-  // username: "usernameinitialvalue", moved to store
-  firstname: "firstnameinitialvalue",
-  lastname: "lastnameinitialvalue",
-  userid: "useridinitialvalue",
-  background: "backgroundinitialvalue",
-  scannedbadgeinput: "Scan Badge To Start",
-  // validuser: false, moved to store
-  scannedbadgebuttontext: "Scan Badge",
-  userstate: "no active user",
-  badgeInputTextBoxDisabled: false
-  // stationname: ''
-  // blockid:''
-}
-},
-
-sockets: {
-    connect: function () {
-        console.log('socket connected')
+export default {
+    name: 'app',
+    data() {
+        return {
+            userinfo: {},
+            scannedbadgeinput: "Scan Badge To Start",
+            defaultbadgeinput: "Scan Badge To Start",
+        }
     },
-    customEmit: function (data) {
-        console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
-    },
-    stream: function(data) {
-        console.log('socket on')
 
-        //validate scan data
-        this.validateScanData(data)
-
-    }
-},
-methods: {
-  validateScanData(data){
-    //this.stationname = data.stationName
-    //Depending on prefix, send to correct placeholder
-    console.log('barcodescan', data.barcodeScanData)
-    console.log('prefix', data.barcodeScanData.substring(0,4))
-
-    switch(data.barcodeScanData.substring(0,4)) {
-      case 'HBLK':
-        //Handled within Slides Component
-        //this.blockid = data.barcodeScanData
-        break
-      case 'SBDG':
-        console.log('Slide Queue Path: ', data.slideQueuePath)
-        store.commit('SetSlideQueuePath', data.slideQueuePath)
-        console.log('slide station name:', data.stationName)
-        store.commit('SetStationName', data.stationName)
-      this.scannedbadgeinput = data.barcodeScanData
-      this.scanbadge()
-        break
-      default:
-        // code block
-    }
-
-
+<<<<<<< Updated upstream
 
     //this.forwardBarcodeScan(data.barcodeScanData) //Received value should be json object matched on data
 
@@ -416,22 +364,102 @@ computed:{
       return false
     } else {
       return true
+=======
+    sockets: {
+        connect: function() {
+            console.log('socket connected')
+        },
+        customEmit: function(data) {
+            console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
+        },
+        stream: function(data) {
+            console.log('socket on')
+            this.validateScanData(data)
+
+        }
+    },
+    methods: {
+        validateScanData(data) {
+                console.log('barcodescan', data.barcodeScanData)
+                console.log('prefix', data.barcodeScanData.substring(0, 4))
+                switch (data.barcodeScanData.substring(0, 4)) {
+                    case 'HBLK':
+                        break
+                    case 'SBDG':
+                        console.log('Slide Queue Path: ', data.slideQueuePath)
+                        store.commit('SetSlideQueuePath', data.slideQueuePath)
+                        console.log('slide station name:', data.stationName)
+                        store.commit('SetStationName', data.stationName)
+                        this.scannedbadgeinput = data.barcodeScanData
+                        this.scanbadge()
+                        break
+                    default:
+                }
+            },
+            logout(){
+              store.commit('SetValidUser', false)
+              store.commit('SetUserName', '')
+              this.scannedbadgeinput = this.defaultbadgeinput
+              this.makeToast("Logging out user", "Logged Out", "warning")
+            },
+            scanbadge() {
+                    if (this.scannedbadgeinput.substring(0, 4) == "SBDG") {
+                        this.userid = this.scannedbadgeinput.substring(4);
+                        axios.post(store.getters.getApiUrl + '/getuserinfo', {
+                                userid: this.userid
+                            })
+                            .then(userinfodata => {
+                                this.loading = false;
+                                this.error_message = '';
+                                if (userinfodata.errorcode) {
+                                    this.error_message = `Error looking up badge.`
+                                    this.makeToast("invalid badge prefix or badge error", "invalid badge", "danger")
+                                    console.log('error')
+                                    return
+                                }
+                                this.userinfo = userinfodata.data;
+                                store.commit('SetUserName', this.userinfo[0].username)
+                                    //Validate user
+                                if (store.getters.GetUsername.length > 0) {
+                                    store.commit('SetValidUser', true)
+                                    this.scannedbadgeinput = store.getters.GetUsername
+                                    this.makeToast("User Logged In", "Logged In", "success")
+                                }
+                            }).catch((e) => {
+                                console.log(e)
+                                this.makeToast("Log In Error: "+e, "Error", "danger")
+                            })
+                            .catch(function(error) {
+                                this.makeToast("Log In Error: "+error, "Error", "danger")
+                            });
+                    } else {
+                        this.makeToast("invalid badge prefix or badge error", "invalid badge", "danger")
+                    }
+            },
+            getInputColor(text) {
+                if (text != this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {
+                    'background-color': '#96ceb4'
+                };
+                if (text != this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {
+                    'background-color': '#ffcc5c'
+                };
+                if (text == this.defaultbadgeinput) return {
+                    'background-color': '#ff6f69'
+                };
+                return {
+                    'background-color': '#ffcc5c'
+                };
+            },
+            makeToast(content, title, variant = null) {
+                this.$bvToast.toast(content, {
+                    title: title,
+                    variant: variant,
+                    solid: true,
+                    autoHideDelay: 1000,
+                    toaster: "b-toaster-bottom-right"
+                })
+            }
+>>>>>>> Stashed changes
     }
-  }
 }
-}
-
-
-
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

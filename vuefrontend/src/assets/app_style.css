@@ -1,0 +1,190 @@
+html,
+body {
+  background-image: url("background.jpg");
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+body {
+  margin: 0;
+
+  font-family: Roboto, sans-serif;
+
+}
+.customheadertext {
+ text-rendering: optimizeLegibility;
+      color: #e0dfdc;
+      letter-spacing: .1em;
+      }
+
+.customsubheadertext {
+ text-rendering: optimizeLegibility;
+      color: #e0dfdc;
+      letter-spacing: .1em;
+      color: white;
+      text-shadow: -1px -1px 0 #2c2d2d, 1px -1px 0 #2c2d2d, -1px 1px 0 #2c2d2d, 1px 1px 0 #2c2d2d;
+      }
+
+.glassslide {
+  background: rgba(255, 255, 255, 1);
+  height: 400px;
+
+  background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0)));
+  background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  border: 1px solid #DDDBD7;
+  -webkit-box-shadow: 3px 3px 10px rgba(0,0,0,0.4),	inset 0 0 10px rgba(255,255,255, 0.8);
+  -moz-box-shadow: 	3px 3px 10px rgba(0,0,0,0.4),	inset 0 0 10px rgba(255,255,255, 0.8);
+  box-shadow: 		3px 3px 10px rgba(0,0,0,0.4),	inset 0 0 10px rgba(255,255,255, 0.8);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 10px;
+  border-bottom-radius: 10px;
+  background: rgba(255, 255, 255, .35);
+
+}
+.slidelabel {
+  margin:1px 1px 1px 1px;
+  height: 160px;
+  border: 1px solid silver;
+  background-color: white;
+}
+
+.slideheader{
+  display: block;
+font-size: 1.30em;
+margin-block-start: 1em;
+margin-block-end: 1em;
+margin-inline-start: 0px;
+margin-inline-end: 0px;
+font-weight: bold;
+text-align: center;
+margin-top:0px;
+margin-bottom:-10px;
+padding: 0px;
+padding-top: 0px;
+padding-right: -5px;
+padding-bottom: 0px;
+padding-left: -5px;
+color: black;
+    line-height: normal !important;
+}
+.slidebody{
+  display: block;
+margin-block-start: 1em;
+margin-block-end: 1em;
+margin-inline-start: 0px;
+margin-inline-end: 0px;
+text-align: left;
+margin-bottom:-10px;
+color: black;
+  line-height: normal !important;
+}
+.slidefooter{
+  display: block;
+margin-block-start: 1em;
+margin-block-end: 1em;
+margin-inline-start: 0px;
+margin-inline-end: 0px;
+text-align: center;
+margin-top:-7px;
+margin-bottom:-10px;
+color: black;
+    line-height: normal !important;
+}
+
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+  height: 450px;
+}
+
+/* vertical spacing between columns */
+
+[class*="col-"] {
+  margin-bottom: 30px;
+}
+
+.content {
+  height: 100%;
+  padding: 20px 20px 10px;
+  color: #fff;
+}
+
+
+
+/*
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+*/
+
+
+table {
+  width: 1100px;
+  border-spacing: 10px 2px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+th,
+td {
+  padding: 15px;
+    padding-top: 15px;
+    padding-right: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: solid thin;
+}
+
+th {
+  text-align: inherit;
+}
+
+thead {
+  th {
+    background-color: #55608f;
+  }
+}
+
+tbody {
+  tr {
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+  td {
+    position: relative;
+    &:hover {
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -9999px;
+        bottom: -9999px;
+        background-color: rgba(255, 255, 255, 0.2);
+        z-index: -1;
+      }
+    }
+  }
+}
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}

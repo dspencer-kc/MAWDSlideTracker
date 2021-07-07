@@ -9,9 +9,7 @@
     Notes: Working towards StandardJS.
 ============================================================================================ -->
 <template>
-
-
-<div class="container" v-if="store.getters.GetValidUser">
+<div class="container"  v-if="this.$store.getters.GetValidUser">
   <div class="mx-auto">
 
 <!--Scan Block......................-->
@@ -23,8 +21,6 @@
       <b-button type="submit" variant="primary lg" :disabled=inputButtonDisabled>{{formstatuslabel}}</b-button>
       <b-button id="btnManualBlockIDToggle" :disabled=inputNoBarcodeButtonDisabled v-b-toggle.collapse-manualbockid variant="outline-secondary"> No Barcode </b-button>
        <b-button variant="secondary sm" @click="clearCurrentSlide()">Cancel</b-button>
-
-
     </b-form>
   </div>
   <div v-if="loading" class="loader">
@@ -155,6 +151,8 @@
 import axios from 'axios'
 import store from '../store.js'
 
+
+// define the external API URL
 const API_URLWithSlideParameters = store.getters.getApiUrl + '/slidetracker/slideparameters?blockid='  //For Get Call
 // Helper function to help build urls to fetch slide details from blockid
 function buildUrl(blockID) {
@@ -163,13 +161,10 @@ function buildUrl(blockID) {
 export default {
   name: 'slides', // component name
   props: {
-    // username: String,  access through store
-    // firstname: String,
+
     lastname: String,
     userid: String,
-    // background: String,
-    // validuser: Boolean access through store
-    //blockID: String
+
     },
     data() {
     return {
@@ -180,8 +175,6 @@ export default {
       formstatus: 'loadslides',
       formstatuslabel: 'Load Slides',
       info: null,
-      // slideQueuePath: '', moved to store
-      // stationName: '', moved to store
       totalBlocks: null,
       currentBlock: null,
       totalParts: null,
@@ -201,7 +194,7 @@ export default {
       connect: function () {
           console.log('socket connected within slide')
       },
-      customEmit: function () {
+      customEmit: function (data) {
           console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
@@ -230,9 +223,6 @@ export default {
             this.pullSlides();
             break
           case 'SBDG':
-          //Handled within App.vue
-          //this.scannedbadgeinput = data.barcodeScanData
-          //this.scanbadge()
             break
           case 'HSLD':
           this.blockID = 'Scan block not slide'
@@ -263,9 +253,6 @@ export default {
   printSlides()
   {
     console.log('start print slides')
-
-    //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-    //Add printRequestedBy
     console.log(store.state.slideQueuePath)
 
       axios.post(store.getters.getApiUrl + '/printslides', {
@@ -383,8 +370,6 @@ export default {
       this.currentBlock = ''
       this.totalParts = ''
       this.currentPart = ''
-      //Always disable input textbox now that we're scanning
-      //document.getElementById("InputBlockID").disabled = false;
       this.slides = {}
       this.setFocusToInputBlockID()
     },
@@ -408,13 +393,6 @@ export default {
       }
     },
     inputTextBoxDisabled(){
-      //if (this.validuser=='f' || !blockID ) {
-      //if (this.validuser) {
-      //  return false;
-      //} else {
-      //  return true;
-      //}
-      //always disable input text box now that values are being scanned
       return true
     },
     inputNoBarcodeButtonDisabled(){

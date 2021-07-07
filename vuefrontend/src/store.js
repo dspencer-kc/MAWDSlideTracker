@@ -10,22 +10,16 @@ export default new Vuex.Store({
     username: '',
     validuser: false,
     stationName: '',
+    testmode: true,
     slideQueuePath: '',
-    //  Prod
-    apiURL: 'http://10.24.4.9:2081',
-    //  Test
-    //  apiURL: 'http://10.24.4.9:2082',
-    //  Local Test
-    //  apiURL: 'http://localhost:2081',
-    // Note `isActive` is left out and will not appear in the rendered table
-    // blockCountTableFields: ['location', 'FirstRunBlockCount', 'SecondRunBlockCount', 'ThirdRunBlockCount', 'FourthRunBlockCount', 'TotalBlockCount'],
+    testapiURL: 'http://localhost:2081',
+    prodapiURL: 'http://10.24.4.9:2081',
     blockCountTableFields: ['location', 'block_count'],
     blockCountTableItems: []
   },
   mutations: {
     increment (state) {
       state.count++
-      console.log('hello increment')
     },
     SetUserName (state, strUsername) {
       state.username = strUsername
@@ -50,74 +44,44 @@ export default new Vuex.Store({
     LoadBlockCountTableData ({ commit }) {
       return new Promise((resolve, reject) => {
         let strFullAPICall = this.state.apiURL + '/reports'
-        console.log('Hello LoadBlockCountTableData')
-        console.log(strFullAPICall)
         axios.post(strFullAPICall, {
-          // action: 'BlockCountAllRunTimesBySortVal'
           action: 'blockcount'
         })
           .then(function (response) {
-            // Clear table data
             commit('ClearBlockCountTableItems')
-            console.log()
-            console.log(response)
             for (var i = 0; i < response.data.length; i++) {
-              // Build Chart Data Array
-              let strLocation = response.data[i].SlideDistributionLocation
-              strLocation = strLocation.replace('LOCN', '')
-              commit('PushBlockCountTableItems', { isActive: false, location: strLocation, block_count: response.data[i].BlockCount })
-              //  commit('PushBlockCountTableItems', { isActive: false, location: response.data[i].LocAbbr, FirstRunBlockCount: response.data[i].FirstRunBlockCount, SecondRunBlockCount: response.data[i].SecondRunBlockCount, ThirdRunBlockCount: response.data[i].ThirdRunBlockCount, FourthRunBlockCount: response.data[i].FourthRunBlockCount, TotalBlockCount: response.data[i].TotalBlockCount })
-            } // end for
-            // Set Chart Collection Object
-            // commit('SetChartDataCollection', 'Blocks Cut', '#f87979')
-            console.log('done test')
+              commit('PushBlockCountTableItems', { isActive: false, location: response.data[i].SlideDistributionLocation.replace('LOCN', ''), block_count: response.data[i].BlockCount })
+            }
             resolve()
           })
           .catch(function (error) {
-            console.log(error)
             reject(error)
           })
-        console.log('promise done')
       })
     },
-    LoadBlockCountTableDataOld ({ commit }) {
-      console.log('Hello LoadBlockCountTableData')
-      return new Promise((resolve, reject) => {
-        let strFullAPICall = this.state.apiURL + '/reports'
-        console.log('Hello LoadBlockCountTableData')
-        console.log(strFullAPICall)
-        axios.post(strFullAPICall, {
-          action: 'BlockCountAllRunTimesBySortVal'
-        })
-          .then(function (response) {
-            // Clear table data
-            commit('ClearBlockCountTableItems')
-            console.log()
-            console.log(response)
-            for (var i = 0; i < response.data.length; i++) {
-              // Build Chart Data Array
-              commit('PushBlockCountTableItems', { isActive: false, location: response.data[i].LocAbbr, FirstRunBlockCount: response.data[i].FirstRunBlockCount, SecondRunBlockCount: response.data[i].SecondRunBlockCount, ThirdRunBlockCount: response.data[i].ThirdRunBlockCount, FourthRunBlockCount: response.data[i].FourthRunBlockCount, TotalBlockCount: response.data[i].TotalBlockCount })
-            } // end for
-            // Set Chart Collection Object
-            // commit('SetChartDataCollection', 'Blocks Cut', '#f87979')
-            console.log('done test')
-            resolve()
-          })
-          .catch(function (error) {
-            console.log(error)
-            reject(error)
-          })
-        console.log('promise done')
-      })
-    }
-
   },
   getters: {
-    BlockCountTableFields: (state, getters) => {
+    BlockCountTableFields: (state) => {
       return state.blockCountTableFields
     },
-    BlockCountTableItems: (state, getters) => {
+    BlockCountTableItems: (state) => {
       return state.blockCountTableItems
+    },
+    GetValidUser: (state) => {
+      if (!state.testmode){
+        return state.validuser
+      }
+      return true
+    },
+    GetUsername: (state) => {
+      return state.username
+    },
+    GetTestmode: (state) => {
+      return state.testmode
+    },
+    getApiUrl: (state) => {
+      if (state.testmode){return state.testapiURL}
+      else {return state.prodapiURL}
     }
   }
 })
