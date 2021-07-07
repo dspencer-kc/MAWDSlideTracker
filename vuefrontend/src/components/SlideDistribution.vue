@@ -1,47 +1,6 @@
 // Slide Distribution.vue
 
-<<<<<<< Updated upstream
-<template>
-<div class="container">
-  <div class="mx-auto">
 
-<!--Scan Block......................-->
-    <b-form v-on:submit.prevent inline>
-    <div class="customheadertext">
-        <h3>{{strInputTextLabel}}  </h3>
-    </div>
-      <b-input id="InputFromScanner" class="mb-2 mr-sm-2 mb-sm-0" v-model="inputtext" disabled placeholder="Scan Slide Tray to Proceed" />
-      <b-button type="submit" variant="primary lg" disabled>{{formstatuslabel}}</b-button>
-       <b-button variant="secondary sm" @click="Cancel()">Cancel</b-button>
-        <div class = 'pl-5'>
-          <b-form-group>
-          <b-form-radio-group
-              id="rdSlideTrayBehavior"
-              v-model="rdSlideTrayBehaviorSelected"
-              :options="rdSlideTrayBehaviorOptions"
-              buttons
-              name="radios-btn-default"
-          ></b-form-radio-group>
-          </b-form-group>
-        </div>
-
-
-    </b-form>
-  </div>
-  <div v-if="loading" class="loader">
-    <b-spinner variant="primary" label="Spinning"></b-spinner>
-  </div>
-
-  <div v-else-if="error_message">
-    <h3>{{ error_message }}</h3>
-  </div>
-  
-  <br>
-  <div class="customsubheadertext">
-    <p v-bind:style="getColor(currentslidetray)" >Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
-    <h5>Slide Details in Current Tray: </h5>
-  </div>
-=======
 <template >
 <div class="container" v-if="this.$store.getters.GetValidUser" >
   <b-navbar class="navbar navbar-dark bg-dark m-auto ">
@@ -56,7 +15,7 @@
     <b-item class="navbar-brand">Slide Count:    <b-badge>{{strInTraySlideCount}} </b-badge></b-item>
     <b-item class="navbar-brand">Block Count:    <b-badge>{{strInTrayBlockCount}} </b-badge></b-item>
   </b-navbar>
->>>>>>> Stashed changes
+
 
   <div class='col-xs-6'>
     <table  class="table table-dark" v-if="this.slides.length>0">
@@ -371,8 +330,8 @@ methods: {
             this.strInputTextLabel = this.defaultstrInputTextLabel
             this.slidedistid = null
             this.loading = false
-            this.strInTrayBlockCount = ''
-            this.strInTraySlideCount = ''
+            this.strInTrayBlockCount = '0'
+            this.strInTraySlideCount = '0'
             this.slides = {}
             //Clear Slide Distrib ID
             this.SlideDistributionID = null
@@ -436,8 +395,8 @@ methods: {
       this.strInputTextLabel = this.defaultstrInputTextLabel
       this.slidedistid = null
       this.loading = false
-      this.strInTrayBlockCount = ''
-      this.strInTraySlideCount = ''
+      this.strInTrayBlockCount = '0'
+      this.strInTraySlideCount = '0'
       this.slides = {}
       this.SlideDistributionID = null
       this.rdSlideTrayBehaviorOptions[1].disabled = false

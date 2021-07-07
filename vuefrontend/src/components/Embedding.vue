@@ -130,6 +130,8 @@ export default {
       })
       .then(apidata => {
         console.log('update block response');
+        var ToastString = this.blockData.data[0].BlockID+" Status Updated to Embedded";
+        this.makeToast(ToastString, "Block Status", "success")
         }).catch((e) => {
           console.log("AXIOS ERROR: "+e)
         })
@@ -137,19 +139,26 @@ export default {
     getBlockColor(){
       if (this.blockData){
         var colorNum = this.blockData.data[0].Hopper
-        if (colorNum == 101 || colorNum == 102){return {'color':  '#acbdda'}//blue
+        let color = ''
+        switch (colorNum){
+          case 101: case 102: color =  {'color':  '#acbdda'};break; //blue
+          case 103: case 104: color =  {'color':  '#bddaac'};break; //green
+          case 105:           color =  {'color':  '#daacbd'};break; //red
+          case 106:           color =  {'color':  '#dbce95'};break; //yellow
+          case 107: case 108: color =  {'color':  '#c9acda'};break; //purple
+          default:            color =  {'color':  '#bddaac'};break; //grey
         }
-        else if (colorNum == 103 || colorNum == 104){return {'color': '#bddaac'}//green
-        }
-        else if (colorNum == 105 ){  return {'color': '#daacbd'}//red
-        }
-        else if (colorNum == 106){  return {'color': '#dbce95'}//yellow
-        }
-        else if (colorNum == 107 || colorNum == 108){return {'color': '#c9acda'}//purple
-        }
-        else  {return {'color': '#acbdda'}//grey
-        }
+        return color
       }
+    },
+    makeToast(content, title, variant = null) {
+        this.$bvToast.toast(content, {
+            title: title,
+            variant: variant,
+            solid: true,
+            autoHideDelay: 4000,
+            toaster: "b-toaster-bottom-right"
+        })
     }
   },
   computed:{
