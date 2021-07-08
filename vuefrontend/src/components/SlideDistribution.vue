@@ -1,6 +1,5 @@
 // Slide Distribution.vue
 
-
 <template >
 <div class="container" v-if="this.$store.getters.GetValidUser" >
   <b-navbar class="navbar navbar-dark bg-dark m-auto ">

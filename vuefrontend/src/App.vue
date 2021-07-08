@@ -41,6 +41,8 @@ export default {
 <style >
 @import './assets/app_style.css';
 
+
+
 </style>
 <script >
 import axios from 'axios'
@@ -151,6 +153,7 @@ export default {
                     toaster: "b-toaster-bottom-right"
                 })
             }
+
 
     }
 }
