@@ -139,16 +139,23 @@ export default {
     getBlockColor(){
       if (this.blockData){
         var colorNum = this.blockData.data[0].Hopper
-        let color = ''
-        switch (colorNum){
-          case 101: case 102: color =  {'color':  '#acbdda'};break; //blue
-          case 103: case 104: color =  {'color':  '#bddaac'};break; //green
-          case 105:           color =  {'color':  '#daacbd'};break; //red
-          case 106:           color =  {'color':  '#dbce95'};break; //yellow
-          case 107: case 108: color =  {'color':  '#c9acda'};break; //purple
-          default:            color =  {'color':  '#bddaac'};break; //grey
+        let colors = {
+          101:'#789af0', //blue
+          102:'#789af0', //blue
+          103:'#bddaac', //green
+          104:'#bddaac', //green
+          105:'#daacbd', //red
+          106:'#dbce95', //yellow
+          107:'#c9acda', //purple
+          108:'#c9acda'  //purple
+        };
+        let blank = '#bddaac'; //grey
+        console.log(colorNum)
+        console.log(colors[colorNum])
+        if (colors[colorNum]){
+            return {'color':  colors[colorNum]}
         }
-        return color
+        return {'color':  blank}
       }
     },
     makeToast(content, title, variant = null) {
