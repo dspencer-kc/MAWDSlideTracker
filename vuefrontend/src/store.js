@@ -12,7 +12,7 @@ export default new Vuex.Store({
     stationName: '',
     testmode: false,
     slideQueuePath: '',
-    testapiURL: 'http://localhost:2081',
+    testapiURL: 'http://10.24.4.9:2082',
     prodapiURL: 'http://10.24.4.9:2081',
     blockCountTableFields: ['location', 'block_count'],
     blockCountTableItems: []
