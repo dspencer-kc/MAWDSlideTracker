@@ -59,6 +59,20 @@ app.post('/slidedistribution', function (request, response) {
   })
 })
 
+app.post('/GetBlockData', function (request, response) {
+  slideTracker.GetBlockData(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
+app.post('/SetBlockData', function (request, response) {
+  slideTracker.SetBlockData(request, response, function (err, message) {
+    if (err) return console.log(err)
+    console.log(message)
+  })
+})
+
 app.post('/reports', function (request, response) {
   slideTrackerReports.reports(request, response, function (err, message) {
     if (err) return console.log(err)
