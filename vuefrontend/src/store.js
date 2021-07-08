@@ -10,6 +10,7 @@ export default new Vuex.Store({
     username: '',
     validuser: false,
     stationName: '',
+    version:'3.10',
     testmode: false,
     slideQueuePath: '',
     testapiURL: 'http://localhost:2081',
@@ -78,6 +79,9 @@ export default new Vuex.Store({
     },
     GetTestmode: (state) => {
       return state.testmode
+    },
+    GetVersion: (state) => {
+      return state.version
     },
     getApiUrl: (state) => {
       if (state.testmode){return state.testapiURL}

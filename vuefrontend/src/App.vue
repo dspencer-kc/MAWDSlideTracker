@@ -3,7 +3,7 @@
 
       <b-navbar class="navbar navbar-dark bg-dark fixed-top">
           <a class="navbar-brand" href="#">Slide Tracker</a>
-          <b-nav-item>v 3.07 </b-nav-item>
+          <b-nav-item>v {{$store.getters.GetVersion}} </b-nav-item>
           <span class="navbar-brand m-auto" style="background:red" v-if="$store.getters.GetTestmode">TESTMODE</span>
           <b-navbar-nav class="ml-auto">
               <b-link class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
