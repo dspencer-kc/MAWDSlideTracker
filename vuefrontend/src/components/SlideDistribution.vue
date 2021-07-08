@@ -37,7 +37,7 @@
   
   <br>
   <div class="customsubheadertext">
-    <p v-bind:style="getColor(currentslidetray)" >Current Slide Tray: {{currentslidetray}}    Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
+    <p>Current Slide Tray:<span v-bind:style="getInputColor(currentslidetray)">{{currentslidetray}}</span>   Slide Count in Tray: {{strInTraySlideCount}}    Block Count in Tray: {{strInTrayBlockCount}}</p>
     <h5>Slide Details in Current Tray: </h5>
   </div>
 
