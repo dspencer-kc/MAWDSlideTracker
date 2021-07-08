@@ -10,7 +10,7 @@ export default new Vuex.Store({
     username: '',
     validuser: false,
     stationName: '',
-    testmode: true,
+    testmode: false,
     slideQueuePath: '',
     testapiURL: 'http://localhost:2081',
     prodapiURL: 'http://10.24.4.9:2081',
