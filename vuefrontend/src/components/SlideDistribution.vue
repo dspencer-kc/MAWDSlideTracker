@@ -4,16 +4,11 @@
 <template >
 <div class="container" v-if="this.$store.getters.GetValidUser" >
   <b-navbar class="navbar navbar-dark bg-dark m-auto ">
-    <b-item class="navbar-brand">Scan Slide Tray to Proceed:  <b-badge>{{formstatuslabel}}    </b-badge></b-item>
+    <b-nav-item class="navbar-brand">Current Slide:  <b-badge :model="currentslidetray" :style="getInputColor(currentslidetray)">{{currentslidetray}}   </b-badge></b-nav-item>
+    <b-nav-item class="navbar-brand">Slide Count:    <b-badge>{{strInTraySlideCount}} </b-badge></b-nav-item>
+    <b-nav-item class="navbar-brand">Block Count:    <b-badge>{{strInTrayBlockCount}} </b-badge></b-nav-item>
     <b-button>{{formstatuslabel}}</b-button><b-button @click="Cancel()">Cancel</b-button>
-    <b-navbar-nav class="ml-auto">
-      <b-form-radio-group id="rdSlideTrayBehavior" v-model="rdSlideTrayBehaviorSelected" :options="rdSlideTrayBehaviorOptions" buttons name="radios-btn-default"></b-form-radio-group>  </b-form-group>
-  </b-navbar-nav>
-  </b-navbar>
-  <b-navbar class="navbar navbar-dark bg-dark m-auto ">
-    <b-item class="navbar-brand">Current Slide:  <b-badge :model="currentslidetray" :style="getInputColor(currentslidetray)">{{currentslidetray}}   </b-badge></b-item>
-    <b-item class="navbar-brand">Slide Count:    <b-badge>{{strInTraySlideCount}} </b-badge></b-item>
-    <b-item class="navbar-brand">Block Count:    <b-badge>{{strInTrayBlockCount}} </b-badge></b-item>
+    <b-form-radio-group id="rdSlideTrayBehavior" v-model="rdSlideTrayBehaviorSelected" :options="rdSlideTrayBehaviorOptions" buttons name="radios-btn-default"></b-form-radio-group>  </b-form-group>
   </b-navbar>
 
 

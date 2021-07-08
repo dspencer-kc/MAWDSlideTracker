@@ -161,10 +161,10 @@ export default new Vuex.Store({
     },
     LoadBlockCountChartData ({ commit }) {
       console.log('Hello LoadBlockCountChartData')
-      commit('SetApiUrl', 'http://10.24.4.9:2082/reports')
+      let strFullAPICall = this.state.apiURL + '/reports'
 
       return new Promise((resolve, reject) => {
-        axios.post(this.state.apiurl, {
+        axios.post(strFullAPICall, {
           fromdatetime: this.state.strFromDateTime,
           todatetime: this.state.strToDateTime
         })
@@ -233,7 +233,7 @@ export default new Vuex.Store({
             for (var i = 0; i < response.data.length; i++) {
               // Build Chart Data Array
               let strBackgroundColor = arColors[i]
-              
+
               // No total count
               commit('PushBlockCountFourRunsTableItems', { label: response.data[i].LocAbbr, backgroundColor: strBackgroundColor, data: [response.data[i].FirstRunBlockCount, response.data[i].SecondRunBlockCount, response.data[i].ThirdRunBlockCount, response.data[i].FourthRunBlockCount] })
               // Include Total count

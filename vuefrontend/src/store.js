@@ -43,7 +43,7 @@ export default new Vuex.Store({
   actions: {
     LoadBlockCountTableData ({ commit }) {
       return new Promise((resolve, reject) => {
-        let strFullAPICall = this.state.apiURL + '/reports'
+        let strFullAPICall = this.getters.getApiUrl + '/reports'
         axios.post(strFullAPICall, {
           action: 'blockcount'
         })
