@@ -14,11 +14,11 @@
   <b-card-text class="mb-5"></b-card-text>
   <b-card-text>
     <b-iconstack class="mb-5">
-    <b-icon stacked icon="table" scale="6" flip-v=true                   style="{color:#acbdda}"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="3" shift-h="-21" shift-v="21"  style="{color:#acbdda}"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="3" shift-h="-21" shift-v="-21" style="{color:#acbdda}"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="3" shift-h="21" shift-v="21"   style="{color:#acbdda}"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="3" shift-h="21" shift-v="-21"  style="{color:#acbdda}"></b-icon>
+    <b-icon stacked icon="calendar" scale="6" flip-v=true                   variant="dark"></b-icon>
+    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="21"  variant="dark"></b-icon>
+    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="-21" variant="dark"></b-icon>
+    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="21"   variant="dark"></b-icon>
+    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="-21"  variant="dark"></b-icon>
     </b-iconstack>
   </b-card-text>
    </b-card>
@@ -26,11 +26,11 @@
     <b-card-text class="mb-5"></b-card-text>
     <b-card-text>
       <b-iconstack class="mb-5">
-      <b-icon stacked icon="table" scale="6" flip-v=true                   :style="getBlockColor()"></b-icon>
-      <b-icon stacked icon="grid3x3" scale="3" shift-h="-21" shift-v="21"  :style="getBlockColor()"></b-icon>
-      <b-icon stacked icon="grid3x3" scale="3" shift-h="-21" shift-v="-21" :style="getBlockColor()"></b-icon>
-      <b-icon stacked icon="grid3x3" scale="3" shift-h="21" shift-v="21"   :style="getBlockColor()"></b-icon>
-      <b-icon stacked icon="grid3x3" scale="3" shift-h="21" shift-v="-21"  :style="getBlockColor()"></b-icon>
+        <b-icon stacked icon="calendar" scale="6" flip-v=true                   :style="getBlockColor()"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="21"  :style="getBlockColor()"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="-21" :style="getBlockColor()"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="21"   :style="getBlockColor()"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="-21"  :style="getBlockColor()"></b-icon>
       </b-iconstack>
     </b-card-text>
 
@@ -38,7 +38,7 @@
     <b-card-text>Block ID:         <b-badge> {{this.blockData.data[0].PartDesignator}}{{this.blockData.data[0].BlockDesignator}}  </b-badge></b-card-text>
     <b-card-text>Name:             <b-badge>{{this.blockData.data[0].PatientName}}                                                </b-badge></b-card-text>
     <b-card-text>BlockStatus:      <b-badge>{{this.blockData.data[0].BlockStatus}}                                                </b-badge></b-card-text>
-    <b-card-text>BlockComment:      <b-badge>{{this.blockData.data[0].BlockComment}}                                                </b-badge></b-card-text>
+    <b-card-text>BlockComment:     <b-badge>{{this.blockData.data[0].BlockComment}}                                               </b-badge></b-card-text>
     <b-card-text>PartDescription:  <b-badge>{{this.blockData.data[0].PartDescription}}                                            </b-badge></b-card-text>
 
 

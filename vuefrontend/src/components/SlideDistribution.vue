@@ -4,7 +4,7 @@
 <template >
 <div class="container" v-if="this.$store.getters.GetValidUser" >
   <b-navbar class="navbar navbar-dark bg-dark m-auto ">
-    <b-nav-item class="navbar-brand">Current Slide:  <b-badge :model="currentslidetray" :style="getInputColor(currentslidetray)">{{currentslidetray}}   </b-badge></b-nav-item>
+    <b-nav-item class="navbar-brand"> <b-badge :model="currentslidetray" :style="getInputColor(currentslidetray)">{{currentslidetray}}   </b-badge></b-nav-item>
     <b-nav-item class="navbar-brand">Slide Count:    <b-badge>{{strInTraySlideCount}} </b-badge></b-nav-item>
     <b-nav-item class="navbar-brand">Block Count:    <b-badge>{{strInTrayBlockCount}} </b-badge></b-nav-item>
     <b-button>{{formstatuslabel}}</b-button><b-button @click="Cancel()">Cancel</b-button>
