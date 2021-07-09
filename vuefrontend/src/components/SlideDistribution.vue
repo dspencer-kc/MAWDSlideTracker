@@ -7,7 +7,7 @@
     <b-nav-item class="navbar-brand">Slide Count:    <b-badge>{{strInTraySlideCount}} </b-badge></b-nav-item>
     <b-nav-item class="navbar-brand">Block Count:    <b-badge>{{strInTrayBlockCount}} </b-badge></b-nav-item>
     <b-button>{{formstatuslabel}}</b-button><b-button @click="Cancel()">Cancel</b-button>
-    <b-form-radio-group id="rdSlideTrayBehavior" v-model="rdSlideTrayBehaviorSelected" :options="rdSlideTrayBehaviorOptions" buttons name="radios-btn-default"></b-form-radio-group>  </b-form-group>
+    <b-form-radio-group id="rdSlideTrayBehavior" v-model="rdSlideTrayBehaviorSelected" :options="rdSlideTrayBehaviorOptions" buttons name="radios-btn-default"></b-form-radio-group>
   </b-navbar>
 
 
@@ -146,6 +146,7 @@ methods: {
       axios.post(store.getters.getApiUrl + '/slidedistribution', {
       action: 'MarkSlideToBeDistributed',
       slidedistid: strSlideDistributionID,
+        slidetray: this.slidetrayID,
       slideid: strSlideID
       })
       .then(apidata => {
@@ -159,9 +160,7 @@ methods: {
         // console.log(apidata)
         let temp = {}
         temp = apidata.data
-        console.log(temp)
         this.slides = temp[1]
-        // let aryTmpSlidesInTray = {}
         this.obApiResult02 = temp[2]
         this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
         this.obApiResult03 = temp[3]
@@ -265,7 +264,6 @@ methods: {
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
                 //Load Slide Tray now
                 this.slides = temp[1]
-
                 this.obApiResult02 = temp[2]
                 this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
                 this.obApiResult03 = temp[3]

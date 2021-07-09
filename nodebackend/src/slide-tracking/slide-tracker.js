@@ -612,6 +612,7 @@ function slideDistribution (request, response, callback) {
     case 'MarkSlideToBeDistributed':
       console.log('Mark Slide To Be Distributed')
       let strSlideDistID = request.body.slidedistid
+      let strSlideTray = request.body.slidetray
       console.log('Slide Distr ID:')
       console.log(strSlideDistID)
       let strSlideID = request.body.slideid
@@ -637,6 +638,9 @@ function slideDistribution (request, response, callback) {
   			(SELECT SlideID,AccessionID FROM tblSlides where tblSlides.SlideDistributionID = ${strSlideDistID} GROUP BY SlideID,AccessionID) ts3
               on ts1.AccessionID = ts3.AccessionID
   	order by ts3.SlideID;
+  	      SELECT Count(SlideID) AS 'SlidesInTray'
+      FROM tblSlides
+      WHERE SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTray}');
       SELECT Count(qrySubBlocksCorrespondingToPendingSlides.subBlockID) AS BlockCountInTray
       FROM (SELECT subTblSlides.BlockID AS subBlockID
             FROM tblSlides as subTblSlides

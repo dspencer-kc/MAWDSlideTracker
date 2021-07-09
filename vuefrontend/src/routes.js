@@ -1,7 +1,7 @@
 // routes.js
 
 import Home from './components/Home.vue'
-// import SlidePrinter from './components/SlidesV3.vue'
+
 import Embedding from './components/Embedding.vue'
 import SlideDistribution from './components/SlideDistribution.vue'
 import SlidePrinting from './components/SlidePrinting.vue'
