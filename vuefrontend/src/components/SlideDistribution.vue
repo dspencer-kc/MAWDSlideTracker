@@ -228,9 +228,8 @@ methods: {
       }
     },
     getInputColor (text) {
-        console.log("TEXT: "+text);
-        if(text != this.defaultcurrentslidetray && text != this.nextslidetray) return  'success' ;
-        if(text == this.defaultcurrentslidetray ||  text == this.nextslidetray) return  'danger' ;
+        if(text != this.defaultcurrentslidetray && text != this.nextslidetray) return  {'background-color': '#96ceb4'} ;
+        if(text == this.defaultcurrentslidetray ||  text == this.nextslidetray) return  {'background-color': '#ff6f69'} ;
 },
     ScanSlideTray(strSlideTrayID){
         if (this.blSlideTrayLoaded === false) {

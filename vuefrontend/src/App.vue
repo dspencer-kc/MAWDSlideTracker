@@ -97,7 +97,7 @@ export default {
               this.makeToast("Logging out user", "Logged Out", "warning")
             },
             scanbadge() {
-                    if (this.scannedbadgeinput.substring(0, 4) == "SBDG") {
+                    if (this.scannedbadgeinput.substring(0, 4) === "SBDG") {
                         this.userid = this.scannedbadgeinput.substring(4);
                         axios.post(store.getters.getApiUrl + '/getuserinfo', {
                                 userid: this.userid
@@ -131,13 +131,13 @@ export default {
                     }
             },
             getInputColor(text) {
-                if (text != this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {
+                if (text !== this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {
                     'background-color': '#96ceb4'
                 };
-                if (text != this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {
+                if (text !== this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {
                     'background-color': '#ffcc5c'
                 };
-                if (text == this.defaultbadgeinput) return {
+                if (text === this.defaultbadgeinput) return {
                     'background-color': '#ff6f69'
                 };
                 return {
