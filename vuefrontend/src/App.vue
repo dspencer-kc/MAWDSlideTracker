@@ -11,9 +11,9 @@
               <b-link class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
               <b-link class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
               <b-link class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
-              <b-nav-item-dropdown no-caret>
-                  <template #button-content>
-                    <h5>
+              <b-nav-item-dropdown right  no-caret>
+                  <template #button-content >
+                    <h5 >
                       <b-badge v-model="scannedbadgeinput" :style="getInputColor(scannedbadgeinput)" :model="scannedbadgeinput">  {{scannedbadgeinput}}</b-badge>
                       <b-icon shift-h="3" shift-v="-3" v-if="$store.getters.GetValidUser"   icon="person-check" variant="success">    </b-icon>
                       <b-icon shift-h="3" shift-v="-3" v-if="!$store.getters.GetValidUser"  icon="person-x"     variant="danger">     </b-icon>
