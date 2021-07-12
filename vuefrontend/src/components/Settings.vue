@@ -14,7 +14,7 @@
         <b-button v-on:click="setAllValues(setAllValue,setDirections)" title="Set All Values"><b-icon icon="cloud-upload" aria-hidden="true"></b-icon></b-button>
       </b-button-group>
     </b-button-toolbar>
-    <b-table style="opacity: 1;background: grey" striped hover :items="items" :fields="fields" ref="table">
+    <b-table style="opacity: 1;background: grey" striped hover :items="items" :fields="fields" >
       <template v-slot:cell(old_value)="row">    <b-form-input v-model="row.item.old_value" :disabled='true'/></template>
       <template v-slot:cell(right_left_value)="row">
         <b-form-group  @change="checkboxFlip(row.item.old_value)">

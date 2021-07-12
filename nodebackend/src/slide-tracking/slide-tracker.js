@@ -15,7 +15,8 @@ module.exports = {
   GetBlockData: GetBlockData,
   SetBlockData: SetBlockData,
   GetStatusData: GetStatusData,
-  GetCassEngLoc: GetCassEngLoc
+  GetCassEngLoc: GetCassEngLoc,
+  caseinquiry: GetCaseInquery
 }
 
 function printSlides (request, response, callback) {
@@ -211,8 +212,60 @@ function printSlides (request, response, callback) {
 //  // get some slide parameters here
 // }
 
-GetStatusData
+function GetCaseInquery (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function GetCaseInquery
+  //      Get Case Inquery Data
+  //
+  //    Author: Justin Dial
+  //
+  //
+  //    When to call:
+  //      To get data for use with case inqueries
+  //= ===========================================================================================
 
+  var strStrAccessionID = request.body.ACCESSIONID
+
+  var strSQL =
+`
+/*qryCaseInquiry*/
+      SELECT tblSlides.SlideID, 
+              tblSlides.StainLabel, 
+              tblSlideDistribution.Status, 
+              tblSlideDistribution.SlideDistributionLocation, 
+              tblSlideDistribution.DTReadyForCourier, 
+              tblSlides.LocationPrinted, 
+              tblSlides.DTPrinted, 
+              tblSlides.StainOrderDate, 
+              tblSlideDistribution.SlideTray,
+              tblBlock.DateTimeEngraved
+      FROM   (tblSlides 
+              LEFT JOIN tblSlideDistribution 
+                      ON tblSlides.SlideDistributionID = 
+                        tblSlideDistribution.SlideDistributionID) 
+              LEFT JOIN tblBlock 
+                    ON tblSlides.BlockID = tblBlock.BlockID 
+      WHERE  (( ( tblSlides.AccessionID ) = "` + strStrAccessionID + `"));
+`
+
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) // End query
+}
 
 function GetStatusData (request, response, callback) {
   //= ==========================================================================================
