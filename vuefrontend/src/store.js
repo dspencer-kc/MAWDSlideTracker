@@ -80,6 +80,12 @@ export default new Vuex.Store({
     GetUsername: (state) => {
       return state.username
     },
+    GetnodeBackendTestMode: (state) => {
+      return state.nodeBackendTestMode
+    },
+    GetvueFrontendTestMode: (state) => {
+      return state.vueFrontendTestMode
+    },
     GetVersion: (state) => {
       return state.version
     },

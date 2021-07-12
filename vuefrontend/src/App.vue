@@ -4,7 +4,8 @@
       <b-navbar class="navbar navbar-dark bg-dark fixed-top">
           <a class="navbar-brand" href="#">Slide Tracker</a>
           <b-nav-item>v {{$store.getters.GetVersion}} </b-nav-item>
-<!--          <span class="navbar-brand m-auto" style="background:red" v-if="!$store.getters.GetProduction">TESTMODE</span>-->
+          <span class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69)" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</span>
+          <span class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c)" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</span>
           <b-navbar-nav class="ml-auto">
               <b-link class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
               <b-link class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
@@ -12,7 +13,7 @@
               <b-link class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
               <b-nav-item-dropdown no-caret>
                   <template #button-content>
-                      <h5>
+                    <h5>
                       <b-badge v-model="scannedbadgeinput" :style="getInputColor(scannedbadgeinput)" :model="scannedbadgeinput">  {{scannedbadgeinput}}</b-badge>
                       <b-icon shift-h="3" shift-v="-3" v-if="$store.getters.GetValidUser"   icon="person-check" variant="success">    </b-icon>
                       <b-icon shift-h="3" shift-v="-3" v-if="!$store.getters.GetValidUser"  icon="person-x"     variant="danger">     </b-icon>

@@ -13,7 +13,8 @@ module.exports = {
   histodata: histoData,
   slideDistribution: slideDistribution,
   GetBlockData: GetBlockData,
-  SetBlockData: SetBlockData
+  SetBlockData: SetBlockData,
+  GetStatusData: GetStatusData
 }
 
 function printSlides (request, response, callback) {
@@ -208,6 +209,68 @@ function printSlides (request, response, callback) {
 // function getSlideParameters (request, response, callback) {
 //  // get some slide parameters here
 // }
+
+GetStatusData
+
+
+function GetStatusData (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function GetStatusData
+  //      Get Status Data
+  //
+  //    Author: Justin Dial
+  //
+  //
+  //    When to call:
+  //      To get Status of block/slides
+  //= ===========================================================================================
+  var strSQL =
+`
+select count(*),'pre Embedded'
+from tblBlock
+where 1 not in (select IDOfMaterial from tblActionTracking)
+and BlockStatus is null
+and PartDescription not like 'B%' -- bone marrow
+and DateTimeEngraved > now() - interval 1 day
+and TimesEngraved>0
+union all
+select count(action),action 
+from tblActionTracking
+where ActionDateTime > now() - interval 1 day
+and action='Embedded'
+group by action
+union all
+select count(action),action 
+from tblActionTracking
+where ActionDateTime > now() - interval 1 day
+and action='SlidesPrintedOffBlock'
+group by action
+union all
+SELECT count(distinct BlockID),'distributed'
+FROM tblSlides
+INNER JOIN   tblSlideDistribution on tblSlides.SlideDistributionID = tblSlideDistribution.SlideDistributionID
+WHERE tblSlideDistribution.DTReadyForCourier >date_format(curdate() - if(weekday(curdate()) >= 5, if(weekday(curdate()) = 6, 2, 1), 1),'%Y-%m-%d 18:00:00');
+`
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query.')
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) // End query
+}
+
+
 
 function getUserInfo (request, response, callback) {
   //= ==========================================================================================
