@@ -56,10 +56,10 @@ export default {
            console.log("AXIOS RESPONSE")
            console.log(JSON.stringify(apidata))
            this.blockStatusData = apidata
-           this.preEmbedded= apidata.data[0]['count(*)']
-           this.embedded= apidata.data[1]['count(*)']
-           this.slidesCut= apidata.data[2]['count(*)']
-           this.distributed= apidata.data[3]['count(*)']
+           this.preEmbedded= apidata.data[0]['count']
+           this.embedded= apidata.data[1]['count']
+           this.slidesCut= apidata.data[2]['count']
+           this.distributed= apidata.data[3]['count']
            this.max =this.preEmbedded+ this.embedded+ this.slidesCut+ this.distributed
 
          })

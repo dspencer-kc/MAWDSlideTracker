@@ -14,7 +14,8 @@ module.exports = {
   slideDistribution: slideDistribution,
   GetBlockData: GetBlockData,
   SetBlockData: SetBlockData,
-  GetStatusData: GetStatusData
+  GetStatusData: GetStatusData,
+  GetCassEngLoc: GetCassEngLoc
 }
 
 function printSlides (request, response, callback) {
@@ -227,7 +228,7 @@ function GetStatusData (request, response, callback) {
   //= ===========================================================================================
   var strSQL =
 `
-select count(*),'pre Embedded'
+select count(*) as 'count','pre Embedded'
 from tblBlock
 where 1 not in (select IDOfMaterial from tblActionTracking)
 and BlockStatus is null
@@ -412,7 +413,42 @@ function SetBlockData (request, response, callback) {
   response.send('OK')
 }
 
+function GetCassEngLoc (request, response, callback) {
+  //= ==========================================================================================
+  //
+  //    Function GetCassEngLoc
+  //      Get Cassette Engraver Locations
+  //
+  //    Author: Justin Dial
+  //
+  //
+  //    When to call:
+  //      To get cassette engraver locations
+  //= ===========================================================================================
 
+  var strSQL =
+`
+select old_value,new_value,right_left_value
+from engraver_lookup;
+`
+
+  console.log(strSQL)
+
+  // Connect to the database
+  var con = mysql.createConnection(mysqlConfig)
+  console.log('Connected!')
+
+  con.query(strSQL, function (err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Completed query cassette engraver')
+      console.log(result)
+      response.json(result)
+    }
+    con.end()
+  }) // End query
+}
 
 function getPartBlockCurrentAndTotals (request, response, callback) {
   //= ==========================================================================================
