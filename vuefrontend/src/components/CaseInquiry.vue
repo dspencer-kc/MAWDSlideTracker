@@ -2,7 +2,7 @@
   <div class="col d-flex justify-content-center" v-if="this.$store.getters.GetValidUser" >
       <div>
         <div><!--width is set by this div -->
-          <h2 class="display-2">Case Inquery</h2>
+          <h2 class="display-2">Case Inquiry</h2>
           <div class="input-group">
             <b-input id="InputCaseNo"  v-model="strCaseNo" placeholder="Input Case No: ie D19-99999" @keyup.enter="EnterKeyTrigger" />
             <b-button type="submit" variant="primary sm" @click="LoadTableData()" ref="btnLoadTableData">OK</b-button>
@@ -50,10 +50,6 @@ export default {
         apitoken: store.state.apitoken
       })
           .then(apidata => {
-            if (apidata.errorcode) {
-              console.log('error')
-              return
-            }
             let temp = {}
             temp = apidata.data
             console.log(JSON.stringify(apidata))
