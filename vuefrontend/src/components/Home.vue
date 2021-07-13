@@ -8,7 +8,7 @@
       <b-progress-bar :value="embedded" variant="success" v-if="embedded>=(slidesCut/12)"><span>Embedded:     <h3>{{ embedded }}</h3></span></b-progress-bar>
       <b-progress-bar :value="embedded*12" variant="secondary" v-if="embedded<(slidesCut/12)"><span>Embedded:     <h3>{{ embedded }}</h3></span></b-progress-bar>
       <b-progress-bar :value="slidesCut" variant="warning"><span>Slides Cut: <h3>{{ slidesCut}}</h3> </span></b-progress-bar>
-      <b-progress-bar :value="distributed" variant="info"><span>Distributed: <h3>{{ distributed }}</h3></span></b-progress-bar>
+      <b-progress-bar :value="distributed" variant="danger"><span>Distributed: <h3>{{ distributed }}</h3></span></b-progress-bar>
     </b-progress>
     </b-card>
   </div>
