@@ -14,21 +14,24 @@
         <b-button v-on:click="setAllValues(setAllValue,setDirections)" title="Set All Values"><b-icon icon="cloud-upload" aria-hidden="true"></b-icon></b-button>
       </b-button-group>
     </b-button-toolbar>
-    <b-table style="opacity: 1;background: grey" striped hover :items="items" :fields="fields" ref="table">
-      <template v-slot:cell(CoPath_Workstation_ID)="row">    <b-form-input v-model="row.item.CoPath_Workstation_ID" :disabled='true'/></template>
-      <template v-slot:cell(Side)="row">
-        <b-form-group  @change="checkboxFlip(row.item.CoPath_Workstation_ID)">
-          <b-form-radio v-model="row.item.Side" :name='getIndex(row.item.CoPath_Workstation_ID)' value="false">Left</b-form-radio>
-          <b-form-radio v-model="row.item.Side" :name='getIndex(row.item.CoPath_Workstation_ID)' value="true">Right</b-form-radio>
+    <b-table style="opacity: 1;background: grey" striped hover :items="items" :fields="fields" >
+      <template v-slot:cell(old_value)="row">    <b-form-input v-model="row.item.old_value" :disabled='true'/></template>
+      <template v-slot:cell(right_left_value)="row">
+        <b-form-group  @change="checkboxFlip(row.item.old_value)">
+          <b-form-radio v-model="row.item.right_left_value" :name='getIndex(row.item.old_value)' value="false">Left</b-form-radio>
+          <b-form-radio v-model="row.item.right_left_value" :name='getIndex(row.item.old_value)' value="true">Right</b-form-radio>
         </b-form-group>
       </template>
-      <template v-slot:cell(Assigned_Cassette_Engraver)="row"><b-form-input v-model="row.item.Assigned_Cassette_Engraver"/></template>
+      <template v-slot:cell(new_value)="row"><b-form-input v-model="row.item.new_value"/></template>
     </b-table>
   </div>
 </template>
 
 
 <script>
+import axios from "axios";
+import store from "@/store";
+
 export default {
   data() {
     return {
@@ -36,51 +39,53 @@ export default {
       setDirections:'',
       engraver_locations: ['PLAZA01','MAWD01','CASSETTELABELS01'],
       directions: ['Left','Right'],
-      fields: { CoPath_Workstation_ID: "CoPath_Workstation_ID", Side: "Side", Assigned_Cassette_Engraver: "Assigned_Cassette_Engraver" },
-      items: [{ CoPath_Workstation_ID: "",Side:true,Assigned_Cassette_Engraver: "CASSETTELABELS01"},
-        { CoPath_Workstation_ID: "MAWD.00-.B",Side:true,Assigned_Cassette_Engraver: "CASSETTELABELS01"},
-        { CoPath_Workstation_ID: "MAWD.00-.K",Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "MAWD.00-.M",Side:false,Assigned_Cassette_Engraver: "MAWD01"},
-        { CoPath_Workstation_ID: "MAWD.00-.7",Side:true,Assigned_Cassette_Engraver: "MAWD01"},
-        { CoPath_Workstation_ID: "MAWD.LP-02",Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "MAWD.LP-06",Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "MAWD.00.13",Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "MAWD.00.10",Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "MWD012",    Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "NKC-.05-01",Side:true,Assigned_Cassette_Engraver: "PLAZA01"},
-        { CoPath_Workstation_ID: "MAWD.00.1E",Side:false,Assigned_Cassette_Engraver: "MAWD01"},
-        { CoPath_Workstation_ID: "MAWD.00.1F",Side:false,Assigned_Cassette_Engraver: "MAWD01"},
-        { CoPath_Workstation_ID: "MAWD.00.1J",Side:false,Assigned_Cassette_Engraver: "MAWD01"},
-        { CoPath_Workstation_ID: "MAWD.00.1K",Side:true,Assigned_Cassette_Engraver: "MAWD01"},
-        { CoPath_Workstation_ID: "MAWD.00-.G",Side:true,Assigned_Cassette_Engraver: "CASSETTELABELS01"},
-        { CoPath_Workstation_ID: "MAWD.LP-.1",Side:false,Assigned_Cassette_Engraver: "PLAZA01"}
-      ]
+      fields: [{ key: 'old_value', label: 'CoPath_Workstation_ID' },{ key: 'right_left_value', label: 'Side' },{ key: 'new_value', label: 'Assigned_Cassette_Engraver' }],
+      items: []
     }
   },
+mounted() {
+  console.log('MOUNTED')
+  this.getValues()
+
+},
 methods: {
   setAllValues(newVal_eng,newVal_dir) {
     console.log("SET ALL VALUES")
     console.log(newVal_eng)
-    console.log(this.items.forEach(element => console.log(element.CoPath_Workstation_ID+' , '+element.Side+' , '+element.Assigned_Cassette_Engraver)));
+    console.log(this.items.forEach(element => console.log(element.old_value+' , '+element.right_left_value+' , '+element.new_value)));
     for (var item of this.items) {
-      if (newVal_eng.length>0){item.Assigned_Cassette_Engraver=newVal_eng}
-      if (newVal_dir=='Right'){item.Side=true}
-      else if (newVal_dir=='Left'){item.Side=false}
+      if (newVal_eng.length>0){item.new_value=newVal_eng}
+      if (newVal_dir=='Right'){item.right_left_value=true}
+      else if (newVal_dir=='Left'){item.right_left_value=false}
     }
     console.log("AFTER SET ALL VALUES")
     console.log(newVal_eng)
-    console.log(this.items.forEach(element => console.log(element.CoPath_Workstation_ID+' , '+element.Side+' , '+element.Assigned_Cassette_Engraver)));
+    console.log(this.items.forEach(element => console.log(element.old_value+' , '+element.right_left_value+' , '+element.new_value)));
 
   },
   getIndex(val){
-    return parseInt(this.items.findIndex(x => x.CoPath_Workstation_ID ===val))
+    return this.items.findIndex(x => x.old_value ===val).toString()
   },
   checkboxFlip(val){
-    this.items[this.getIndex(val)].Side=!this.items[this.getIndex(val)].Side;
+    this.items[this.getIndex(val)].right_left_value=!this.items[this.getIndex(val)].right_left_value;
   },
   SaveAllChanges(){
     console.log("SAVE ALL CHANGES");
-    console.log(this.items.forEach(element => console.log(element.CoPath_Workstation_ID+' , '+element.Side+' , '+element.Assigned_Cassette_Engraver)));
+    console.log(this.items.forEach(element => console.log(element.old_value+' , '+element.right_left_value+' , '+element.new_value)));
+  },
+  getValues(){
+    axios.post(store.getters.getApiUrl + '/GetCassEngLoc', {
+      action: 'GetCassEngLoc'
+    })
+        .then(apidata => {
+          console.log("AXIOS RESPONSE")
+          console.log(JSON.stringify(apidata));
+          console.log(JSON.stringify(apidata.data));
+          console.log(Object.keys(apidata.data))
+          this.items = apidata.data
+        })
+
+
   }
 }
 }

@@ -9,7 +9,6 @@
 <template>
 
 <div class="container" v-if="this.$store.getters.GetValidUser" >
-<br>
 <b-card class="mx-auto " style="max-width: 340px;" header="Scan Block" v-if="!this.blockID">
   <b-card-text class="mb-5"></b-card-text>
   <b-card-text>

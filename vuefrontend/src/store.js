@@ -10,8 +10,12 @@ export default new Vuex.Store({
     username: '',
     validuser: false,
     stationName: '',
-    testmode: false,
+    version:'3.10',
+    nodeBackendTestMode: false,
+    vueFrontendTestMode:false,
+    production:false,
     slideQueuePath: '',
+    testLocalapiURL: 'http://localhost:2081',
     testapiURL: 'http://10.24.4.9:2082',
     prodapiURL: 'http://10.24.4.9:2081',
     blockCountTableFields: ['location', 'block_count'],
@@ -68,7 +72,7 @@ export default new Vuex.Store({
       return state.blockCountTableItems
     },
     GetValidUser: (state) => {
-      if (!state.testmode){
+      if (!state.nodeBackendTestMode){
         return state.validuser
       }
       return true
@@ -76,12 +80,22 @@ export default new Vuex.Store({
     GetUsername: (state) => {
       return state.username
     },
-    GetTestmode: (state) => {
-      return state.testmode
+    GetnodeBackendTestMode: (state) => {
+      return state.nodeBackendTestMode
+    },
+    GetvueFrontendTestMode: (state) => {
+      return state.vueFrontendTestMode
+    },
+    GetVersion: (state) => {
+      return state.version
     },
     getApiUrl: (state) => {
-      if (state.testmode){return state.testapiURL}
+      if (state.nodeBackendTestMode){return state.testLocalapiURL}
+      if (!state.production){return state.testapiURL}
       else {return state.prodapiURL}
+    },
+    GetProduction: (state) => {
+      return state.production
     }
   }
 })
