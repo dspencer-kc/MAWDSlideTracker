@@ -3,11 +3,11 @@
 <template>
   <div class="col d-flex justify-content-center" style="font: normal small-caps normal 30px/1.4 'Arial';">
     <b-card style="min-width: 80%;" header="Slide Status" >
-    <b-progress class="mt-2" :max="max" show-value>
-      <b-progress-bar :value="preEmbedded" variant="primary"><span>preEmbedded: <strong>{{ preEmbedded }} </strong></span></b-progress-bar>
-      <b-progress-bar :value="embedded" variant="success"><span>embedded: <strong>{{ embedded }}</strong></span></b-progress-bar>
-      <b-progress-bar :value="slidesCut" variant="warning"><span>slidesCut: <strong>{{ slidesCut}} </strong></span></b-progress-bar>
-      <b-progress-bar :value="distributed" variant="info"><span>distributed: <strong>{{ distributed }} </strong></span></b-progress-bar>
+    <b-progress class="mt-2" :max="100" show-value height="4rem">
+      <b-progress-bar :value="25" variant="primary"><span>preEmbedded: <h4>{{ preEmbedded }} </h4></span></b-progress-bar>
+      <b-progress-bar :value="25" variant="success"><span>embedded: <h4>{{ embedded }}</h4></span></b-progress-bar>
+      <b-progress-bar :value="25" variant="warning"><span>slidesCut: <h4>{{ slidesCut}} </h4></span></b-progress-bar>
+      <b-progress-bar :value="25" variant="info"><span>distributed: <h4>{{ distributed }} </h4></span></b-progress-bar>
     </b-progress>
     </b-card>
   </div>
