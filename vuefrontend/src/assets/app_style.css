@@ -10,9 +10,12 @@ body {
 
 body {
   margin: 0;
-
   font-family: Roboto, sans-serif;
+}
 
+h1,span,navbar,table {
+    color: #e0dfdc;
+    text-shadow: -1px -1px 0 #2c2d2d, 1px -1px 0 #2c2d2d, -1px 1px 0 #2c2d2d, 1px 1px 0 #2c2d2d;
 }
 .customheadertext {
  text-rendering: optimizeLegibility;
@@ -31,7 +34,6 @@ body {
 .glassslide {
   background: rgba(255, 255, 255, 1);
   height: 400px;
-
   background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0)));
   background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
@@ -104,81 +106,10 @@ color: black;
   height: 450px;
 }
 
-/* vertical spacing between columns */
-
-[class*="col-"] {
-  margin-bottom: 30px;
-}
-
 .content {
   height: 100%;
   padding: 20px 20px 10px;
   color: #fff;
-}
-
-
-
-/*
-.container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-*/
-
-
-table {
-  width: 1100px;
-  border-spacing: 10px 2px;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-}
-
-th,
-td {
-  padding: 15px;
-    padding-top: 15px;
-    padding-right: 15px;
-    padding-bottom: 15px;
-    padding-left: 15px;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border: solid thin;
-}
-
-th {
-  text-align: inherit;
-}
-
-thead {
-  th {
-    background-color: #55608f;
-  }
-}
-
-tbody {
-  tr {
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-  }
-  td {
-    position: relative;
-    &:hover {
-      &:before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: -9999px;
-        bottom: -9999px;
-        background-color: rgba(255, 255, 255, 0.2);
-        z-index: -1;
-      }
-    }
-  }
 }
 
 #app {

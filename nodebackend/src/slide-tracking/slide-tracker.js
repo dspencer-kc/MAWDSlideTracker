@@ -45,8 +45,7 @@ function printSlides (request, response, callback) {
   //= ===========================================================================================
   // print the slides here
 
-  console.log('Hello print slides')
-  console.log(request)
+
   var strLocationID = 'unknown'
   var strSQLUpdateStatement = ''
 
@@ -58,7 +57,7 @@ function printSlides (request, response, callback) {
   strLocationID = request.body.printLocation
   var strOrderPathInitials = ''
 
-  console.log('Hello PrintSlides')
+
 
   // Get all required information from blockID, only include slides that are marked 'to be printed'
   var strSQL = ` SELECT tblSlides.StainOrderDate,
@@ -91,7 +90,7 @@ function printSlides (request, response, callback) {
   // console.log('Connected!')
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      //console.log(err)
     } else {
       // console.log(result)
       // iterate for all the rows in result
@@ -102,18 +101,17 @@ function printSlides (request, response, callback) {
         var row = result[key]
         // Format Date
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-        console.log('OrderingPathInitials1:', row.OrderPathInitials)
+
         if (row.OrderPathInitials == null) {
           strOrderPathInitials = ''
-          console.log('Matched null')
+
         } else if (row.OrderPathInitials === 'null') {
           strOrderPathInitials = ''
-          console.log('Matched the word null')
+
         } else {
           strOrderPathInitials = row.OrderPathInitials
-          console.log('OrderingPathInitials2:', strOrderPathInitials)
+
         }
-        console.log('OrderingPathInitials3:', strOrderPathInitials)
         strOrderPathInitials = strOrderPathInitials.substring(0, 3)
 
         var d = new Date().toLocaleDateString()
@@ -124,13 +122,13 @@ function printSlides (request, response, callback) {
         var strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
 
         var strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
-        console.log(strSlideFlatFileFullName)
+
         fs.writeFile(strSlideFlatFileFullName, strFileWriteData,
           // callback function that is called after writing file is done
           function (err) {
             if (err) throw err
             // if no error
-            console.log('Data is written to ' + strSlideFlatFileFullName.toString())
+
           })
 
         // Update query to say slide has been printed
@@ -151,7 +149,7 @@ function printSlides (request, response, callback) {
 
         con.query(strSQLUpdateStatement, function (updateerr, updateresult) {
           if (updateerr) {
-            console.log('updateerror:', updateerr)
+            //console.log('updateerror:', updateerr)
           } else {
             // console.log(strSQLUpdateStatement)
             // console.log(updateresult.affectedRows + ' record(s) updated')
@@ -193,7 +191,7 @@ function printSlides (request, response, callback) {
 
       con.query(strTempSQL, function (updateerr, updateresult) {
         if (updateerr) {
-          console.log('updateerror:', updateerr)
+          //console.log('updateerror:', updateerr)
         } else {
           // console.log(strSQLUpdateStatement)
           // console.log(updateresult.affectedRows + ' record(s) updated')
@@ -204,7 +202,6 @@ function printSlides (request, response, callback) {
     con.end()
   }) // end qury
 
-  console.log(`${strBlockID}`)
   response.send('Slides have been sent to Slide Printer')
 }
 
@@ -246,21 +243,20 @@ function GetCaseInquery (request, response, callback) {
                         tblSlideDistribution.SlideDistributionID) 
               LEFT JOIN tblBlock 
                     ON tblSlides.BlockID = tblBlock.BlockID 
-      WHERE  (( ( tblSlides.AccessionID ) = "` + strStrAccessionID + `"));
+      WHERE  (( ( tblSlides.AccessionID ) LIKE "` + strStrAccessionID + `"))
+      order by DTPrinted DESC;
 `
 
-  console.log(strSQL)
+
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
-  console.log('Connected!')
+
 
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      //console.log(err)
     } else {
-      console.log('Completed query.')
-      console.log(result)
       response.json(result)
     }
     con.end()

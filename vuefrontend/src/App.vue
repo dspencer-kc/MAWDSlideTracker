@@ -11,13 +11,13 @@
               <b-link class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
               <b-link class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
               <b-link class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
-              <b-nav-item-dropdown right  no-caret>
+              <b-nav-item-dropdown right no-caret>
                   <template #button-content >
-                    <h5 >
+                    <span >
                       <b-badge v-model="scannedbadgeinput" :style="getInputColor(scannedbadgeinput)" :model="scannedbadgeinput">  {{scannedbadgeinput}}</b-badge>
                       <b-icon shift-h="3" shift-v="-3" v-if="$store.getters.GetValidUser"   icon="person-check" variant="success">    </b-icon>
                       <b-icon shift-h="3" shift-v="-3" v-if="!$store.getters.GetValidUser"  icon="person-x"     variant="danger">     </b-icon>
-                    </h5>
+                    </span>
                   </template>
                   <b-dd-item v-if="$store.getters.GetValidUser" to="/settings">Settings</b-dd-item>
                   <b-dd-item v-if="$store.getters.GetValidUser" to="/caseinquiry">Case Inquiry</b-dd-item>
@@ -134,16 +134,16 @@ export default {
             },
             getInputColor(text) {
                 if (text !== this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {
-                    'background-color': '#96ceb4'
+                    'background-color': '#28a745'
                 };
                 if (text !== this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {
-                    'background-color': '#ffcc5c'
+                    'background-color': '#ffc107'
                 };
                 if (text === this.defaultbadgeinput) return {
-                    'background-color': '#ff6f69'
+                    'background-color': '#dc3545'
                 };
                 return {
-                    'background-color': '#ffcc5c'
+                    'background-color': '#ffc107'
                 };
             },
             makeToast(content, title, variant = null) {
