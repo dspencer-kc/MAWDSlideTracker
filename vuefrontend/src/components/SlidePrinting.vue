@@ -198,8 +198,6 @@ export default {
           console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
-          console.log('socket on within slide')
-          console.log('within slide:',data)
           //validate scan data
           this.validateScanData(data)
       }
@@ -207,13 +205,9 @@ export default {
   methods: {
     validateScanData(data){
       if (store.state.validuser) {
-        console.log('Slide Queue Path: ', data.slideQueuePath)
         store.commit('SetSlideQueuePath', data.slideQueuePath)
-        console.log('slide station name:', data.stationName)
         store.commit('SetStationName', data.stationName)
         //Depending on prefix, send to correct placeholder
-        console.log('slide: barcodescan', data.barcodeScanData)
-        console.log('slide: prefix', data.barcodeScanData.substring(0,4))
 
         switch(data.barcodeScanData.substring(0,4)) {
           case 'HBLK':
@@ -252,8 +246,6 @@ export default {
 
   printSlides()
   {
-    console.log('start print slides')
-    console.log(store.state.slideQueuePath)
 
       axios.post(store.getters.getApiUrl + '/printslides', {
       action: 'PrintSlides',
@@ -264,7 +256,7 @@ export default {
 
       })
       .then(function (response) {
-        console.log('slides printed')
+      console.log('slides printed')
       console.log(response)
       })
       .catch(function (error) {
@@ -307,8 +299,6 @@ export default {
           this.formstatus = 'readytoprint';
           document.getElementById("InputBlockID").disabled = true;
           this.formstatuslabel = 'Print Slides';
-          console.log("Made it to this.slide=data");
-          console.log(data);
         }).catch((e) => {
           console.log(e)
         })

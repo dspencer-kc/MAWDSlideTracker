@@ -76,15 +76,11 @@ export default {
     },
     methods: {
         validateScanData(data) {
-                console.log('barcodescan', data.barcodeScanData)
-                console.log('prefix', data.barcodeScanData.substring(0, 4))
                 switch (data.barcodeScanData.substring(0, 4)) {
                     case 'HBLK':
                         break
                     case 'SBDG':
-                        console.log('Slide Queue Path: ', data.slideQueuePath)
                         store.commit('SetSlideQueuePath', data.slideQueuePath)
-                        console.log('slide station name:', data.stationName)
                         store.commit('SetStationName', data.stationName)
                         this.scannedbadgeinput = data.barcodeScanData
                         this.scanbadge()
