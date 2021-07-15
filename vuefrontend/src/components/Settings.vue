@@ -74,6 +74,11 @@ methods: {
 
 
   }
-}
+},
+  computed:{
+    currentRouteName() {
+      return this.$route.name;
+    }
+  }
 }
 </script>

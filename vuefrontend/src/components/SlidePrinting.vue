@@ -198,7 +198,7 @@ export default {
           console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
-          //validate scan data
+          console.log("SOCKET STREAM SLIDE DIST")
           this.validateScanData(data)
       }
   },
@@ -208,12 +208,10 @@ export default {
         store.commit('SetSlideQueuePath', data.slideQueuePath)
         store.commit('SetStationName', data.stationName)
         //Depending on prefix, send to correct placeholder
-
+        console.log("SLIDE PRINTER: "+this.$route.name)
         switch(data.barcodeScanData.substring(0,4)) {
           case 'HBLK':
-            //BlockScan Detected Pull Slides
             this.blockID = data.barcodeScanData
-            //this.pullSlidesViaPost();
             this.pullSlides();
             break
           case 'SBDG':
@@ -252,7 +250,8 @@ export default {
       blockID: this.blockID,
       printRequestedBy: store.state.username,
       slideQueuePath: store.state.slideQueuePath,
-      printLocation: store.state.stationName
+      printLocation: store.state.stationName,
+      curRoute : this.currentRouteName
 
       })
       .then(function (response) {
@@ -294,7 +293,7 @@ export default {
             console.log('error')
             return
           }
-
+          console.log(this.currentRouteName)
           this.slides = data;
           this.formstatus = 'readytoprint';
           document.getElementById("InputBlockID").disabled = true;
@@ -310,7 +309,8 @@ export default {
       axios.post(store.getters.getApiUrl + '/updateslidetoprint', {
         action: 'UpdateSlideToPrintValue',
         slideId: strSlideID,
-        toPrintStatus: blChecked
+        toPrintStatus: blChecked,
+        curRoute : this.currentRouteName
       })
       .then(function (response) {
         console.log(response);
@@ -323,7 +323,8 @@ export default {
     GetPartBlockCurrentAndTotals() {
         console.log('start GetPartBlockCurrentAndTotals')
               axios.post(store.getters.getApiUrl + '/getpartblockcurrentandtotals', {
-              blockID: this.blockID
+              blockID: this.blockID,
+              curRoute : this.currentRouteName
             })
             .then(apidata => {
               this.loading = false;
@@ -392,6 +393,9 @@ export default {
       } else {
         return true
       }
+    },
+    currentRouteName() {
+      return this.$route.name;
     }
   }
 }

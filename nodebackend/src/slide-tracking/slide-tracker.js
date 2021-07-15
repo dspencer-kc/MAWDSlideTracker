@@ -370,22 +370,14 @@ function GetBlockData (request, response, callback) {
   //      To get block info
   //= ===========================================================================================
   var blockID = request.body.blockID
-
-  var strSQL = `SELECT * FROM OPENLIS.tblBlock
-              WHERE \`BlockID\` = '` + blockID + `';`
-
-  console.log(strSQL)
+  var strSQL = `SELECT * FROM OPENLIS.tblBlock WHERE \`BlockID\` = '` + blockID + `';`
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
-  console.log('Connected!')
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.log(err)
     } else {
-      console.log('Completed query blockdata')
-      console.log(result)
       response.json(result)
     }
     con.end()
@@ -404,13 +396,17 @@ function SetBlockData (request, response, callback) {
   //    When to call:
   //      To set block info
   //= ===========================================================================================
+
+
   var blockData            = request.body.blockData.data[0]
   let ScanLocation         = request.body.scanlocation
   let userid               = request.body.userid
+  let curRoute             = request.body.curRoute
   let TimesScannedAtEmbedding   = blockData.TimesScannedAtEmbedding
   let BlockID				       = blockData.BlockID
   if (!TimesScannedAtEmbedding){TimesScannedAtEmbedding=1}
   else{TimesScannedAtEmbedding = TimesScannedAtEmbedding+1}
+
 
   var strSQL =
   `
@@ -480,9 +476,7 @@ function GetCassEngLoc (request, response, callback) {
 select old_value,new_value,right_left_value
 from engraver_lookup;
 `
-
   console.log(strSQL)
-
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
   console.log('Connected!')
@@ -491,8 +485,6 @@ from engraver_lookup;
     if (err) {
       console.log(err)
     } else {
-      console.log('Completed query cassette engraver')
-      console.log(result)
       response.json(result)
     }
     con.end()
@@ -597,9 +589,6 @@ function updateSlideToPrint (request, response, callback) {
   })
   // });
 
-  console.log(strSlideID)
-  console.log(blToPrintStatus)
-  console.log(strAction)
   response.send('OK')
 }
 

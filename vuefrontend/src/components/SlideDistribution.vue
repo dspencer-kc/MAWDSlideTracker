@@ -77,7 +77,7 @@ mounted() {
           //console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
-          //validate scan data
+          console.log("SOCKET STREAM SLIDE DIST")
           this.validateScanData(data)
       }
   },
@@ -134,7 +134,8 @@ methods: {
       action: 'MarkSlideToBeDistributed',
       slidedistid: strSlideDistributionID,
         slidetray: this.slidetrayID,
-      slideid: strSlideID
+      slideid: strSlideID,
+      curRoute : this.currentRouteName
       })
       .then(apidata => {
         this.loading = false;
@@ -186,7 +187,8 @@ methods: {
           action: 'CreateNewSlideDistribution',
           userid: store.state.username,
           slidetray: this.slidetrayID,
-          scanlocation: store.state.stationName
+          scanlocation: store.state.stationName,
+          curRoute : this.currentRouteName
           })
           .then(apidata => {
             this.loading = false;
@@ -231,7 +233,8 @@ methods: {
               action: 'LoadSlideTray',
               userid: store.state.username,
               slidetray: this.slidetrayID,
-              scanlocation: store.state.stationName
+              scanlocation: store.state.stationName,
+              curRoute : this.currentRouteName
               })
               .then(apidata => {
                 this.loading = false;
@@ -295,7 +298,8 @@ methods: {
         slidedistid: this.SlideDistributionID,
         userid: store.state.username,
         slidedistrloc: strLocID,
-        scanlocation: store.state.stationName
+        scanlocation: store.state.stationName,
+        curRoute : this.currentRouteName
         })
         .then(response => {
             // console.log(response)
@@ -332,7 +336,8 @@ methods: {
         userid: store.state.username,
         slidedistrloc: strLocID,
         scanlocation: store.state.stationName,
-        slidetray: this.slidetrayID
+        slidetray: this.slidetrayID,
+        curRoute : this.currentRouteName
         })
         .then(response => {
           // console.log(response)
@@ -381,6 +386,10 @@ methods: {
     }
 
 },
-computed: {}
+computed: {
+  currentRouteName() {
+    return this.$route.name;
+  }
+}
 }
 </script>

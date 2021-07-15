@@ -7,10 +7,10 @@
           <span class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69)" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</span>
           <span class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c)" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</span>
           <b-navbar-nav class="ml-auto">
-              <b-link class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
-              <b-link class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
-              <b-link class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
-              <b-link class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
+              <b-link :active="this.$route.name =='home'" class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
+              <b-link :active="this.$route.name =='Embedding'" class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
+              <b-link :active="this.$route.name =='SlidePrinting'" class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
+              <b-link :active="this.$route.name =='SlideDistribution'" class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
               <b-nav-item-dropdown right no-caret>
                   <template #button-content >
                     <span >
@@ -153,6 +153,12 @@ export default {
             }
 
 
+    },
+  computed:{
+    currentRouteName() {
+      return this.$route.name;
     }
+  }
+
 }
 </script>

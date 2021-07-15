@@ -37,7 +37,8 @@ export default {
   methods: {
      LoadData(){
      axios.post(store.getters.getApiUrl + '/GetStatusData', {
-       action: 'GetStatusData'
+       action: 'GetStatusData',
+       curRoute : this.currentRouteName
      })
          .then(apidata => {
            this.blockStatusData = apidata
@@ -51,6 +52,11 @@ export default {
 
 
      }
+  },
+  computed:{
+    currentRouteName() {
+      return this.$route.name;
+    }
   }
 }
 </script>

@@ -56,7 +56,8 @@ export default {
       else{accId=this.strCaseNo}
       axios.post(strFullAPICall, {
         ACCESSIONID: accId,
-        apitoken: store.state.apitoken
+        apitoken: store.state.apitoken,
+        curRoute : this.currentRouteName
       })
           .then(apidata => {
             let temp = {}
@@ -81,6 +82,11 @@ export default {
     }
   },
   mounted() {
+  },
+  computed:{
+    currentRouteName() {
+      return this.$route.name;
+    }
   }
 }
 </script>

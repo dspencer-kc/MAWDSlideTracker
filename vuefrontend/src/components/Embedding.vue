@@ -58,7 +58,7 @@ export default {
           console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
-          //validate scan data
+          console.log("SOCKET STREAM EMBED")
           this.validateScanData(data)
       }
   },
@@ -66,11 +66,11 @@ export default {
     validateScanData(data){
       if (store.state.validuser) {
         //Depending on prefix, send to correct placeholder
-
+        console.log("EMBEDDED: "+this.$route.name)
         switch(data.barcodeScanData.substring(0,4)) {
           case 'HBLK':
             this.blockID = data.barcodeScanData
-            this.getBlockData();
+            if (this.$route.name =='Embedding'){this.getBlockData()};
             break
           default:
             // code block
@@ -81,11 +81,12 @@ export default {
 
     },
 
-    async getBlockData() {
+     getBlockData() {
 
       axios.post(store.getters.getApiUrl + '/GetBlockData', {
       action: 'GetBlockData',
-      blockID:this.blockID
+      blockID:this.blockID,
+      curRoute : this.currentRouteName
       })
       .then(apidata => {
         this.blockData = apidata;
@@ -102,10 +103,12 @@ export default {
       action: 'SetBlockData',
       blockData:this.blockData,
       scanlocation:store.state.stationName,
-      userid:store.state.username
+      userid:store.state.username,
+      curRoute : this.currentRouteName
       })
       .then(apidata => {
-
+        console.log("SET BLOCK DATA AXIOS CALL")
+        console.log(this.currentRouteName())
         var ToastString = this.blockData.data[0].BlockID+" Status Updated to Embedded";
         this.makeToast(ToastString, "Block Status", "success")
         }).catch((e) => {
@@ -136,6 +139,9 @@ export default {
     }
   },
   computed:{
+    currentRouteName() {
+      return this.$route.name;
+    }
   }
 }
 </script>
