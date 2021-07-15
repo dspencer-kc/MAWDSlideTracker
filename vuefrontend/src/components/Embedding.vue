@@ -7,43 +7,30 @@
     Description: This is the component for handling the embedding process
 ============================================================================================ -->
 <template>
-
-<div class="container" v-if="this.$store.getters.GetValidUser" >
-<b-card class="mx-auto " style="max-width: 340px;" header="Scan Block" v-if="!this.blockID">
-  <b-card-text class="mb-5"></b-card-text>
-  <b-card-text>
-    <b-iconstack class="mb-5">
-    <b-icon stacked icon="calendar" scale="6" flip-v=true                   variant="dark"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="21"  variant="dark"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="-21" variant="dark"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="21"   variant="dark"></b-icon>
-    <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="-21"  variant="dark"></b-icon>
-    </b-iconstack>
-  </b-card-text>
-   </b-card>
-  <b-card class="mx-auto" style="max-width: 340px;" header="Block Info" v-if="this.blockID">
+  <div class="container"  v-if="this.$store.getters.GetValidUser" >
+  <h1>Scan Block</h1>
+    <br>
+  <b-card class="mx-auto" style="max-width: 68%;opacity:.90;font: normal small-caps normal 30px/1.4 'Arial';" >
     <b-card-text class="mb-5"></b-card-text>
     <b-card-text>
-      <b-iconstack class="mb-5">
-        <b-icon stacked icon="calendar" scale="6" flip-v=true                   :style="getBlockColor()"></b-icon>
-        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="21"  :style="getBlockColor()"></b-icon>
-        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="-21" :style="getBlockColor()"></b-icon>
-        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="21"   :style="getBlockColor()"></b-icon>
-        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21" shift-v="-21"  :style="getBlockColor()"></b-icon>
+      <b-iconstack class="mb-5 py-md-1" :variant="SetColor">
+        <b-icon stacked icon="calendar" scale="6" flip-v=true ></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="21"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="-21" shift-v="-21"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21"  shift-v="21"></b-icon>
+        <b-icon stacked icon="grid3x3" scale="2.8" shift-h="21"  shift-v="-21"></b-icon>
       </b-iconstack>
     </b-card-text>
-
-    <b-card-text>AccessionID:      <b-badge>{{this.blockData.data[0].SpecNumFormatted}}                                           </b-badge></b-card-text>
-    <b-card-text>Block ID:         <b-badge> {{this.blockData.data[0].PartDesignator}}{{this.blockData.data[0].BlockDesignator}}  </b-badge></b-card-text>
-    <b-card-text>Name:             <b-badge>{{this.blockData.data[0].PatientName}}                                                </b-badge></b-card-text>
-    <b-card-text>BlockStatus:      <b-badge>{{this.blockData.data[0].BlockStatus}}                                                </b-badge></b-card-text>
-    <b-card-text>BlockComment:     <b-badge>{{this.blockData.data[0].BlockComment}}                                               </b-badge></b-card-text>
-    <b-card-text>PartDescription:  <b-badge>{{this.blockData.data[0].PartDescription}}                                            </b-badge></b-card-text>
-
-
+    <span v-if="this.blockID">
+    <b-card-text>AccessionID:       <b-badge>{{this.blockData.data[0].SpecNumFormatted}}                                           </b-badge></b-card-text>
+    <b-card-text>Block ID:          <b-badge> {{this.blockData.data[0].PartDesignator}}{{this.blockData.data[0].BlockDesignator}}  </b-badge></b-card-text>
+    <b-card-text>Name:              <b-badge>{{this.blockData.data[0].PatientName}}                                                </b-badge></b-card-text>
+    <b-card-text>BlockStatus:       <b-badge>{{this.blockData.data[0].BlockStatus}}                                                </b-badge></b-card-text>
+    <b-card-text>BlockComment:      <b-badge>{{this.blockData.data[0].BlockComment}}                                               </b-badge></b-card-text>
+    <b-card-text>PartDescription:   <b-badge>{{this.blockData.data[0].PartDescription}}                                            </b-badge></b-card-text>
+    </span>
    </b-card>
   </div>
-<!-- /container -->
 </template>
 
 
@@ -57,7 +44,8 @@ export default {
     data() {
     return {
       blockID: '',
-      blockData:[]
+      blockData:[],
+      SetColor:'secondary'
     }
   },
 
@@ -70,9 +58,7 @@ export default {
           console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
-          console.log('socket on within slide')
-          console.log('within slide:',data)
-          //validate scan data
+          console.log("SOCKET STREAM EMBED")
           this.validateScanData(data)
       }
   },
@@ -80,14 +66,11 @@ export default {
     validateScanData(data){
       if (store.state.validuser) {
         //Depending on prefix, send to correct placeholder
-        console.log('slide: barcodescan', data.barcodeScanData)
-        console.log('slide: prefix', data.barcodeScanData.substring(0,4))
-
+        console.log("EMBEDDED: "+this.$route.name)
         switch(data.barcodeScanData.substring(0,4)) {
           case 'HBLK':
-            console.log(data.barcodeScanData)
             this.blockID = data.barcodeScanData
-            this.getBlockData();
+            if (this.$route.name =='Embedding'){this.getBlockData()};
             break
           default:
             // code block
@@ -98,64 +81,52 @@ export default {
 
     },
 
-    async getBlockData() {
-      console.log('start pull block');
-      this.loading = true
-      console.log(this.blockID);
+     getBlockData() {
+
       axios.post(store.getters.getApiUrl + '/GetBlockData', {
       action: 'GetBlockData',
-      blockID:this.blockID
+      blockID:this.blockID,
+      curRoute : this.currentRouteName
       })
       .then(apidata => {
-        console.log('pull block response');
-        this.loading = false;
-        console.log(apidata);
         this.blockData = apidata;
-        console.log(this.blockData)
+        this.setBlockColor(apidata.data[0].Hopper);
         this.setBlockData();
         }).catch((e) => {
-          console.log("AXIOS ERROR: "+e)
+          //console.log("AXIOS ERROR: "+e)
         })
     },
 
     setBlockData() {
-      console.log('start update block');
-      console.log(this.blockData);
+
       axios.post(store.getters.getApiUrl + '/SetBlockData', {
       action: 'SetBlockData',
       blockData:this.blockData,
       scanlocation:store.state.stationName,
-      userid:store.state.username
+      userid:store.state.username,
+      curRoute : this.currentRouteName
       })
       .then(apidata => {
-        console.log('update block response');
+        console.log("SET BLOCK DATA AXIOS CALL")
+        console.log(this.currentRouteName())
         var ToastString = this.blockData.data[0].BlockID+" Status Updated to Embedded";
         this.makeToast(ToastString, "Block Status", "success")
         }).catch((e) => {
-          console.log("AXIOS ERROR: "+e)
+          //console.log("AXIOS ERROR: "+e)
         })
     },
-    getBlockColor(){
-      if (this.blockData){
-        var colorNum = this.blockData.data[0].Hopper
+    setBlockColor(hopperColor){
         let colors = {
-          101:'#789af0', //blue
-          102:'#789af0', //blue
-          103:'#bddaac', //green
-          104:'#bddaac', //green
-          105:'#daacbd', //red
-          106:'#dbce95', //yellow
-          107:'#c9acda', //purple
-          108:'#c9acda'  //purple
+          101:'primary', //blue
+          102:'primary', //blue
+          103:'success', //green
+          104:'success', //green
+          105:'danger', //red
+          106:'warning', //yellow
+          107:'dark', //purple
+          108:'dark'  //purple
         };
-        let blank = '#bddaac'; //grey
-        console.log(colorNum)
-        console.log(colors[colorNum])
-        if (colors[colorNum]){
-            return {'color':  colors[colorNum]}
-        }
-        return {'color':  blank}
-      }
+        if (colors[hopperColor]){this.SetColor = colors[hopperColor]}
     },
     makeToast(content, title, variant = null) {
         this.$bvToast.toast(content, {
@@ -168,6 +139,9 @@ export default {
     }
   },
   computed:{
+    currentRouteName() {
+      return this.$route.name;
+    }
   }
 }
 </script>

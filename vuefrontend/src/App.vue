@@ -7,17 +7,17 @@
           <span class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69)" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</span>
           <span class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c)" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</span>
           <b-navbar-nav class="ml-auto">
-              <b-link class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
-              <b-link class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
-              <b-link class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
-              <b-link class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
-              <b-nav-item-dropdown right  no-caret>
+              <b-link :active="this.$route.name =='home'" class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
+              <b-link :active="this.$route.name =='Embedding'" class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
+              <b-link :active="this.$route.name =='SlidePrinting'" class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
+              <b-link :active="this.$route.name =='SlideDistribution'" class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
+              <b-nav-item-dropdown right no-caret>
                   <template #button-content >
-                    <h5 >
+                    <span >
                       <b-badge v-model="scannedbadgeinput" :style="getInputColor(scannedbadgeinput)" :model="scannedbadgeinput">  {{scannedbadgeinput}}</b-badge>
                       <b-icon shift-h="3" shift-v="-3" v-if="$store.getters.GetValidUser"   icon="person-check" variant="success">    </b-icon>
                       <b-icon shift-h="3" shift-v="-3" v-if="!$store.getters.GetValidUser"  icon="person-x"     variant="danger">     </b-icon>
-                    </h5>
+                    </span>
                   </template>
                   <b-dd-item v-if="$store.getters.GetValidUser" to="/settings">Settings</b-dd-item>
                   <b-dd-item v-if="$store.getters.GetValidUser" to="/caseinquiry">Case Inquiry</b-dd-item>
@@ -76,15 +76,11 @@ export default {
     },
     methods: {
         validateScanData(data) {
-                console.log('barcodescan', data.barcodeScanData)
-                console.log('prefix', data.barcodeScanData.substring(0, 4))
                 switch (data.barcodeScanData.substring(0, 4)) {
                     case 'HBLK':
                         break
                     case 'SBDG':
-                        console.log('Slide Queue Path: ', data.slideQueuePath)
                         store.commit('SetSlideQueuePath', data.slideQueuePath)
-                        console.log('slide station name:', data.stationName)
                         store.commit('SetStationName', data.stationName)
                         this.scannedbadgeinput = data.barcodeScanData
                         this.scanbadge()
@@ -134,16 +130,16 @@ export default {
             },
             getInputColor(text) {
                 if (text !== this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {
-                    'background-color': '#96ceb4'
+                    'background-color': '#28a745'
                 };
                 if (text !== this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {
-                    'background-color': '#ffcc5c'
+                    'background-color': '#ffc107'
                 };
                 if (text === this.defaultbadgeinput) return {
-                    'background-color': '#ff6f69'
+                    'background-color': '#dc3545'
                 };
                 return {
-                    'background-color': '#ffcc5c'
+                    'background-color': '#ffc107'
                 };
             },
             makeToast(content, title, variant = null) {
@@ -157,6 +153,12 @@ export default {
             }
 
 
+    },
+  computed:{
+    currentRouteName() {
+      return this.$route.name;
     }
+  }
+
 }
 </script>

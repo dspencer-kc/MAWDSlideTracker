@@ -2,34 +2,23 @@
 
 <template >
 <div class="container" v-if="this.$store.getters.GetValidUser" >
-  <b-navbar class="navbar navbar-dark bg-dark m-auto ">
-    <b-nav-item class="navbar-brand"> <h3><b-badge :model="currentslidetray" :style="getInputColor(currentslidetray)" size="lg">{{currentslidetray}}   </b-badge></h3></b-nav-item>
-    <b-nav-item class="navbar-brand">Slide Count:    <b-badge>{{strInTraySlideCount}} </b-badge></b-nav-item>
-    <b-nav-item class="navbar-brand">Block Count:    <b-badge>{{strInTrayBlockCount}} </b-badge></b-nav-item>
-    <b-button>{{formstatuslabel}}</b-button><b-button @click="Cancel()">Cancel</b-button>
-    <b-form-radio-group id="rdSlideTrayBehavior" v-model="rdSlideTrayBehaviorSelected" :options="rdSlideTrayBehaviorOptions" buttons name="radios-btn-default"></b-form-radio-group>
+
+  <b-navbar class="bg-dark navbar-expan" style="white-space: nowrap;">
+    <b-nav-item  disabled ="navbar-brand"> <h3><b-badge :model="currentslidetray" :style="getInputColor(currentslidetray)">{{currentslidetray}}   </b-badge></h3></b-nav-item>
+    <b-nav-item>Slide Count:<h3><b-badge>{{strInTraySlideCount}} </b-badge></h3></b-nav-item>
+    <b-nav-item>Block Count:<h3><b-badge>{{strInTrayBlockCount}} </b-badge></h3></b-nav-item>
+    <b-button><span>{{formstatuslabel}}</span></b-button>
+    <b-button @click="Cancel()"><span>Cancel</span></b-button>
+    <b-nav-item class="navbar-brand"></b-nav-item>
+    <b-nav-item class='ml-auto'>
+      <b-form-radio-group  id="rdSlideTrayBehavior" v-model="rdSlideTrayBehaviorSelected" :options="rdSlideTrayBehaviorOptions" buttons name="radios-btn-default">
+      </b-form-radio-group>
+    </b-nav-item>
+
   </b-navbar>
-
-
+  <br>
   <div class='col-xs-6'>
-    <table  class="table table-dark" v-if="this.slides.length>0">
-      <tr>
-        <th>Slide ID</th>
-        <th>Case Slides In Tray</th>
-        <th>Case Slides Total</th>
-        <th>Case Slides Not In Tray</th>
-      </tr>
-      <template v-for="result in slides">
-      <tr>
-        <td>{{ result.SlideID }}</td>
-        <td>{{ result.CaseSlidesInTray }}</td>
-        <td>{{ result.CaseSlidesTotal }}</td>
-        <td>{{ result.CaseSlidesNotInTray }}</td>
-      </tr>
-      </template>
-    </table>
-    <ul>
-    </ul>
+    <b-table v-if="this.slides.length>0" style="opacity: .90;white-space: nowrap;" striped hover dark small borderless :items="slides" :fields="fields" ></b-table>
     <blockcount> </blockcount>
 </div>
   </div>
@@ -64,33 +53,31 @@ return {
   strInputTextLabel: 'Scan Slide Tray: ',
   defaultstrInputTextLabel: 'Scan Slide Tray: ',
   slides: {},
+  fields: {},
   obApiResult02: {},
   obApiResult03: {},
   strInTrayBlockCount: '0',
   strInTraySlideCount: '0',
   rdSlideTrayBehaviorSelected: 'NewSlideTray',
   rdSlideTrayBehaviorOptions: [
-    { text: 'New Slide Tray', value: 'NewSlideTray', disabled: false },
-    { text: 'Edit Existing Slide Tray', value: 'EditExisting', disabled: false },
+    { text: 'New', value: 'NewSlideTray', disabled: false },
+    { text: 'Edit', value: 'EditExisting', disabled: false },
   ]
 }
 },
 mounted() {
-  console.log('MOUNTED - LOADING TABLE DATA')
   this.LoadTableData()
 
 },
   sockets: {
       connect: function () {
-          console.log('socket connected within slide')
+          //console.log('socket connected within slide')
       },
       customEmit: function (data) {
-          console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
+          //console.log(' within slide this method was fired by the socket server. eg: io.emit("customEmit", data)')
       },
       stream: function(data) {
-          console.log('socket on within slide')
-          console.log('within slide:',data)
-          //validate scan data
+          console.log("SOCKET STREAM SLIDE DIST")
           this.validateScanData(data)
       }
   },
@@ -147,7 +134,8 @@ methods: {
       action: 'MarkSlideToBeDistributed',
       slidedistid: strSlideDistributionID,
         slidetray: this.slidetrayID,
-      slideid: strSlideID
+      slideid: strSlideID,
+      curRoute : this.currentRouteName
       })
       .then(apidata => {
         this.loading = false;
@@ -161,22 +149,21 @@ methods: {
         let temp = {}
         temp = apidata.data
         this.slides = temp[1]
+        this.fields = Object.keys(this.slides[0])
+        this.fields[3] = { key: Object.keys(this.slides[0])[3], label: 'Case Slides Not In Tray' }
         this.obApiResult02 = temp[2]
         this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
         this.obApiResult03 = temp[3]
         this.strInTrayBlockCount = this.obApiResult03[0].BlockCountInTray
-        // console.log(temp)
-        // this.SlideDistributionID = temp.insertId
         // Update block count table
-        console.log('MarkSlideToBeDistributed - LOADING TABLE DATA')
         this.LoadTableData()
 
       }).catch((e) => {
-        console.log(e)
+        //console.log(e)
       })
       .catch(function (error) {
-        console.log("error:")
-        console.log(error)
+        //console.log("error:")
+        //console.log(error)
       })
       } else {
           this.inputtext = 'Scan Slide Tray Before Slide'
@@ -200,7 +187,8 @@ methods: {
           action: 'CreateNewSlideDistribution',
           userid: store.state.username,
           slidetray: this.slidetrayID,
-          scanlocation: store.state.stationName
+          scanlocation: store.state.stationName,
+          curRoute : this.currentRouteName
           })
           .then(apidata => {
             this.loading = false;
@@ -218,18 +206,18 @@ methods: {
             this.MarkSlideToBeDistributed(strSlideID, temp.insertId)
 
           }).catch((e) => {
-            console.log(e)
+            //console.log(e)
           })
           .catch(function (error) {
-            console.log("error:")
-            console.log(error)
+            //console.log("error:")
+            //console.log(error)
           })
           break
       }
     },
     getInputColor (text) {
-        if(text != this.defaultcurrentslidetray && text != this.nextslidetray) return  {'background-color': '#96ceb4'} ;
-        if(text == this.defaultcurrentslidetray ||  text == this.nextslidetray) return  {'background-color': '#ff6f69'} ;
+        if(text != this.defaultcurrentslidetray && text != this.nextslidetray) return  {'background-color': '#28a745'} ;
+        if(text == this.defaultcurrentslidetray ||  text == this.nextslidetray) return  {'background-color': '#dc3545'} ;
 },
     ScanSlideTray(strSlideTrayID){
         if (this.blSlideTrayLoaded === false) {
@@ -245,24 +233,26 @@ methods: {
               action: 'LoadSlideTray',
               userid: store.state.username,
               slidetray: this.slidetrayID,
-              scanlocation: store.state.stationName
+              scanlocation: store.state.stationName,
+              curRoute : this.currentRouteName
               })
               .then(apidata => {
                 this.loading = false;
                 this.error_message = '';
                 if (apidata.errorcode) {
                   this.error_message = `Error loading existing slide distr.`
-                  console.log('error')
+                  //console.log('error')
                   return
                 }
-                console.log(apidata)
-                let temp = {}
-                temp = apidata.data
+                let temp = apidata.data
 
 
                 this.SlideDistributionID = temp[0][0].CurrentSlideDistID
                 //Load Slide Tray now
                 this.slides = temp[1]
+                this.fields = Object.keys(this.slides[0])
+                this.fields[3] = { key: Object.keys(this.slides[0])[3], label: 'Case Slides Not In Tray' }
+                this.fields[3] = "Case Slides Not In Tray"
                 this.obApiResult02 = temp[2]
                 this.strInTraySlideCount = this.obApiResult02[0].SlidesInTray
                 this.obApiResult03 = temp[3]
@@ -273,15 +263,14 @@ methods: {
 
 
               }).catch((e) => {
-                console.log(e)
+                //console.log(e)
               })
               .catch(function (error) {
-                console.log("error:")
-                console.log(error)
+                //console.log("error:")
+                //console.log(error)
               })
 
             } else {
-            console.log('Hello new slide tray')
             //disable Edit Existing Slide Tray Option
                 this.rdSlideTrayBehaviorOptions[1].disabled = true
             }
@@ -309,7 +298,8 @@ methods: {
         slidedistid: this.SlideDistributionID,
         userid: store.state.username,
         slidedistrloc: strLocID,
-        scanlocation: store.state.stationName
+        scanlocation: store.state.stationName,
+        curRoute : this.currentRouteName
         })
         .then(response => {
             // console.log(response)
@@ -346,7 +336,8 @@ methods: {
         userid: store.state.username,
         slidedistrloc: strLocID,
         scanlocation: store.state.stationName,
-        slidetray: this.slidetrayID
+        slidetray: this.slidetrayID,
+        curRoute : this.currentRouteName
         })
         .then(response => {
           // console.log(response)
@@ -395,6 +386,10 @@ methods: {
     }
 
 },
-computed: {}
+computed: {
+  currentRouteName() {
+    return this.$route.name;
+  }
+}
 }
 </script>

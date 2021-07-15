@@ -1,16 +1,16 @@
 // Home.vue
 
 <template>
-  <div class="col d-flex justify-content-center" style="font: normal small-caps normal 30px/1.4 'Arial';">
-    <b-card style="min-width: 80%;" header="Slide Status" >
-    <b-progress class="mt-2" :max="max" show-value height="4rem">
+  <div class="container">
+    <h1>Slide Status</h1>
+    <br>
+    <b-progress class="mx-auto" :max="max" show-value height="4rem" style="border:2px solid #000;max-width: 80%">
       <b-progress-bar :value="preEmbedded" variant="primary"><span>Pre Embedded: <h3>{{ preEmbedded }}</h3></span> </b-progress-bar>
       <b-progress-bar :value="embedded" variant="success" v-if="embedded>=(slidesCut/12)"><span>Embedded:     <h3>{{ embedded }}</h3></span></b-progress-bar>
       <b-progress-bar :value="embedded*12" variant="secondary" v-if="embedded<(slidesCut/12)"><span>Embedded:     <h3>{{ embedded }}</h3></span></b-progress-bar>
       <b-progress-bar :value="slidesCut" variant="warning"><span>Slides Cut: <h3>{{ slidesCut}}</h3> </span></b-progress-bar>
-      <b-progress-bar :value="distributed" variant="info"><span>Distributed: <h3>{{ distributed }}</h3></span></b-progress-bar>
+      <b-progress-bar :value="distributed" variant="danger"><span>Distributed: <h3>{{ distributed }}</h3></span></b-progress-bar>
     </b-progress>
-    </b-card>
   </div>
 </template>
 
@@ -31,18 +31,16 @@ export default {
     }
   },
   mounted() {
-    console.log('MOUNTED')
     this.LoadData()
 
   },
   methods: {
      LoadData(){
      axios.post(store.getters.getApiUrl + '/GetStatusData', {
-       action: 'GetStatusData'
+       action: 'GetStatusData',
+       curRoute : this.currentRouteName
      })
          .then(apidata => {
-           console.log("AXIOS RESPONSE")
-           console.log(JSON.stringify(apidata))
            this.blockStatusData = apidata
            this.preEmbedded = apidata.data[0]['count']
            this.embedded    = apidata.data[1]['count']
@@ -54,6 +52,11 @@ export default {
 
 
      }
+  },
+  computed:{
+    currentRouteName() {
+      return this.$route.name;
+    }
   }
 }
 </script>
