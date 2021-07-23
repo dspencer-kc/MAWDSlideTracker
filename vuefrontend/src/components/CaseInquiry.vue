@@ -8,7 +8,7 @@
 ============================================================================================ -->
 
 <template>
-  <div class="justify-content-center container" v-if="this.$store.getters.GetValidUser" >
+  <div class="justify-content-center container"  >
     <h1>Case Inquiry</h1>
 
     <b-checkbox v-model="exactMatch">Exact Match</b-checkbox>
@@ -17,7 +17,7 @@
       <b-button type="submit" variant="primary sm" @click="LoadTableData()" ref="btnLoadTableData">OK</b-button>
     </b-input-group>
     <br>
-    <b-table style="opacity: .90;font-size: smaller" striped hover dark small borderless :items="queryData" :fields="fieldVals"></b-table>
+    <b-table style="opacity: .90;font-size: smaller;" striped hover dark small borderless :items="queryData" :fields="fieldVals"></b-table>
     </div>
 </template>
 <script>
@@ -64,8 +64,12 @@ export default {
             temp = apidata.data
             console.log(JSON.stringify(apidata))
             for (let e of temp) {
-              if(e['DTPrinted']) e['DTPrinted'] = e['DTPrinted'].replace('T', ' ').replace('Z', ' ').split('.')[0];
-              if(e['StainOrderDate']) e['StainOrderDate'] = e['StainOrderDate'].replace('T', ' ').replace('Z', ' ').split('.')[0];
+              if(e['Order Time']) e['Order Time'] = e['Order Time'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
+              if(e['Embedded Time']) e['Embedded Time'] = e['Embedded Time'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
+              if(e['Slide Printed Time']) e['Slide Printed Time'] = e['Slide Printed Time'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
+              if(e['StainOrderDate']) e['StainOrderDate'] = e['StainOrderDate'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
+              if(e['DTReadyForCourier']) e['DTReadyForCourier'] = e['DTReadyForCourier'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
+              if(e['DateTimeEngraved']) e['DateTimeEngraved'] = e['DateTimeEngraved'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
             }
             this.queryData = temp
             this.fieldVals = Object.keys(this.queryData[0])

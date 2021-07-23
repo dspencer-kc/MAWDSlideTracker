@@ -230,19 +230,29 @@ function GetCaseInquery (request, response, callback) {
       SELECT tblSlides.SlideID, 
               tblSlides.StainLabel, 
               tblSlideDistribution.Status, 
+              '' AS 'blnk1',
+              tblSlides.StainOrderDate as 'Order Time',
+              tblBlock.DateTimeEngraved,
+              '' AS 'blnk2',
+              tblActionTracking.Station as 'Embedded Location',
+              tblActionTracking.ActionDateTime as 'Embedded Time',
+              '' AS 'blnk3',
+              tblSlides.LocationPrinted as 'Slide Printed Location', 
+              tblSlides.DTPrinted as 'Slide Printed Time', 
+              '' AS 'blnk4',
               tblSlideDistribution.SlideDistributionLocation, 
               tblSlideDistribution.DTReadyForCourier, 
-              tblSlides.LocationPrinted, 
-              tblSlides.DTPrinted, 
-              tblSlides.StainOrderDate, 
-              tblSlideDistribution.SlideTray,
-              tblBlock.DateTimeEngraved
+              tblSlideDistribution.SlideTray
+
       FROM   (tblSlides 
               LEFT JOIN tblSlideDistribution 
                       ON tblSlides.SlideDistributionID = 
                         tblSlideDistribution.SlideDistributionID) 
               LEFT JOIN tblBlock 
                     ON tblSlides.BlockID = tblBlock.BlockID 
+              LEFT JOIN tblActionTracking 
+                    ON tblSlides.BlockID = tblActionTracking.IDOfMaterial
+                    and tblActionTracking.Action='Embedded'
       WHERE  (( ( tblSlides.AccessionID ) LIKE "` + strStrAccessionID + `"))
       order by DTPrinted DESC;
 `
