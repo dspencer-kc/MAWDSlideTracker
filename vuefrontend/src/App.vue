@@ -20,7 +20,7 @@
                     </span>
                   </template>
                   <b-dd-item v-if="$store.getters.GetValidUser" to="/settings">Settings</b-dd-item>
-                  <b-dd-item v-if="$store.getters.GetValidUser" to="/caseinquiry">Case Inquiry</b-dd-item>
+                  <b-dd-item  to="/caseinquiry">Case Inquiry</b-dd-item>
                   <b-dd-item v-if="$store.getters.GetValidUser" @click="logout()">Log Out</b-dd-item>
               </b-nav-item-dropdown>
           </b-navbar-nav>

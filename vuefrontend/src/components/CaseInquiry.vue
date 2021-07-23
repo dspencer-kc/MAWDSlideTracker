@@ -8,7 +8,7 @@
 ============================================================================================ -->
 
 <template>
-  <div class="justify-content-center container" v-if="this.$store.getters.GetValidUser" >
+  <div class="justify-content-center container"  >
     <h1>Case Inquiry</h1>
 
     <b-checkbox v-model="exactMatch">Exact Match</b-checkbox>
