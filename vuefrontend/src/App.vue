@@ -2,8 +2,8 @@
   <div id="app">
 
       <b-navbar class="navbar navbar-dark bg-dark fixed-top">
-          <a class="navbar-brand" href="#">Slide Tracker</a>
-          <b-nav-item>v {{$store.getters.GetVersion}} </b-nav-item>
+        <b-item class="navbar-brand">Slide Tracker</b-item>
+          <b-item class="navbar-brand">v {{$store.getters.GetVersion}} </b-item>
           <span class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69)" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</span>
           <span class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c)" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</span>
           <b-navbar-nav class="ml-auto">
