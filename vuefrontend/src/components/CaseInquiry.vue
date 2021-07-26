@@ -64,12 +64,12 @@ export default {
             temp = apidata.data
             console.log(JSON.stringify(apidata))
             for (let e of temp) {
-              if(e['Order Time']) e['Order Time'] = e['Order Time'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
-              if(e['Embedded Time']) e['Embedded Time'] = e['Embedded Time'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
-              if(e['Slide Printed Time']) e['Slide Printed Time'] = e['Slide Printed Time'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
-              if(e['StainOrderDate']) e['StainOrderDate'] = e['StainOrderDate'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
-              if(e['DTReadyForCourier']) e['DTReadyForCourier'] = e['DTReadyForCourier'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
-              if(e['DateTimeEngraved']) e['DateTimeEngraved'] = e['DateTimeEngraved'].replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99);
+              if(e['Order Time'])         e['Order Time'] =         this.dateFormatter(e['Order Time']);
+              if(e['Embedded Time'])      e['Embedded Time'] =      this.dateFormatter(e['Embedded Time']);
+              if(e['Slide Printed Time']) e['Slide Printed Time'] = this.dateFormatter(e['Slide Printed Time']);
+              if(e['StainOrderDate'])     e['StainOrderDate'] =     this.dateFormatter(e['StainOrderDate']);
+              if(e['DTReadyForCourier'])  e['DTReadyForCourier'] =  this.dateFormatter(e['DTReadyForCourier']);
+              if(e['DateTimeEngraved'])   e['DateTimeEngraved'] =   this.dateFormatter(e['DateTimeEngraved']);
             }
             this.queryData = temp
             this.fieldVals = Object.keys(this.queryData[0])
@@ -80,6 +80,9 @@ export default {
             console.log("error:")
             console.log(error)
           })
+    },
+    dateFormatter(str){
+      return str.replace('T', ' ').replace('Z', ' ').split('.')[0].substring(2,99)
     },
     EnterKeyTrigger() {
       this.$refs.btnLoadTableData.click()
