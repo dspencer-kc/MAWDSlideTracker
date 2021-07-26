@@ -5,6 +5,7 @@ var bodyParser = require('body-parser')
 var slideTracker = require('./slide-tracking/slide-tracker')
 var slideTrackerReports = require('./slide-tracking/reports')
 var slideTrackerCaseBlockSlideCounts = require('./slide-tracking/CaseBlockSlideCount.js')
+var version = '4'
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -14,7 +15,14 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
   res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Cache-Control','no-store')
+  res.setHeader('Cache-Control','max-age=0')
   next()
+})
+
+
+app.get('/getVersion', function (req, res) {
+  res.send(version)
 })
 
 app.post('/getuserinfo', function (request, response) {

@@ -10,10 +10,12 @@ export default new Vuex.Store({
     username: '',
     validuser: false,
     stationName: '',
-    version:'3.10',
-    nodeBackendTestMode: false,
+    backendVersion:'0',
+    frontendVersion:'4',
+    nodeBackendTestMode: true,
     vueFrontendTestMode:false,
     production:false,
+    socketConn:false,
     slideQueuePath: '',
     testLocalapiURL: 'http://localhost:2081',
     testapiURL: 'http://10.24.4.9:2082',
@@ -36,6 +38,12 @@ export default new Vuex.Store({
     },
     SetSlideQueuePath (state, strTemp) {
       state.slideQueuePath = strTemp
+    },
+    SetSocketConn (state, strTemp) {
+      state.socketConn = strTemp
+    },
+    SetbackendVersion (state, strTemp) {
+      state.backendVersion = strTemp
     },
     ClearBlockCountTableItems (state) {
       state.blockCountTableItems = []
@@ -86,8 +94,14 @@ export default new Vuex.Store({
     GetvueFrontendTestMode: (state) => {
       return state.vueFrontendTestMode
     },
-    GetVersion: (state) => {
-      return state.version
+    GetBEVersion: (state) => {
+      return state.backendVersion
+    },
+    GetFEVersion: (state) => {
+      return state.frontendVersion
+    },
+    GetSocketStatus: (state) => {
+      return state.socketConn
     },
     getApiUrl: (state) => {
       if (state.nodeBackendTestMode){return state.testLocalapiURL}
