@@ -7,14 +7,14 @@
         <b-item style='color: #007bff;font-style: italic'>&nbsp fev {{$store.getters.GetFEVersion}}</b-item>
           <b-item style='color: #ffffff'>
             &nbsp Prod &nbsp
-            <b-icon icon="check-square" scale="1.5" variant="success" v-if="$store.getters.GetProduction"></b-icon>
-            <b-icon icon="x-circle"     scale="1.5" variant="danger"  v-if="!$store.getters.GetProduction"></b-icon>
+            <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetProduction"></b-icon>
+            <b-icon icon="x-circle"     scale="1" variant="danger"  v-if="!$store.getters.GetProduction"></b-icon>
             &nbsp Socket &nbsp
-            <b-icon icon="check-square" scale="1.5" variant="success" v-if="$store.getters.GetSocketStatus"></b-icon>
-            <b-icon icon="x-circle"     scale="1.5" variant="danger"  v-if="!$store.getters.GetSocketStatus"></b-icon>
+            <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetSocketStatus"></b-icon>
+            <b-icon icon="x-circle"     scale="1" variant="danger"  v-if="!$store.getters.GetSocketStatus"></b-icon>
             &nbsp Server &nbsp
-            <b-icon icon="check-square" scale="1.5" variant="success" v-if="$store.getters.GetBackendStatus"></b-icon>
-            <b-icon icon="x-circle"     scale="1.5" variant="danger"  v-if="!$store.getters.GetBackendStatus"></b-icon>
+            <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetBackendStatus"></b-icon>
+            <b-icon icon="x-circle"     scale="1" variant="danger"  v-if="!$store.getters.GetBackendStatus"></b-icon>
           </b-item>
 
           <b-item class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69);margin-left: 15px" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</b-item>
