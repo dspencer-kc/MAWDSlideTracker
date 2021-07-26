@@ -12,6 +12,9 @@
             &nbsp Socket &nbsp
             <b-icon icon="check-square" scale="1.5" variant="success" v-if="$store.getters.GetSocketStatus"></b-icon>
             <b-icon icon="x-circle"     scale="1.5" variant="danger"  v-if="!$store.getters.GetSocketStatus"></b-icon>
+            &nbsp Server &nbsp
+            <b-icon icon="check-square" scale="1.5" variant="success" v-if="$store.getters.GetBackendStatus"></b-icon>
+            <b-icon icon="x-circle"     scale="1.5" variant="danger"  v-if="!$store.getters.GetBackendStatus"></b-icon>
           </b-item>
 
           <b-item class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69);margin-left: 15px" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</b-item>
@@ -82,7 +85,11 @@ export default {
     },
     methods: {
       getFEVersion(){
-        axios.get(store.getters.getApiUrl + '/getVersion').then(userinfodata => {store.commit('SetbackendVersion', userinfodata.data)})
+        axios.get(store.getters.getApiUrl + '/getVersion')
+            .then(userinfodata => {
+              store.commit('SetbackendVersion', userinfodata.data)
+              store.commit('SetbackendConn', true)
+            })
       },
         validateScanData(data) {
                 switch (data.barcodeScanData.substring(0, 4)) {
