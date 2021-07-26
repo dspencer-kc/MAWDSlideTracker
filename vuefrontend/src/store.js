@@ -12,7 +12,7 @@ export default new Vuex.Store({
     stationName: '',
     backendVersion:'0',
     frontendVersion:'4',
-    nodeBackendTestMode: true,
+    nodeBackendTestMode: false,
     vueFrontendTestMode:false,
     production:false,
     socketConn:false,
