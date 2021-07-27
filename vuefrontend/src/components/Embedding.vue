@@ -93,7 +93,8 @@ export default {
         this.setBlockColor(apidata.data[0].Hopper);
         this.setBlockData();
         }).catch((e) => {
-          //console.log("AXIOS ERROR: "+e)
+        console.log("AXIOS ERROR: "+e)
+        this.makeToast("Failed to get Block Data: "+e, "Block Failure", "danger",10000)
         })
     },
 
@@ -112,7 +113,8 @@ export default {
         var ToastString = this.blockData.data[0].BlockID+" Status Updated to Embedded";
         this.makeToast(ToastString, "Block Status", "success")
         }).catch((e) => {
-          //console.log("AXIOS ERROR: "+e)
+          console.log("AXIOS ERROR: "+e)
+          this.makeToast("Failed to Embed: "+e, "Block Failure", "danger",10000)
         })
     },
     setBlockColor(hopperColor){
@@ -128,12 +130,12 @@ export default {
         };
         if (colors[hopperColor]){this.SetColor = colors[hopperColor]}
     },
-    makeToast(content, title, variant = null) {
+    makeToast(content, title, variant = null,time=1500) {
         this.$bvToast.toast(content, {
             title: title,
             variant: variant,
             solid: true,
-            autoHideDelay: 4000,
+            autoHideDelay: time,
             toaster: "b-toaster-bottom-right"
         })
     }
