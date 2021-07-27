@@ -94,7 +94,7 @@ export default {
         this.setBlockData();
         }).catch((e) => {
         console.log("AXIOS ERROR: "+e)
-        this.makeToast("Failed to get Block Data: "+e, "Block Failure", "danger",10000)
+        this.makeToast("Failed to get block: "+e, "Block Failure", "danger",10000,'b-toaster-top-full')
         })
     },
 
