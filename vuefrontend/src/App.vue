@@ -81,10 +81,10 @@ export default {
         }
     },
     mounted() {
-      this.getFEVersion()
+      this.getBEVersion()
     },
     methods: {
-      getFEVersion(){
+      getBEVersion(){
         axios.get(store.getters.getApiUrl + '/getVersion')
             .then(userinfodata => {
               store.commit('SetbackendVersion', userinfodata.data)
