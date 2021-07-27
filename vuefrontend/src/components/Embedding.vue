@@ -111,10 +111,10 @@ export default {
         console.log("SET BLOCK DATA AXIOS CALL")
         console.log(this.currentRouteName())
         var ToastString = this.blockData.data[0].BlockID+" Status Updated to Embedded";
-        this.makeToast(ToastString, "Block Status", "success")
+        this.makeToast(ToastString, "Block Status", "success",3000)
         }).catch((e) => {
           console.log("AXIOS ERROR: "+e)
-          this.makeToast("Failed to Embed: "+e, "Block Failure", "danger",10000)
+          this.makeToast("Failed to Embed: "+e, "Block Failure", "danger",10000,'b-toaster-top-full')
         })
     },
     setBlockColor(hopperColor){
@@ -130,13 +130,14 @@ export default {
         };
         if (colors[hopperColor]){this.SetColor = colors[hopperColor]}
     },
-    makeToast(content, title, variant = null,time=1500) {
+    makeToast(content, title, variant = null,time=1500,locn='b-toaster-bottom-right') {
         this.$bvToast.toast(content, {
             title: title,
             variant: variant,
             solid: true,
             autoHideDelay: time,
-            toaster: "b-toaster-bottom-right"
+            toaster: locn,
+            appendToast: true
         })
     }
   },
