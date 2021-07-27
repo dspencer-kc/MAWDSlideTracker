@@ -153,7 +153,7 @@ export default {
                     variant: variant,
                     solid: true,
                     autoHideDelay: time,
-                    toaster: "b-toaster-bottom-right"
+                    toaster: "b-toaster-top-left"
                 })
             }
 

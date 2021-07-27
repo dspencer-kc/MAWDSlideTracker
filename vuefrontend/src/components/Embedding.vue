@@ -130,7 +130,7 @@ export default {
         };
         if (colors[hopperColor]){this.SetColor = colors[hopperColor]}
     },
-    makeToast(content, title, variant = null,time=1500,locn='b-toaster-bottom-right') {
+    makeToast(content, title, variant = null,time=1500,locn='b-toaster-top-left') {
         this.$bvToast.toast(content, {
             title: title,
             variant: variant,
