@@ -90,7 +90,7 @@ function printSlides (request, response, callback) {
   // console.log('Connected!')
   con.query(strSQL, function (err, result) {
     if (err) {
-      //console.log(err)
+      //console.error(err)
     } else {
       // console.log(result)
       // iterate for all the rows in result
@@ -123,13 +123,23 @@ function printSlides (request, response, callback) {
 
         var strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
 
-        fs.writeFile(strSlideFlatFileFullName, strFileWriteData,
+        fs.writeFileSync(strSlideFlatFileFullName, strFileWriteData,
           // callback function that is called after writing file is done
           function (err) {
             if (err) throw err
-            // if no error
-
+            console.error(err)
+            response.send(err)
           })
+
+        try {
+          if (fs.existsSync(strSlideFlatFileFullName)) {
+            console.log("FILE DOES EXIST: "+strSlideFlatFileFullName)
+          }
+        } catch(err) {
+          console.error("FILE DOESNT EXIST: "+err)
+          response.send(err)
+        }
+
 
         // Update query to say slide has been printed
         strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\`
@@ -265,7 +275,7 @@ function GetCaseInquery (request, response, callback) {
 
   con.query(strSQL, function (err, result) {
     if (err) {
-      //console.log(err)
+      //console.error(err)
     } else {
       response.json(result)
     }
@@ -320,7 +330,8 @@ WHERE tblSlideDistribution.DTReadyForCourier >date_format(curdate() - if(weekday
 
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      response.send(err)
+  
     } else {
       console.log('Completed query.')
       console.log(result)
@@ -357,7 +368,8 @@ function getUserInfo (request, response, callback) {
 
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      console.error(err)
+      response.send(err)
     } else {
       console.log('Completed query.')
       console.log(result)
@@ -386,7 +398,8 @@ function GetBlockData (request, response, callback) {
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      console.error(err)
+      response.send(err)
     } else {
       response.json(result)
     }
@@ -434,8 +447,8 @@ function SetBlockData (request, response, callback) {
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
+      console.error(err)
       response.send(err)
-      console.log(err)
     // On Error, close connection
     } else {
     }
@@ -460,8 +473,8 @@ function SetBlockData (request, response, callback) {
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
+      console.error(err)
       response.send(err)
-      console.log(err)
     } else {
     }
     con.end()
@@ -494,7 +507,8 @@ from engraver_lookup;
 
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      console.error(err)
+      response.send(err)
     } else {
       response.json(result)
     }
@@ -542,7 +556,8 @@ function getPartBlockCurrentAndTotals (request, response, callback) {
   // Send multiple queries at once
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      console.error(err)
+      response.send(err)
     } else {
       var strTotalBlocks = result[0][0].BlockDesignator
       var strTotalParts = result[1][0].PartDesignator
@@ -588,8 +603,8 @@ function updateSlideToPrint (request, response, callback) {
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
+      console.error(err)
       response.send(err)
-      console.log(err)
       // On Error, close connection
     } else {
       // if there is no error, you have the result
@@ -652,7 +667,8 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
 
   con.query(strSQL, function (err, result) {
     if (err) {
-      console.log(err)
+      console.error(err)
+      response.send(err)
     } else {
       // if there is no error, you have the result
       // iterate for all the rows in result
@@ -697,8 +713,8 @@ function histoData (request, response, callback) {
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
+      console.error(err)
       response.send(err)
-      console.log(err)
     // On Error, close connection
     } else {
     // if there is no error, you have the result
@@ -748,7 +764,7 @@ function slideDistribution (request, response, callback) {
       con.query(strSQL, function (err, result) {
         if (err) {
           response.send(err)
-          console.log(err)
+          console.error(err)
           // On Error, close connection
         } else {
           // if there is no error, you have the result
@@ -802,7 +818,7 @@ function slideDistribution (request, response, callback) {
       con2.query(strSQLMarkToBeDistributed, function (err, result) {
         if (err) {
           response.send(err)
-          console.log(err)
+          console.error(err)
           // On Error, close connection
         } else {
           // if there is no error, you have the result
@@ -838,7 +854,7 @@ function slideDistribution (request, response, callback) {
       con3.query(strSQLMarkSlidesReadyForCourier, function (err, result) {
         if (err) {
           response.send(err)
-          console.log(err)
+          console.error(err)
           // On Error, close connection
         } else {
           // if there is no error, you have the result
@@ -875,7 +891,7 @@ function slideDistribution (request, response, callback) {
       con4.query(strSQLAssignNewLoc, function (err, result) {
         if (err) {
           response.send(err)
-          console.log(err)
+          console.error(err)
           // On Error, close connection
         } else {
           // if there is no error, you have the result
@@ -937,7 +953,7 @@ function slideDistribution (request, response, callback) {
       con5.query(strSQLExistingST, function (err, result) {
         if (err) {
           response.send(err)
-          console.log(err)
+          console.error(err)
           // On Error, close connection
         } else {
           // if there is no error, you have the result
@@ -956,7 +972,8 @@ function slideDistribution (request, response, callback) {
 //  con.query(strSQL, function (err, result) {
 //    if (err) {
 //      response.send(err)
-//      console.log(err)
+//           console.error(err)
+      response.send(err)
 //      // On Error, close connection
 //    } else {
 //      // if there is no error, you have the result

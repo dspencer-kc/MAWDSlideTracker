@@ -27,77 +27,77 @@ app.get('/getVersion', function (req, res) {
 
 app.post('/getuserinfo', function (request, response) {
   slideTracker.getUserInfo(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/getpartblockcurrentandtotals', function (request, response) {
   slideTracker.getPartBlockCurrentAndTotals(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/updateslidetoprint', function (request, response) {
   slideTracker.updateSlideToPrint(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/printslides', function (request, response) {
   slideTracker.printSlides(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/histodata', function (request, response) {
   slideTracker.histodata(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/slidedistribution', function (request, response) {
   slideTracker.slideDistribution(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/GetBlockData', function (request, response) {
   slideTracker.GetBlockData(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/SetBlockData', function (request, response) {
   slideTracker.SetBlockData(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/GetStatusData', function (request, response) {
   slideTracker.GetStatusData(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/GetCassEngLoc', function (request, response) {
   slideTracker.GetCassEngLoc(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/caseinquiry', (request, response) => {
   slideTracker.caseinquiry(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(request)
     console.log(message)
   })
@@ -105,7 +105,7 @@ app.post('/caseinquiry', (request, response) => {
 
 app.post('/reports', function (request, response) {
   slideTrackerReports.reports(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
@@ -122,21 +122,21 @@ router.get('/', (request, response) => {
 
 router.get('/slideparameters', (request, response) => {
   slideTracker.pullSlides(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/caseblockslidecount', (request, response) => {
   slideTrackerCaseBlockSlideCounts.caseblockslidecount(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
 
 app.post('/caseblockslidecountdetails', (request, response) => {
   slideTrackerCaseBlockSlideCounts.caseblockslidecountdetails(request, response, function (err, message) {
-    if (err) return console.log(err)
+    if (err) res.status(502).end()
     console.log(message)
   })
 })
