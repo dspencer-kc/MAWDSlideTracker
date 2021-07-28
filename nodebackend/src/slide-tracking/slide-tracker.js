@@ -19,28 +19,17 @@ module.exports = {
   caseinquiry: GetCaseInquery
 }
 
-function printSlides (request, response, callback) {
-  //= ==========================================================================================
-  //    app.post printslides
-  //      Prints Slides and updates tracking info
-  //
-  //    When to call:
-  //      AFter you know the blockid and you are ready to print a slide
-  //= ===========================================================================================
+function printSlides (request, response) {
   console.log('/printSlides')
-
   var strLocationID = 'unknown'
   var strSQLUpdateStatement = ''
-
-  var strDate
-  strDate = new Date().toLocaleString()
+  var strDate = new Date().toLocaleString()
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
   var strSlideQueuePath = request.body.slideQueuePath
-  if (strSlideQueuePath.slice(-1) != '/') {strSlideQueuePath = strSlideQueuePath+'/'}
+  if (strSlideQueuePath.slice(-1) !== '/') {strSlideQueuePath = strSlideQueuePath+'/'}
   strLocationID = request.body.printLocation
   var strOrderPathInitials = ''
-
   var strSQL = ` SELECT tblSlides.StainOrderDate,
          tblSlides.SlideID,
          tblSlides.AccessionID,
@@ -62,21 +51,17 @@ function printSlides (request, response, callback) {
                          and copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id
                          and copath_p_stainprocess.wkdept_id = copath_c_d_department.id)
   WHERE (((tblSlides.BlockID) = '${strBlockID}') AND tblSlides.ToBePrinted = TRUE);`
-
   var con = mysql.createConnection(mysqlConfig)
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
       response.send(err)
     } else {
       let intRowCounter = 0
-
       Object.keys(result).forEach(function (key) {
         intRowCounter++
         var row = result[key]
         row.StainOrderDate = dateFormat(row.StainOrderDate, 'shortDate')
-
         if (row.OrderPathInitials == null) {
           strOrderPathInitials = ''
 
@@ -88,16 +73,26 @@ function printSlides (request, response, callback) {
 
         }
         strOrderPathInitials = strOrderPathInitials.substring(0, 3)
-
         var d = new Date().toLocaleDateString()
         var fileDate = d.replace(/-|\//g, '')
-
         // WriteSlideData
         // SlideID|AccessionID|SlideInst|PartDesignator|BlockDesignator|StainOrderDate|OrderingPath|Patient|SiteLabel|SlideDistributionKeyword|StainLabel
-        var strFileWriteData = row.SlideID + '|' + row.AccessionID + '|' + row.SlideInst + '|' + row.PartDesignator + '|' + row.BlockDesignator + '|' + row.StainOrderDate + '|' + strOrderPathInitials + '|' + row.Patient + '|' + row.SiteLabel + '|' + row.SlideDistributionKeyword + '|' + row.StainLabel
-
+        var elements =
+        [
+          row.SlideID,
+          row.AccessionID,
+          row.SlideInst,
+          row.PartDesignator,
+          row.BlockDesignator,
+          row.StainOrderDate,
+          strOrderPathInitials,
+          row.Patient,
+          row.SiteLabel,
+          row.SlideDistributionKeyword,
+          row.StainLabel
+        ]
+        var strFileWriteData = elements.join('|');
         var strSlideFlatFileFullName = strSlideQueuePath + row.SlideID + '_' + fileDate + '.txt'
-
         fs.writeFileSync(strSlideFlatFileFullName, strFileWriteData,
           function (err) {
             if (err) throw err
@@ -113,7 +108,6 @@ function printSlides (request, response, callback) {
           console.error("FILE DOESNT EXIST: "+err)
           response.send(err)
         }
-
         strSQLUpdateStatement = `UPDATE \`OPENLIS\`.\`tblSlides\`
                                                     SET
                                                         \`Status\` = 'Printed',
@@ -129,7 +123,7 @@ function printSlides (request, response, callback) {
                                                     WHERE
                                                         \`SlideID\` = '` + row.SlideID + `';`
 
-        con.query(strSQLUpdateStatement, function (err, updateresult) {
+        con.query(strSQLUpdateStatement, function (err) {
           if (err) {
             console.error(err)
             response.send(err)
@@ -167,7 +161,7 @@ function printSlides (request, response, callback) {
           );
         `
 
-      con.query(strTempSQL, function (err, updateresult) {
+      con.query(strTempSQL, function (err) {
         if (err) {
           console.error(err)
           response.send(err)
@@ -180,17 +174,8 @@ function printSlides (request, response, callback) {
   response.send('Slides have been sent to Slide Printer')
 }
 
-function GetCaseInquery (request, response, callback) {
-  //= ==========================================================================================
-  //    Function GetCaseInquery
-  //      Get Case Inquery Data
-  //
-  //    When to call:
-  //      To get data for use with case inqueries
-  //= ===========================================================================================
-
+function GetCaseInquery (request, response) {
   var strStrAccessionID = request.body.ACCESSIONID
-
   var strSQL =
 `
 /*qryCaseInquiry*/
@@ -223,10 +208,8 @@ function GetCaseInquery (request, response, callback) {
       WHERE  (( ( tblSlides.AccessionID ) LIKE "` + strStrAccessionID + `"))
       order by DTPrinted DESC;
 `
-
   console.log('/GetCaseInquery')
   var con = mysql.createConnection(mysqlConfig)
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
@@ -238,14 +221,7 @@ function GetCaseInquery (request, response, callback) {
   }) // End query
 }
 
-function GetStatusData (request, response, callback) {
-  //= ==========================================================================================
-  //    Function GetStatusData
-  //      Get Status Data
-  //
-  //    When to call:
-  //      To get Status of block/slides
-  //= ===========================================================================================
+function GetStatusData (request, response) {
   var strSQL =
 `
 select count(*) as 'count','pre Embedded'
@@ -274,9 +250,7 @@ INNER JOIN   tblSlideDistribution on tblSlides.SlideDistributionID = tblSlideDis
 WHERE tblSlideDistribution.DTReadyForCourier >date_format(curdate() - if(weekday(curdate()) >= 5, if(weekday(curdate()) = 6, 2, 1), 1),'%Y-%m-%d 18:00:00');
 `
   console.log('/GetStatusData')
-
   var con = mysql.createConnection(mysqlConfig)
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
@@ -288,23 +262,12 @@ WHERE tblSlideDistribution.DTReadyForCourier >date_format(curdate() - if(weekday
   }) // End query
 }
 
-function getUserInfo (request, response, callback) {
-  //= ==========================================================================================
-  //    Function getUserInfo
-  //      Get User Info
-  //
-  //    When to call:
-  //      To get userinfo based on badge barcode
-  //= ===========================================================================================
+function getUserInfo (request, response) {
   var strUserID = request.body.userid
-
   var strSQL = `SELECT * FROM OPENLIS.tblUsers
               WHERE \`id\` = '` + strUserID + `';`
-
   console.log('/getUserInfo')
-
   var con = mysql.createConnection(mysqlConfig)
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
@@ -316,18 +279,10 @@ function getUserInfo (request, response, callback) {
   }) // End query
 }
 
-function GetBlockData (request, response, callback) {
-  //= ==========================================================================================
-  //    Function blockdata
-  //      Get Block Info
-  //
-  //    When to call:
-  //      To get block info
-  //= ===========================================================================================
+function GetBlockData (request, response) {
   var blockID = request.body.blockID
   var strSQL = `SELECT * FROM OPENLIS.tblBlock WHERE \`BlockID\` = '` + blockID + `';`
   console.log('/GetBlockData')
-
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
@@ -340,16 +295,7 @@ function GetBlockData (request, response, callback) {
   })
 }
 
-function SetBlockData (request, response, callback) {
-  //= ==========================================================================================
-  //    Function blockdata
-  //      Set Block Info
-  //
-  //    When to call:
-  //      To set block info
-  //= ===========================================================================================
-
-
+function SetBlockData (request, response) {
   var blockData            = request.body.blockData.data[0]
   let ScanLocation         = request.body.scanlocation
   let userid               = request.body.userid
@@ -358,9 +304,7 @@ function SetBlockData (request, response, callback) {
   let BlockID				       = blockData.BlockID
   if (!TimesScannedAtEmbedding){TimesScannedAtEmbedding=1}
   else{TimesScannedAtEmbedding = TimesScannedAtEmbedding+1}
-
   console.log('/SetBlockData: '+BlockID)
-
   var strSQL =
   `
   UPDATE OPENLIS.tblBlock
@@ -371,7 +315,6 @@ function SetBlockData (request, response, callback) {
       TimesScannedAtEmbedding = ${TimesScannedAtEmbedding}
     WHERE BlockID = '${BlockID}';
   `
-
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
@@ -407,23 +350,13 @@ function SetBlockData (request, response, callback) {
 }
 
 function GetCassEngLoc (request, response, callback) {
-  //= ==========================================================================================
-  //    Function GetCassEngLoc
-  //      Get Cassette Engraver Locations
-  //
-  //    When to call:
-  //      To get cassette engraver locations
-  //= ===========================================================================================
-
   var strSQL =
 `
 select old_value,new_value,right_left_value
 from engraver_lookup;
 `
   console.log('/GetCassEngLoc')
-
   var con = mysql.createConnection(mysqlConfig)
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
@@ -436,31 +369,20 @@ from engraver_lookup;
 }
 
 function getPartBlockCurrentAndTotals (request, response, callback) {
-  //= ==========================================================================================
-  //    Function getPartBlockCurrentAndTotals
-  //      Get Current and How Many Parts are on case and Blocks are on this part
-  //
-  //    When to call:
-  //      When block is scanned
-  //= ===========================================================================================
   var strBlockID = request.body.blockID
   var strAccessionId = null
   var strCurrentBlock = null
   var strCurrentPart = null
-
   var strNoPrefix = strBlockID.substring(4)
   var strTemp = strNoPrefix.split('_')
   strAccessionId = strTemp[0]
   strCurrentPart = strTemp[1]
   strCurrentBlock = strTemp[2]
-
   var con = mysql.createConnection(mysqlConfig)
   console.log('/getPartBlockCurrentAndTotals')
-
   var strSQLTotalBlocks = `SELECT BlockDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAccessionId}' AND PartDesignator = '${strCurrentPart}' order by ABS(BlockDesignator) desc limit 1;`
   var strSQLTotalParts = `SELECT PartDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAccessionId}' order by PartDesignator desc LIMIT 1;`
   var strSQL = strSQLTotalBlocks + strSQLTotalParts
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
@@ -481,13 +403,6 @@ function getPartBlockCurrentAndTotals (request, response, callback) {
 }
 
 function updateSlideToPrint (request, response, callback) {
-  //= ==========================================================================================
-  //    Function updateslidetoprint
-  //      Update Slide To Print
-  //
-  //    Purpose:
-  //      Updated the database that a slide needs to be printed, or does not need to be printed.
-  //= ===========================================================================================
   var strResponse = ''
   var strAction = request.body.action
   var strSlideID = request.body.slideId
@@ -498,7 +413,6 @@ function updateSlideToPrint (request, response, callback) {
               \`ToBePrinted\` = ` + blToPrintStatus +
             ` WHERE \`SlideID\` = '` + strSlideID + `';`
   console.log('/updateSlideToPrint')
-
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
     if (err) {
@@ -513,16 +427,9 @@ function updateSlideToPrint (request, response, callback) {
 }
 
 function pullSlides (request, response, callback) {
-  //= ==========================================================================================
-  //    Used to lookup slides by BlockID
-  //
-  //    Purpose:
-  //      Pulls all pending slides for block
-  //= ===========================================================================================
   var urlParts = url.parse(request.url, true)
   var parameters = urlParts.query
   var strBlockID = parameters.blockid
-
   var strSQL = `SELECT tblSlides.AccessionID,
   tblSlides.PartDesignator,
   tblSlides.BlockDesignator,
@@ -537,10 +444,8 @@ function pullSlides (request, response, callback) {
   tblSlides.Status
 FROM   tblSlides
 WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
-
   console.log('/pullSlides')
   var con = mysql.createConnection(mysqlConfig)
-
   con.query(strSQL, function (err, result) {
     if (err) {
       console.error(err)
@@ -560,14 +465,9 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
 }
 
 function histoData (request, response, callback) {
-  // ===========================================================================================
-  //    Histo data for chart
-  // ============================================================================================
-
   console.log('histodata start')
   var strFromDateTime = request.body.fromdatetime
   var strToDateTime = request.body.todatetime
-
   var strSQL = `SELECT qrySubBlocksPreviousDay.WhoPrinted, Count(qrySubBlocksPreviousDay.BlockID) AS CountOfBlockID
     FROM (SELECT tblSlides.WhoPrinted, tblSlides.BlockID
           FROM tblSlides
@@ -589,20 +489,14 @@ function histoData (request, response, callback) {
 }
 
 function slideDistribution (request, response, callback) {
-  // ===========================================================================================
-  //    Slide Distribution
-  // ============================================================================================
-
   console.log('slide distribution start')
   let strAction = request.body.action
   let strUser = request.body.userid
   let strScanLocation = request.body.scanlocation
-
   switch (strAction) {
     case 'CreateNewSlideDistribution':
       console.log('Create new slide distr')
       let strSlideTrayID = request.body.slidetray
-
       let strSQL = `INSERT INTO OPENLIS.tblSlideDistribution
                     (SlideTray,
                     Status,
@@ -620,13 +514,12 @@ function slideDistribution (request, response, callback) {
                     '${strScanLocation}',
                     concat('Initial insert:', now(), ' ')
                     );`
-
       console.log('/CreateNewSlideDistribution')
       var con = mysql.createConnection(mysqlConfig)
       con.query(strSQL, function (err, result) {
         if (err) {
-          response.send(err)
           console.error(err)
+          response.send(err)
         } else {
           response.json(result)
         }
@@ -639,7 +532,6 @@ function slideDistribution (request, response, callback) {
       let strSlideTray = request.body.slidetray
       console.log('Slide Distr ID:')
       let strSlideID = request.body.slideid
-
       let strSQLMarkToBeDistributed = `UPDATE OPENLIS.tblSlides
       SET
       Status = 'ReadyForCourier',
@@ -670,12 +562,11 @@ function slideDistribution (request, response, callback) {
             WHERE subTblSlides.SlideDistributionID = ${strSlideDistID}
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
       ;`
-
       var con2 = mysql.createConnection(mysqlConfig)
       con2.query(strSQLMarkToBeDistributed, function (err, result) {
         if (err) {
-          response.send(err)
           console.error(err)
+          response.send(err)
         } else {
           response.json(result)
         }
@@ -704,12 +595,11 @@ function slideDistribution (request, response, callback) {
         SlideStatusID = '$rfc'
         WHERE SlideDistributionID = ${strSlideDistIDMarkForCourier};
       `
-
       var con3 = mysql.createConnection(mysqlConfig)
       con3.query(strSQLMarkSlidesReadyForCourier, function (err, result) {
         if (err) {
-          response.send(err)
           console.error(err)
+          response.send(err)
         } else {
           response.json(result)
         }
@@ -718,12 +608,10 @@ function slideDistribution (request, response, callback) {
       break
     case 'AssignTrayNewLocation':
       console.log('AssignTrayNewLocation')
-
       let strUserTrayNewLoc = request.body.userid
       let strSlideDistrLocIDForST = request.body.slidedistrloc
       let strScanLocationForST = request.body.scanlocation
       let strSlideTrayIDForST = request.body.slidetray
-
       let strSQLAssignNewLoc = `UPDATE OPENLIS.tblSlideDistribution as tblUpdate
       Inner Join (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDForST}') as tblB ON tblUpdate.SlideDistributionID = tblB.SlideDistID
       SET
@@ -732,12 +620,11 @@ function slideDistribution (request, response, callback) {
       tblUpdate.StationLocationScanned = '${strScanLocationForST}',
       tblUpdate.WhoSetLocation = '${strUserTrayNewLoc}'
       WHERE tblUpdate.SlideDistributionID = SlideDistID;`
-
       var con4 = mysql.createConnection(mysqlConfig)
       con4.query(strSQLAssignNewLoc, function (err, result) {
         if (err) {
-          response.send(err)
           console.error(err)
+          response.send(err)
         } else {
           response.json(result)
         }
@@ -747,7 +634,6 @@ function slideDistribution (request, response, callback) {
     case 'LoadSlideTray':
       console.log('Load Existing Slide Tray')
       let strSlideTrayIDExistingST = request.body.slidetray
-
       let strSQLExistingST = `
       /*Query01*/
       SELECT max(subTblSlideDistribution.SlideDistributionID) as CurrentSlideDistID
@@ -788,19 +674,16 @@ function slideDistribution (request, response, callback) {
             WHERE subTblSlides.SlideDistributionID = (SELECT max(subTblSlideDistribution.SlideDistributionID) as SlideDistID FROM tblSlideDistribution as subTblSlideDistribution where SlideTray = '${strSlideTrayIDExistingST}')
             GROUP BY subTblSlides.BlockID) AS qrySubBlocksCorrespondingToPendingSlides
       ;`
-
       var con5 = mysql.createConnection(mysqlConfig)
       con5.query(strSQLExistingST, function (err, result) {
         if (err) {
-          response.send(err)
           console.error(err)
+          response.send(err)
         } else {
           response.json(result)
         }
         con5.end()
       })
-      break
-    default:
       break
   }
 }
