@@ -258,7 +258,7 @@ function GetCaseInquery (request, response, callback) {
 `
 
 
-
+  console.log('/GetCaseInquery')
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
 
@@ -312,7 +312,7 @@ FROM tblSlides
 INNER JOIN   tblSlideDistribution on tblSlides.SlideDistributionID = tblSlideDistribution.SlideDistributionID
 WHERE tblSlideDistribution.DTReadyForCourier >date_format(curdate() - if(weekday(curdate()) >= 5, if(weekday(curdate()) = 6, 2, 1), 1),'%Y-%m-%d 18:00:00');
 `
-  console.log(strSQL)
+  console.log('/GetStatusData')
 
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
@@ -381,7 +381,7 @@ function GetBlockData (request, response, callback) {
   //= ===========================================================================================
   var blockID = request.body.blockID
   var strSQL = `SELECT * FROM OPENLIS.tblBlock WHERE \`BlockID\` = '` + blockID + `';`
-
+  console.log('/GetBlockData')
   // Connect to the database
   var con = mysql.createConnection(mysqlConfig)
   con.query(strSQL, function (err, result) {
@@ -417,6 +417,7 @@ function SetBlockData (request, response, callback) {
   if (!TimesScannedAtEmbedding){TimesScannedAtEmbedding=1}
   else{TimesScannedAtEmbedding = TimesScannedAtEmbedding+1}
 
+  console.log('/SetBlockData: '+BlockID)
 
   var strSQL =
   `

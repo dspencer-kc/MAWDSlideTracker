@@ -3,9 +3,22 @@
 
       <b-navbar class="navbar navbar-dark bg-dark fixed-top">
         <b-item class="navbar-brand">Slide Tracker</b-item>
-          <b-item class="navbar-brand">v {{$store.getters.GetVersion}} </b-item>
-          <span class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69)" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</span>
-          <span class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c)" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</span>
+        <b-item style='color: #007bff;font-style: italic'>&nbsp bev {{$store.getters.GetBEVersion}}</b-item>
+        <b-item style='color: #007bff;font-style: italic'>&nbsp fev {{$store.getters.GetFEVersion}}</b-item>
+          <b-item style='color: #ffffff'>
+            &nbsp Prod &nbsp
+            <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetProduction"></b-icon>
+            <b-icon icon="x-circle"     scale="1" variant="danger"  v-if="!$store.getters.GetProduction"></b-icon>
+            &nbsp Socket &nbsp
+            <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetSocketStatus"></b-icon>
+            <b-icon icon="x-circle"     scale="1" variant="danger"  v-if="!$store.getters.GetSocketStatus"></b-icon>
+            &nbsp Server &nbsp
+            <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetBackendStatus"></b-icon>
+            <b-icon icon="x-circle"     scale="1" variant="danger"  v-if="!$store.getters.GetBackendStatus"></b-icon>
+          </b-item>
+
+          <b-item class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69);margin-left: 15px" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</b-item>
+          <b-item class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c);margin-left: 15px" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</b-item>
           <b-navbar-nav class="ml-auto">
               <b-link :active="this.$route.name =='home'" class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
               <b-link :active="this.$route.name =='Embedding'" class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
@@ -34,17 +47,8 @@
     </div>
   </template>
 
-
-<script>
-export default {
-}
-</script>
-
 <style >
 @import './assets/app_style.css';
-
-
-
 </style>
 <script >
 import axios from 'axios'
@@ -64,9 +68,11 @@ export default {
     sockets: {
         connect: function() {
             console.log('socket connected')
+            store.commit('SetSocketConn', true)
         },
-        customEmit: function(data) {
-            console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
+        disconnect: function() {
+          console.log('socket disconnected')
+          store.commit('SetSocketConn', false)
         },
         stream: function(data) {
             console.log('socket on')
@@ -74,7 +80,17 @@ export default {
 
         }
     },
+    mounted() {
+      this.getBEVersion()
+    },
     methods: {
+      getBEVersion(){
+        axios.get(store.getters.getApiUrl + '/getVersion')
+            .then(userinfodata => {
+              store.commit('SetbackendVersion', userinfodata.data)
+              store.commit('SetbackendConn', true)
+            })
+      },
         validateScanData(data) {
                 switch (data.barcodeScanData.substring(0, 4)) {
                     case 'HBLK':
@@ -121,34 +137,23 @@ export default {
                                 console.log(e)
                                 this.makeToast("Log In Error: "+e, "Error", "danger")
                             })
-                            .catch(function(error) {
-                                this.makeToast("Log In Error: "+error, "Error", "danger")
-                            });
                     } else {
                         this.makeToast("invalid badge prefix or badge error", "invalid badge", "danger")
                     }
             },
             getInputColor(text) {
-                if (text !== this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {
-                    'background-color': '#28a745'
-                };
-                if (text !== this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {
-                    'background-color': '#ffc107'
-                };
-                if (text === this.defaultbadgeinput) return {
-                    'background-color': '#dc3545'
-                };
-                return {
-                    'background-color': '#ffc107'
-                };
+                if (text !== this.defaultbadgeinput && !/\d/.test(text) && text.length > 0) return {'background-color': '#28a745'};
+                if (text !== this.defaultbadgeinput && /\d/.test(text) && text.length > 0) return {'background-color': '#ffc107'};
+                if (text === this.defaultbadgeinput) return {'background-color': '#dc3545'};
+                return {'background-color': '#ffc107'};
             },
-            makeToast(content, title, variant = null) {
+            makeToast(content, title, variant = null,time = 1500) {
                 this.$bvToast.toast(content, {
                     title: title,
                     variant: variant,
                     solid: true,
-                    autoHideDelay: 1000,
-                    toaster: "b-toaster-bottom-right"
+                    autoHideDelay: time,
+                    toaster: "b-toaster-top-left"
                 })
             }
 
