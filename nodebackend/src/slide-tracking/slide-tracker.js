@@ -54,6 +54,7 @@ function printSlides (request, response, callback) {
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
   var strSlideQueuePath = request.body.slideQueuePath
+  if (strSlideQueuePath.slice(-1) != '/') {strSlideQueuePath = strSlideQueuePath+'/'}
   strLocationID = request.body.printLocation
   var strOrderPathInitials = ''
 
