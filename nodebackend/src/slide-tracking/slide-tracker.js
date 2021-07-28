@@ -973,7 +973,7 @@ function slideDistribution (request, response, callback) {
 //    if (err) {
 //      response.send(err)
 //           console.error(err)
-      response.send(err)
+//           response.send(err)
 //      // On Error, close connection
 //    } else {
 //      // if there is no error, you have the result
