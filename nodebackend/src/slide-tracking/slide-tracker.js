@@ -4,22 +4,7 @@ const url = require('url')
 var dateFormat = require('dateformat')
 var fs = require('fs')
 
-module.exports = {
-  printSlides: printSlides,
-  getUserInfo: getUserInfo,
-  updateSlideToPrint: updateSlideToPrint,
-  pullSlides: pullSlides,
-  getPartBlockCurrentAndTotals: getPartBlockCurrentAndTotals,
-  histodata: histoData,
-  slideDistribution: slideDistribution,
-  GetBlockData: GetBlockData,
-  SetBlockData: SetBlockData,
-  GetStatusData: GetStatusData,
-  GetCassEngLoc: GetCassEngLoc,
-  caseinquiry: GetCaseInquery
-}
-
-function printSlides (request, response) {
+export function printSlides (request, response) {
   console.log('/printSlides')
   var strLocationID = 'unknown'
   var strSQLUpdateStatement = ''
@@ -174,7 +159,7 @@ function printSlides (request, response) {
   response.send('Slides have been sent to Slide Printer')
 }
 
-function GetCaseInquery (request, response) {
+export function GetCaseInquery (request, response) {
   var strStrAccessionID = request.body.ACCESSIONID
   var strSQL =
 `
@@ -210,7 +195,7 @@ function GetCaseInquery (request, response) {
 `
   console.log('/GetCaseInquery')
   var con = mysql.createConnection(mysqlConfig)
-  con.query(strSQL, function (err, result) {
+  con.query(strSQL, export function (err, result) {
     if (err) {
       console.error(err)
       response.send(err)
@@ -221,7 +206,7 @@ function GetCaseInquery (request, response) {
   }) // End query
 }
 
-function GetStatusData (request, response) {
+export function GetStatusData (request, response) {
   var strSQL =
 `
 select count(*) as 'count','pre Embedded'
@@ -262,7 +247,7 @@ WHERE tblSlideDistribution.DTReadyForCourier >date_format(curdate() - if(weekday
   }) // End query
 }
 
-function getUserInfo (request, response) {
+export function getUserInfo (request, response) {
   var strUserID = request.body.userid
   var strSQL = `SELECT * FROM OPENLIS.tblUsers
               WHERE \`id\` = '` + strUserID + `';`
@@ -279,7 +264,7 @@ function getUserInfo (request, response) {
   }) // End query
 }
 
-function GetBlockData (request, response) {
+export function GetBlockData (request, response) {
   var blockID = request.body.blockID
   var strSQL = `SELECT * FROM OPENLIS.tblBlock WHERE \`BlockID\` = '` + blockID + `';`
   console.log('/GetBlockData')
@@ -295,7 +280,7 @@ function GetBlockData (request, response) {
   })
 }
 
-function SetBlockData (request, response) {
+export function SetBlockData (request, response) {
   var blockData            = request.body.blockData.data[0]
   let ScanLocation         = request.body.scanlocation
   let userid               = request.body.userid
@@ -349,7 +334,7 @@ function SetBlockData (request, response) {
   response.send('OK')
 }
 
-function GetCassEngLoc (request, response, callback) {
+export function GetCassEngLoc (request, response, callback) {
   var strSQL =
 `
 select old_value,new_value,right_left_value
@@ -368,7 +353,7 @@ from engraver_lookup;
   })
 }
 
-function getPartBlockCurrentAndTotals (request, response, callback) {
+export function getPartBlockCurrentAndTotals (request, response, callback) {
   var strBlockID = request.body.blockID
   var strAccessionId = null
   var strCurrentBlock = null
@@ -402,7 +387,7 @@ function getPartBlockCurrentAndTotals (request, response, callback) {
   })
 }
 
-function updateSlideToPrint (request, response, callback) {
+export function updateSlideToPrint (request, response, callback) {
   var strResponse = ''
   var strAction = request.body.action
   var strSlideID = request.body.slideId
@@ -426,7 +411,7 @@ function updateSlideToPrint (request, response, callback) {
   response.send('OK')
 }
 
-function pullSlides (request, response, callback) {
+export function pullSlides (request, response, callback) {
   var urlParts = url.parse(request.url, true)
   var parameters = urlParts.query
   var strBlockID = parameters.blockid
@@ -464,7 +449,7 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
   })
 }
 
-function histoData (request, response, callback) {
+export function histoData (request, response, callback) {
   console.log('histodata start')
   var strFromDateTime = request.body.fromdatetime
   var strToDateTime = request.body.todatetime
@@ -488,7 +473,7 @@ function histoData (request, response, callback) {
   })
 }
 
-function slideDistribution (request, response, callback) {
+export function slideDistribution (request, response, callback) {
   console.log('slide distribution start')
   let strAction = request.body.action
   let strUser = request.body.userid
