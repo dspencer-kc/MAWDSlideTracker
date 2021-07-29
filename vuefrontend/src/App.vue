@@ -2,9 +2,17 @@
   <div id="app">
 
       <b-navbar class="navbar navbar-dark bg-dark fixed-top">
-        <b-item class="navbar-brand">Slide Tracker</b-item>
-        <b-item style='color: #007bff;font-style: italic'>&nbsp bev {{$store.getters.GetBEVersion}}</b-item>
-        <b-item style='color: #007bff;font-style: italic'>&nbsp fev {{$store.getters.GetFEVersion}}</b-item>
+        <b-nav-item-dropdown left no-caret>
+          <template #button-content >
+                    <span >
+                      <b-badge>Slide Tracker</b-badge>
+                    </span>
+          </template>
+          <b-dd-item class="btn-sm" active href="/">Slide Tracker</b-dd-item>
+          <b-dd-item class="btn-sm" active href="http://mawdcovidchart.com">Mawd Covid Chart</b-dd-item>
+        </b-nav-item-dropdown>
+        <b-item style='color: #b700ff;font-style: italic;font-size: smaller'>&nbsp bev <badge> {{$store.getters.GetBEVersion}}</badge></b-item>
+        <b-item style='color: #007bff;font-style: italic;font-size: smaller'>&nbsp fev <badge> {{$store.getters.GetFEVersion}}</badge></b-item>
           <b-item style='color: #ffffff'>
             &nbsp Prod &nbsp
             <b-icon icon="check-square" scale="1" variant="success" v-if="$store.getters.GetProduction"></b-icon>
@@ -20,9 +28,9 @@
           <b-item class="navbar-brand" style="background-image: linear-gradient(#f3edd4, #ff6f69);margin-left: 15px" v-if="$store.getters.GetnodeBackendTestMode">BACKEND LOCAL</b-item>
           <b-item class="navbar-brand" style="background-image: linear-gradient(#e7d0ce, #ffcc5c);margin-left: 15px" v-if="$store.getters.GetvueFrontendTestMode">FRONTEND LOCAL</b-item>
           <b-navbar-nav class="ml-auto">
-              <b-link :active="this.$route.name =='home'" class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
-              <b-link :active="this.$route.name =='Embedding'" class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
-              <b-link :active="this.$route.name =='SlidePrinting'" class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
+              <b-link :active="this.$route.name =='home'"              class="nav-link" to="/"                  v-if="$store.getters.GetValidUser"> Home               </b-link>
+              <b-link :active="this.$route.name =='Embedding'"         class="nav-link" to="/embedding"         v-if="$store.getters.GetValidUser"> Embedding          </b-link>
+              <b-link :active="this.$route.name =='SlidePrinting'"     class="nav-link" to="/slideprinting"     v-if="$store.getters.GetValidUser"> Slide Printing     </b-link>
               <b-link :active="this.$route.name =='SlideDistribution'" class="nav-link" to="/slidedistribution" v-if="$store.getters.GetValidUser"> Slide Distribution </b-link>
               <b-nav-item-dropdown right no-caret>
                   <template #button-content >

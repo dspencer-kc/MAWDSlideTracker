@@ -5,7 +5,7 @@ var bodyParser = require('body-parser')
 var slideTracker = require('./slide-tracking/slide-tracker')
 var slideTrackerReports = require('./slide-tracking/reports')
 var slideTrackerCaseBlockSlideCounts = require('./slide-tracking/CaseBlockSlideCount.js')
-var version = '4'
+var version = '4.0'
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
