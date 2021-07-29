@@ -195,7 +195,7 @@ export function GetCaseInquery (request, response) {
 `
   console.log('/GetCaseInquery')
   var con = mysql.createConnection(mysqlConfig)
-  con.query(strSQL, export function (err, result) {
+  con.query(strSQL,  function (err, result) {
     if (err) {
       console.error(err)
       response.send(err)
