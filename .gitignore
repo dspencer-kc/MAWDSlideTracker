@@ -2,7 +2,7 @@
 node_modules
 /dist
 vuefrontend/dist
-vuebackend/dist
+nodebackend/dist
 
 # local env files
 .env.local
@@ -24,3 +24,4 @@ yarn-error.log*
 *.sw*
 
 package-lock.json
+nodebackend/package-lock.json
