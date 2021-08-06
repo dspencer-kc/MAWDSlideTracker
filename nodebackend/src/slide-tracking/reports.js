@@ -1,29 +1,13 @@
 var mysql = require('mysql')
 var mysqlConfig = require('../mysqlConfig')
-// const url = require('url')
-// var dateFormat = require('dateformat')
-// var fs = require('fs')
 
-module.exports = {
+export function reports (request, response, callback) {
 
-  reports: reports
-}
-
-function reports (request, response, callback) {
-// ===========================================================================================
-//    Reports
-// ============================================================================================
-
-  console.log('reports start')
   let strReportName = request.body.action
   let strSQL = null
 
-  console.log(strReportName)
-
-  // Set SQL based on action
   switch (strReportName) {
     case 'blockcount':
-      // console.log('Hello report block count')
 
       strSQL = `/* qryTotalBlockCountWSort
       Total Block Count: Previous Busines Day Plus Hours set from tbleRunTime 'PreviousDayCutoff*/
@@ -42,7 +26,6 @@ function reports (request, response, callback) {
       break
 
     case 'BlockCountAllRunTimesBySortVal':
-      // console.log('Hello report block count')
 
       strSQL = `/*qryBlockCountAllRunTimesBySortVal*/
       SELECT 
@@ -59,18 +42,14 @@ function reports (request, response, callback) {
     default:
       break
   }
-  //  console.log(strSQL)
 
   if (strSQL !== null) {
-  // Connect to the database
     var con = mysql.createConnection(mysqlConfig)
     con.query(strSQL, function (err, result) {
       if (err) {
         response.send(err)
-        console.log(err)
-      // On Error, close connection
+        console.error(err)
       } else {
-      // if there is no error, you have the result
         response.json(result)
       }
       con.end()

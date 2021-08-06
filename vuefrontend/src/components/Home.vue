@@ -11,6 +11,7 @@
       <b-progress-bar :value="slidesCut" variant="warning"><span>Slides Cut: <h3>{{ slidesCut}}</h3> </span></b-progress-bar>
       <b-progress-bar :value="distributed" variant="danger"><span>Distributed: <h3>{{ distributed }}</h3></span></b-progress-bar>
     </b-progress>
+    <i>Updated At: {{timestamp}}</i>
   </div>
 </template>
 
@@ -27,7 +28,8 @@ export default {
       embedded:0,
       slidesCut:0,
       distributed:0,
-      max:0
+      max:0,
+      timestamp:0
     }
   },
   mounted() {
@@ -42,6 +44,7 @@ export default {
      })
          .then(apidata => {
            this.blockStatusData = apidata
+           this.timestamp = new Date(apidata.data[0].timestamp).toLocaleString().split(',')[1]
            this.preEmbedded = apidata.data[0]['count']
            this.embedded    = apidata.data[1]['count']
            this.slidesCut   = apidata.data[2]['count']
@@ -51,7 +54,17 @@ export default {
          })
 
 
-     }
+     },
+    makeToast(content, title, variant = null,time=1500,locn='b-toaster-top-left') {
+      this.$bvToast.toast(content, {
+        title: title,
+        variant: variant,
+        solid: true,
+        autoHideDelay: time,
+        toaster: locn,
+        appendToast: true
+      })
+    }
   },
   computed:{
     currentRouteName() {

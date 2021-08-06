@@ -4,6 +4,8 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
+
+
 export default new Vuex.Store({
   state: {
     count: 0,
@@ -84,10 +86,10 @@ export default new Vuex.Store({
       return state.blockCountTableItems
     },
     GetValidUser: (state) => {
-      if (!state.nodeBackendTestMode){
-        return state.validuser
+      if (state.nodeBackendTestMode){
+        return true
       }
-      return true
+      return state.validuser
     },
     GetUsername: (state) => {
       return state.username

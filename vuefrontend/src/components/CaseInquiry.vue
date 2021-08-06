@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     LoadTableData() {
-      let strFullAPICall = store.getters.getApiUrl + '/caseinquiry'
+      let strFullAPICall = store.getters.getApiUrl + '/GetCaseInquery'
       var accId = ''
       if(!this.exactMatch){accId="%"+this.strCaseNo+"%"}
       else{accId=this.strCaseNo}
@@ -86,6 +86,16 @@ export default {
     },
     EnterKeyTrigger() {
       this.$refs.btnLoadTableData.click()
+    },
+    makeToast(content, title, variant = null,time=1500,locn='b-toaster-top-left') {
+      this.$bvToast.toast(content, {
+        title: title,
+        variant: variant,
+        solid: true,
+        autoHideDelay: time,
+        toaster: locn,
+        appendToast: true
+      })
     }
   },
   mounted() {

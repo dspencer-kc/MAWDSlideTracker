@@ -1,4 +1,3 @@
-// routes.js
 
 import Home from './components/Home.vue'
 import Embedding from './components/Embedding.vue'

@@ -1,151 +1,69 @@
+
+
+const fastify = require('fastify')()
 const express = require('express')
-const app = express()
-const router = express.Router()
-var bodyParser = require('body-parser')
-var slideTracker = require('./slide-tracking/slide-tracker')
-var slideTrackerReports = require('./slide-tracking/reports')
-var slideTrackerCaseBlockSlideCounts = require('./slide-tracking/CaseBlockSlideCount.js')
-var version = '4.0'
+const router = require('express').Router()
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
 
-app.use(function (req, res, next) {
+const path = require('path');
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+
+const ST = require('./slide-tracking/slide-tracker')
+const STFunc = Object.keys(ST)
+const STR = require('./slide-tracking/reports')
+const STRFunc = Object.keys(STR)
+const STCB = require('./slide-tracking/CaseBlockSlideCount.js')
+const STCBFunc = Object.keys(STCB);
+
+const version = '4.0'
+
+router.use(morgan('dev'));
+
+router.use(bodyParser.urlencoded({ extended: false }))
+router.use(bodyParser.json())
+router.use(express.static('dist'))
+
+router.use('/slidetracker', router)
+
+router.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
   res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Cache-Control','no-store')
-  res.setHeader('Cache-Control','max-age=0')
-  next()
+  res.setHeader('Cache-Control', 'no-store')
+  res.setHeader('Cache-Control', 'max-age=0')
+  if ('OPTIONS' === req.method) {
+    console.log('\n')
+    console.info('Route Requested: '+req.url.substring(1))
+    res.sendStatus(200);
+  }else{
+    next()
+  }
 })
 
-
-app.get('/getVersion', function (req, res) {
-  res.send(version)
+router.use(function (req, res) { //Check if requested route is in:
+  const route = req.url.substring(1)
+  console.log('\n')
+  console.info('Route Requested: '+route)
+  if (STFunc.includes(route)) {           //SlideTracker Routes
+    eval('ST.' + route)(req, res);
+  }else if (STRFunc.includes(route)) {    //SlideTrackerReport Routes
+    eval('STR.' + route)(req, res);
+  }else if (STCBFunc.includes(route)) {   //SlideTrackerCaseBlock Routes
+    eval('STCB.' + route)(req, res);
+  }else if (route === 'getVersion'){      //Get Backend Version
+    res.send(version)
+  }else if (route === ''){                 //host frontend vue
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  }else{                                   //No Route Found
+    console.error("NO ROUTE FOUND: "+route)
+  }
 })
 
-app.post('/getuserinfo', function (request, response) {
-  slideTracker.getUserInfo(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
+fastify.register(require('fastify-express'))
+    .after(() => {fastify.use(router)})
 
-app.post('/getpartblockcurrentandtotals', function (request, response) {
-  slideTracker.getPartBlockCurrentAndTotals(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/updateslidetoprint', function (request, response) {
-  slideTracker.updateSlideToPrint(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/printslides', function (request, response) {
-  slideTracker.printSlides(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/histodata', function (request, response) {
-  slideTracker.histodata(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/slidedistribution', function (request, response) {
-  slideTracker.slideDistribution(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/GetBlockData', function (request, response) {
-  slideTracker.GetBlockData(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/SetBlockData', function (request, response) {
-  slideTracker.SetBlockData(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/GetStatusData', function (request, response) {
-  slideTracker.GetStatusData(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/GetCassEngLoc', function (request, response) {
-  slideTracker.GetCassEngLoc(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/caseinquiry', (request, response) => {
-  slideTracker.caseinquiry(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(request)
-    console.log(message)
-  })
-})
-
-app.post('/reports', function (request, response) {
-  slideTrackerReports.reports(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-// all routes prefixed with /slidetracker
-app.use('/slidetracker', router)
-console.log('Slide Tracker Default Route')
-// using router.get() to prefix our path
-// url: http://localhost:3000/slidetracker/
-router.get('/', (request, response) => {
-  console.log('router.get')
-  response.json({ message: 'Hello from the API' })
-})
-
-router.get('/slideparameters', (request, response) => {
-  slideTracker.pullSlides(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/caseblockslidecount', (request, response) => {
-  slideTrackerCaseBlockSlideCounts.caseblockslidecount(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-app.post('/caseblockslidecountdetails', (request, response) => {
-  slideTrackerCaseBlockSlideCounts.caseblockslidecountdetails(request, response, function (err, message) {
-    if (err) res.status(502).end()
-    console.log(message)
-  })
-})
-
-module.exports = {
-  start: start
-}
-
-function start (port, callback) {
-  // set the server to listen on port XXXX
-  server = app.listen(port, () => console.log(`Listening on port ${port}`))
+export function start (port) {
+  fastify.listen(port, () => console.log(`Listening on port ${port}`))
 }
