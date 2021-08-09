@@ -1,17 +1,27 @@
 <template>
   <div class="container" v-if="this.$store.getters.GetValidUser" >
     <h1>Cassette Engraver Location</h1>
+    <b-button-group class="mr-1">
+      <b-button title="Save file" v-on:click="setAllValues(setAllValue,setDirections)">
+        <b-icon icon="cloud-upload" aria-hidden="true"></b-icon>
+      </b-button>
+      <b-button title="Load Default">
+        <b-icon icon="cloud-download" aria-hidden="true"></b-icon>
+      </b-button>
+    </b-button-group>
     <b-dropdown class="m-2" text="Engraver Locations">
       <b-dropdown-item-button  v-for="item in engraver_locations" v-model="setAllValue" :key="item"  @click="setAllValue=item">{{ item }}</b-dropdown-item-button>
     </b-dropdown>
+    <b-button-group class="mx-1">
+    <b-input v-model="setAllValue" placeholder="Set All Location"></b-input>
+    </b-button-group>
     <b-dropdown class="m-2" text="Direction">
       <b-dropdown-item-button  v-for="item in directions" v-model="setDirections" :key="item"  @click="setDirections=item">{{ item }}</b-dropdown-item-button>
     </b-dropdown>
     <b-button-group class="mx-1">
-      <b-input v-model="setAllValue" placeholder="Set All Location"></b-input>
-      <b-input v-model="setDirections" placeholder="Set All Direction"></b-input>
-      <b-button v-on:click="setAllValues(setAllValue,setDirections)" title="Set All Values"><b-icon icon="cloud-upload" aria-hidden="true"></b-icon></b-button>
+    <b-input v-model="setDirections" placeholder="Set All Direction"></b-input>
     </b-button-group>
+
     <br>
     <b-table style="opacity: .90;white-space: nowrap;" striped hover dark small borderless :items="items" :fields="fields" >
       <template v-slot:cell(old_value)="row">    <b-form-input v-model="row.item.old_value" :disabled='true'/></template>

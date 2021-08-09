@@ -47,11 +47,11 @@ router.use(function (req, res) { //Check if requested route is in:
   console.log('\n')
   console.info('Route Requested: '+route)
   if (STFunc.includes(route)) {           //SlideTracker Routes
-    eval('ST.' + route)(req, res);
+    ST[route](req, res);
   }else if (STRFunc.includes(route)) {    //SlideTrackerReport Routes
-    eval('STR.' + route)(req, res);
+    STR[route](req, res);
   }else if (STCBFunc.includes(route)) {   //SlideTrackerCaseBlock Routes
-    eval('STCB.' + route)(req, res);
+    STCB[route](req, res);
   }else if (route === 'getVersion'){      //Get Backend Version
     res.send(version)
   }else if (route === ''){                 //host frontend vue

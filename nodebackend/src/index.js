@@ -1,11 +1,4 @@
-//= ==========================================================================================
-//
-//    File: src/index.js
-//
-//    **This will eventually be the entry point once logic from original index.js is migrated
-//      here.
-//
-//= ===========================================================================================
+
 require('dotenv').load()
 require('console-info');
 require('console-warn');
