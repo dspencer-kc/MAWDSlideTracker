@@ -4,13 +4,26 @@
   "description": "Used to access local resources ie barcode scanner",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "babel-node ./src/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^6.2.0",
     "serialport": "^7.1.5",
-    "socket.io": "^2.4.1"
+    "socket.io": "^2.4.1",
+    "express": "*",
+    "console-error": "0.0.4",
+    "console-info": "0.0.5",
+    "console-warn": "0.0.4"
+  },
+  "devDependencies": {
+    "@serialport/parser-readline": "^9.0.7",
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.14.8",
+    "@babel/node": "^7.14.9",
+    "@babel/preset-env": "^7.14.9",
+    "@babel/register": "^7.14.5"
   }
 }
