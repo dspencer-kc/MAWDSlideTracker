@@ -12,12 +12,13 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http).listen(socketport);
 
 const {get_comm, init} = require("./barcode/barcode-scan");
+
 let parser = ''
+let connectCounter=0;
 
 get_comm()
     .then(data => {init(data['port'])
-    .then(parse => {parser = parse})
-    .then(()=>console.info("Found Scanner!\n"))
+    .then(parse => {parser = parse;console.info("Found Scanner!\n");})
 }).catch(()=>
     {
     console.error("!!!NO SCANNER FOUND!!!")
@@ -26,14 +27,23 @@ get_comm()
 )
 
 io.on('connection', function (socket) {
-  console.warn('socket.io connected on ', socketport)
+  connectCounter++;
+  if(connectCounter>1){console.error('!!TOO MANY CONNECTIONS!!')}
+  else{ console.warn('socket.io connected on ', socketport)}
+
   parser.on('data', function (data) {
-    console.info('Barcode scan detected')
-    console.info('Data:  ', data,'\n')
-      socket.emit('stream', {
+      let blockType = {HBLK:'Block',HSLD:'Slide',LOCN:'Location',SLTR:'Slide Tray',SBDG:'Badge'}
+      console.info(blockType[data.substr(0,4)],'Scanned: ',data,'\n')
+      io.emit('stream', {
       barcodeScanData: data,
       stationName: strStationName,
       slideQueuePath: strSlideQueuePath
     })
   })
 })
+
+io.on('disconnect', function() {
+    connectCounter--;
+    console.log("disconnected")});
+
+
