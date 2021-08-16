@@ -4,22 +4,36 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node ./src/index.js"
   },
   "author": "Drew",
   "license": "ISC",
   "devDependencies": {
-    "express": "^4.16.3"
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.14.8",
+    "@babel/node": "^7.14.9",
+    "@babel/preset-env": "^7.14.9",
+    "@babel/register": "^7.14.5",
+    "console-error": "0.0.4",
+    "console-info": "0.0.5",
+    "console-warn": "0.0.4",
+    "express": "^4.17.1",
+    "fastify": "^3.20.1",
+    "fastify-express": "^0.3.3",
+    "nodemon": "^1.19.4"
   },
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "babel-cli": "^6.26.0",
+    "body-parser": "^1.19.0",
     "dateformat": "^3.0.3",
     "dotenv": "^6.2.0",
-    "mysql": "^2.16.0",
-    "nodemon": "^1.18.9",
-    "serialport": "^7.1.4",
-    "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0",
-    "vue": "^2.5.22"
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "path": "^0.12.7",
+    "serialport": "^7.1.5",
+    "socket.io": "^2.4.1",
+    "socket.io-client": "^2.4.0",
+    "vue": "^2.6.14"
   }
 }

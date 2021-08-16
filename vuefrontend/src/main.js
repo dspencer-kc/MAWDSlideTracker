@@ -15,10 +15,7 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
-Vue.use(new VueSocketIO({
-  debug: true,
-  connection: 'http://localhost:8001'
-}))
+Vue.use(new VueSocketIO({connection: 'http://localhost:8001'}))
 const router = new VueRouter({ routes })
 
 new Vue({

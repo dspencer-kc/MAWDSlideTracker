@@ -15,7 +15,7 @@ console.log(socketport)
 
 //Start http server
 server = httpServer.start(function (err, message) {
-  if (err) console.log(err)
+  if (err) console.error(err)
   console.log(message)
   // server sends some data in the callback to display maybe
 })

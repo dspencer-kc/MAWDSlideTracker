@@ -82,7 +82,6 @@ export default {
     },
 
      getBlockData() {
-
       axios.post(store.getters.getApiUrl + '/GetBlockData', {
       action: 'GetBlockData',
       blockID:this.blockID,
@@ -94,12 +93,11 @@ export default {
         this.setBlockData();
         }).catch((e) => {
         console.log("AXIOS ERROR: "+e)
-        this.makeToast("Failed to get block: "+e, "Block Failure", "danger",10000,'b-toaster-top-full')
+        this.makeToast("Failed to get block: "+e, "Block Failure", "danger",10000)
         })
     },
 
     setBlockData() {
-
       axios.post(store.getters.getApiUrl + '/SetBlockData', {
       action: 'SetBlockData',
       blockData:this.blockData,
@@ -114,7 +112,7 @@ export default {
         this.makeToast(ToastString, "Block Status", "success",3000)
         }).catch((e) => {
           console.log("AXIOS ERROR: "+e)
-          this.makeToast("Failed to Embed: "+e, "Block Failure", "danger",10000,'b-toaster-top-full')
+          this.makeToast("Failed to Embed: "+e, "AXIOS ERROR", "danger",10000)
         })
     },
     setBlockColor(hopperColor){
