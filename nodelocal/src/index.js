@@ -29,7 +29,7 @@ get_comm()
 io.on('connection', function (socket) {
   connectCounter++;
   if(connectCounter>1){console.error('!!TOO MANY CONNECTIONS!!')}
-  else{ console.warn('socket.io connected on ', socketport)}
+  console.warn('socket.io connected on ', socketport)
 
   parser.on('data', function (data) {
       let blockType = {HBLK:'Block',HSLD:'Slide',LOCN:'Location',SLTR:'Slide Tray',SBDG:'Badge'}
