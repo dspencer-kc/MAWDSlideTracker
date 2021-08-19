@@ -3,5 +3,6 @@ module.exports = {
   user: process.env.strMYSQLUser,
   password: process.env.strMYSQLPassword,
   database: process.env.strMYSQLDB,
-  multipleStatements: true
+  multipleStatements: true,
+  timezone: 'Z'
 }

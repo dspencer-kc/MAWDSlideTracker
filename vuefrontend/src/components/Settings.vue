@@ -13,25 +13,34 @@
       <b-dropdown-item-button  v-for="item in engraver_locations" v-model="setAllValue" :key="item"  @click="setAllValue=item">{{ item }}</b-dropdown-item-button>
     </b-dropdown>
     <b-button-group class="mx-1">
-    <b-input v-model="setAllValue" placeholder="Set All Location"></b-input>
+    <b-input disabled v-model="setAllValue" placeholder="Set All Location"></b-input>
     </b-button-group>
     <b-dropdown class="m-2" text="Direction">
       <b-dropdown-item-button  v-for="item in directions" v-model="setDirections" :key="item"  @click="setDirections=item">{{ item }}</b-dropdown-item-button>
     </b-dropdown>
     <b-button-group class="mx-1">
-    <b-input v-model="setDirections" placeholder="Set All Direction"></b-input>
+    <b-input disabled v-model="setDirections" placeholder="Set All Direction"></b-input>
     </b-button-group>
 
     <br>
     <b-table style="opacity: .90;white-space: nowrap;" striped hover dark small borderless :items="items" :fields="fields" >
       <template v-slot:cell(old_value)="row">    <b-form-input v-model="row.item.old_value" :disabled='true'/></template>
       <template v-slot:cell(right_left_value)="row">
-        <b-form-group  @change="checkboxFlip(row.item.old_value)">
-          <b-form-radio v-model="row.item.right_left_value" :name='getIndex(row.item.old_value)' value="false">Left</b-form-radio>
-          <b-form-radio v-model="row.item.right_left_value" :name='getIndex(row.item.old_value)' value="true">Right</b-form-radio>
+        <b-form-group>
+          <b-form-checkbox v-model="row.item.right_left_value" switch>
+            <span v-if="row.item.right_left_value">RIGHT SIDE</span>
+            <span v-if="!row.item.right_left_value">LEFT SIDE</span>
+          </b-form-checkbox>
         </b-form-group>
       </template>
-      <template v-slot:cell(new_value)="row"><b-form-input v-model="row.item.new_value"/></template>
+      <template v-slot:cell(new_value)="row">
+        <b-dropdown class="m-2" text="Engraver Locations">
+          <template #button-content>
+            {{row.item.new_value}}
+          </template>
+          <b-dropdown-item-button  v-for="item in engraver_locations" v-model="item.new_value" :key="item"  >{{ item }}</b-dropdown-item-button>
+        </b-dropdown>
+      </template>
     </b-table>
   </div>
 </template>
@@ -46,8 +55,8 @@ export default {
     return {
       setAllValue:'',
       setDirections:'',
-      engraver_locations: ['PLAZA01','MAWD01','CASSETTELABELS01'],
-      directions: ['Left','Right'],
+      engraver_locations: ['PLAZA01','MAWD01','MAWD02','CASSETTELABELS01'],
+      directions: ['  ','Left','Right'],
       fields: [{ key: 'old_value', label: 'CoPath_Workstation_ID' },{ key: 'right_left_value', label: 'Side' },{ key: 'new_value', label: 'Assigned_Cassette_Engraver' }],
       items: []
     }
@@ -62,17 +71,18 @@ methods: {
       if (newVal_dir=='Right'){item.right_left_value=true}
       else if (newVal_dir=='Left'){item.right_left_value=false}
     }
-
+    this.SaveAllChanges()
   },
   getIndex(val){
     return this.items.findIndex(x => x.old_value ===val).toString()
   },
   checkboxFlip(val){
     this.items[this.getIndex(val)].right_left_value=!this.items[this.getIndex(val)].right_left_value;
+    console.log(val)
   },
   SaveAllChanges(){
-    //console.log("SAVE ALL CHANGES");
-    //console.log(this.items.forEach(element => console.log(element.old_value+' , '+element.right_left_value+' , '+element.new_value)));
+    console.log("SAVE ALL CHANGES");
+    console.log(this.items.forEach(element => console.log(element.old_value+' , '+element.right_left_value+' , '+element.new_value)));
   },
   getValues(){
     axios.post(store.getters.getApiUrl + '/GetCassEngLoc', {
@@ -80,6 +90,11 @@ methods: {
     })
         .then(apidata => {
           this.items = apidata.data
+          for (var item of this.items) {
+            if (item.right_left_value==1){item.right_left_value=true}
+            else if (item.right_left_value==0){item.right_left_value=false}
+          }
+          console.log(JSON.stringify(apidata.data))
         })
 
 

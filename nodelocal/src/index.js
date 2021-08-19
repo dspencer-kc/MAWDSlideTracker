@@ -1,48 +1,49 @@
-require('dotenv').load()
-var barcodeScan = require('./barcode/barcode-scan')
-var httpServer = require('./http-server')
-//barcodeScan.init('COM4')
-//const socketport = '8001'
+require('dotenv').config({path: './src/.env'})
+require('console-info');
+require('console-warn');
+require('console-error');
 
-var strSlideQueuePath = process.env.SlideQueuePath
-var strStationName = process.env.StationName
-var strBarcodeScannerPort = process.env.BarcodeScannerPort
-var socketport = process.env.WebSocketPort
+let strSlideQueuePath = process.env.SlideQueuePath
+let strStationName = process.env.StationName
+let socketport = process.env.WebSocketPort
 
-barcodeScan.init(strBarcodeScannerPort)
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http).listen(socketport);
 
-console.log(socketport)
+const {get_comm, init} = require("./barcode/barcode-scan");
 
-//Start http server
-server = httpServer.start(function (err, message) {
-  if (err) console.error(err)
-  console.log(message)
-  // server sends some data in the callback to display maybe
+let parser = ''
+let connectCounter=0;
+
+get_comm()
+    .then(data => {init(data['port'])
+    .then(parse => {parser = parse;console.info("Found Scanner!\n");})
+}).catch(()=>
+    {
+    console.error("!!!NO SCANNER FOUND!!!")
+    process.exit()
+    }
+)
+
+io.on('connection', function (socket) {
+  connectCounter++;
+  if(connectCounter>1){console.error('!!TOO MANY CONNECTIONS!!')}
+  console.warn('socket.io connected on ', socketport)
+
+  parser.on('data', function (data) {
+      let blockType = {HBLK:'Block',HSLD:'Slide',LOCN:'Location',SLTR:'Slide Tray',SBDG:'Badge'}
+      console.info(blockType[data.substr(0,4)],'Scanned: ',data,'\n')
+      io.emit('stream', {
+      barcodeScanData: data,
+      stationName: strStationName,
+      slideQueuePath: strSlideQueuePath
+    })
+  })
 })
 
-//Load websockets
-var io = require('socket.io').listen(server)
-server.listen(socketport)
-console.log('http server created and listening on ', socketport)
+io.on('disconnect', function() {
+    connectCounter--;
+    console.log("disconnected")});
 
 
-//Socket connected event fired
-io.sockets.on('connection', function(socket){
-  console.log('socket.io connected on ', socketport)
-
-    //Barcode scan event fired
-    parser.on('data', function(data) {
-      console.log('Barcode scan detected')
-      console.log('Data:  ', data)
-      //socket.emit('stream', {'title': data})
-      var oStreamData ={
-        barcodeScanData: data,
-        stationName: strStationName,
-        slideQueuePath: strSlideQueuePath
-
-      }
-      socket.emit('stream', oStreamData)
-      //socket.emit('stream', {'barcodescan': data})
-
-    })
-});
