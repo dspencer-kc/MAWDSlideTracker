@@ -256,7 +256,10 @@ export default {
       })
       .then(function (response) {
       console.log('slides printed')
-      console.log(response)
+      console.log(response.info)
+      if (response.files){
+        this.makeToast("Files waiting to be printed:\n "+response.files, "Slide Printer Issues", "danger",10000)
+      }
       })
       .catch(function (error) {
       console.log(error)
@@ -303,8 +306,7 @@ export default {
         })
         this.GetPartBlockCurrentAndTotals()
     },
-    updateSlideToPrintValue(strSlideID, blChecked)
-    {
+    updateSlideToPrintValue(strSlideID, blChecked) {
             //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
       axios.post(store.getters.getApiUrl + '/updateslidetoprint', {
         action: 'UpdateSlideToPrintValue',
@@ -373,6 +375,16 @@ export default {
       //Collapse additional options
       document.getElementById("btnManualBlockIDToggle").click()
     },
+    makeToast(content, title, variant = null,time=1500,locn='b-toaster-top-left') {
+      this.$bvToast.toast(content, {
+        title: title,
+        variant: variant,
+        solid: true,
+        autoHideDelay: time,
+        toaster: locn,
+        appendToast: true
+      })
+    }
   },
   computed:{
     inputButtonDisabled(){
