@@ -76,6 +76,11 @@ export async function printSlides (request, response) {
 
         var fileDate = new Date().toLocaleDateString().replaceall('-', '').replaceall('/', '')
 
+        var currentFiles=[]
+        fs.readdirSync(strSlideQueuePath).forEach(file => {
+          currentFiles.append(file)
+        });
+
         // WriteSlideData
         // SlideID|AccessionID|SlideInst|PartDesignator|BlockDesignator|StainOrderDate|OrderingPath|Patient|SiteLabel|SlideDistributionKeyword|StainLabel
         var strFileWriteData = [
@@ -155,7 +160,7 @@ export async function printSlides (request, response) {
           );
         `
   var result = db_query(strSQL).then((res)=> {return res}).catch((rej)=>{throw rej})
-  response.send('Slides have been sent to Slide Printer')
+  response.send({info:'Slides have been sent to Slide Printer',files:currentFiles})
 }
 export async function GetCaseInquery (request, response) {
 
@@ -248,7 +253,7 @@ export async function GetBlockData (request, response) {
   var strSQL = `SELECT * FROM OPENLIS.tblBlock WHERE \`BlockID\` = '` + blockID + `';`
   var result = await db_query(strSQL)
   if ('error' in result) {throw result['error']}
-  response.json(result)
+  else{response.json(result)}
 }
 export async function SetBlockData (request, response) {
 
@@ -270,9 +275,8 @@ export async function SetBlockData (request, response) {
       TimesScannedAtEmbedding = ${TimesScannedAtEmbedding}
     WHERE BlockID = '${BlockID}';
   `
-  var result = await db_query(strSQL)
+  await db_query(strSQL)
   if ('error' in result) {throw result['error']}
-  response.send('OK')
 
   var strSQL = `
     INSERT INTO OPENLIS.tblActionTracking
@@ -288,9 +292,9 @@ export async function SetBlockData (request, response) {
       '${ScanLocation}',
       NOW());
     `
-  var result = await db_query(strSQL)
+  await db_query(strSQL)
   if ('error' in result) {throw result['error']}
-  response.send('OK')
+  else{response.send('OK')}
 }
 export async function GetCassEngLoc (request, response) {
 

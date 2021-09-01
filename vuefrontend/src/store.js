@@ -13,7 +13,7 @@ export default new Vuex.Store({
     validuser: false,
     stationName: '',
     backendVersion:'--',
-    frontendVersion:'4.0',
+    frontendVersion:'4.1',
     nodeBackendTestMode: false,
     vueFrontendTestMode:false,
     production:false,
