@@ -16,7 +16,7 @@ const STRFunc = Object.keys(STR)
 const STCB = require('./slide-tracking/CaseBlockSlideCount.js')
 const STCBFunc = Object.keys(STCB);
 
-const version = '4.0'
+const version = '4.1'
 
 router.use(morgan('dev'));
 
