@@ -1,7 +1,11 @@
 var mysql = require('mysql')
 var mysqlConfig = require('../mysqlConfig')
 
-export function reports (request, response, callback) {
+module.exports = {
+  reports
+}
+
+function reports (request, response, callback) {
 
   let strReportName = request.body.action
   let strSQL = null

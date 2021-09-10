@@ -1,19 +1,25 @@
 {
   "name": "mawdslidetrackerbackend",
   "version": "1.0.0",
+  "babel": {
+    "presets": [
+      "@babel/env"
+    ]
+  },
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node ./src/index.js"
+    "test": "nodemon --exec ./node_modules/.bin/babel-node src/index.js",
+    "build": "babel src/index.js -d src",
+    "start": "npm run build && node src/index.js"
   },
   "author": "Drew",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.14.8",
-    "@babel/core": "^7.14.8",
-    "@babel/node": "^7.14.9",
-    "@babel/preset-env": "^7.14.9",
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.5",
+    "@babel/node": "^7.15.4",
+    "@babel/preset-env": "^7.15.6",
     "@babel/register": "^7.14.5",
     "console-error": "0.0.4",
     "console-info": "0.0.5",
@@ -24,14 +30,13 @@
     "nodemon": "^1.19.4"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0",
     "body-parser": "^1.19.0",
     "dateformat": "^3.0.3",
     "dotenv": "^6.2.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "path": "^0.12.7",
-    "serialport": "^7.1.5",
+    "serialport": "^9.0.3",
     "socket.io": "^2.4.1",
     "socket.io-client": "^2.4.0",
     "vue": "^2.6.14"

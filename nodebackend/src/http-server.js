@@ -64,6 +64,10 @@ router.use(function (req, res) { //Check if requested route is in:
 fastify.register(require('fastify-express'))
     .after(() => {fastify.use(router)})
 
-export function start (port) {
+module.exports = {
+  start
+}
+
+ function start (port) {
   fastify.listen(port, () => console.log(`Listening on port ${port}`))
 }
