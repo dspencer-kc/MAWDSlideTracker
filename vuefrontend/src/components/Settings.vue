@@ -33,13 +33,9 @@
           </b-form-checkbox>
         </b-form-group>
       </template>
-      <template v-slot:cell(new_value)="row">
-        <b-dropdown class="m-2" text="Engraver Locations">
-          <template #button-content>
-            {{row.item.new_value}}
-          </template>
-          <b-dropdown-item-button  v-for="item in engraver_locations" v-model="item.new_value" :key="item"  >{{ item }}</b-dropdown-item-button>
-        </b-dropdown>
+      <template   v-slot:cell(new_value)="row">
+        <b-form-select v-model="row.item.new_value" :options="engraver_locations">
+        </b-form-select>
       </template>
     </b-table>
   </div>

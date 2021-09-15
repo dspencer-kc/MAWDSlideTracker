@@ -4,23 +4,28 @@
   "babel": {
     "presets": [
       "@babel/env"
+    ],
+    "plugins": [
+      "add-module-exports"
     ]
   },
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon --exec ./node_modules/.bin/babel-node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src/index.js -d src",
     "start": "npm run build && node src/index.js"
   },
   "author": "Drew",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.15.4",
+    "@babel/cli": "^7.14.8",
     "@babel/core": "^7.15.5",
     "@babel/node": "^7.15.4",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-env": "^7.15.4",
     "@babel/register": "^7.14.5",
+    "babel-plugin-add-module-exports": "^1.0.4",
+    "babel-preset-es2015-node5": "^1.2.0",
     "console-error": "0.0.4",
     "console-info": "0.0.5",
     "console-warn": "0.0.4",

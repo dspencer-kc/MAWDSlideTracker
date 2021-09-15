@@ -67,7 +67,6 @@ return {
 },
 mounted() {
   this.LoadTableData()
-
 },
   sockets: {
       connect: function () {
