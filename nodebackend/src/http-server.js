@@ -69,5 +69,5 @@ module.exports = {
 }
 
  function start (port) {
-  fastify.listen(port, () => console.log(`Listening on port ${port}`))
+  fastify.listen(port, "0.0.0.0", () => console.log(`Listening on port ${port}`))
 }
