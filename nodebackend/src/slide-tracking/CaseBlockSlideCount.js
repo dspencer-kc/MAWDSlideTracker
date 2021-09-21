@@ -1,7 +1,14 @@
 var mysql = require('mysql')
 var mysqlConfig = require('../mysqlConfig')
 
-export function caseblockslidecount (request, response, callback) {
+module.exports = {
+  caseblockslidecount,
+  caseblockslidecountdetails,
+  CaseBlockSlideSQL
+}
+
+
+function caseblockslidecount (request, response, callback) {
   // ===========================================================================================
   //    Case Block Slide Count
   // ============================================================================================
@@ -65,7 +72,7 @@ export function caseblockslidecount (request, response, callback) {
     response.send('Error: Check Paremeters in API Request')
   }
 }
-export function caseblockslidecountdetails (request, response, callback) {
+function caseblockslidecountdetails (request, response, callback) {
   let strSlideDistributionLocation = null
   let strSQL = null
 
@@ -97,7 +104,7 @@ export function caseblockslidecountdetails (request, response, callback) {
     })
   }
 }
-export function CaseBlockSlideSQL (strRun, strStartTime, strCutoffTime, strSlideDistributionLocation) {
+function CaseBlockSlideSQL (strRun, strStartTime, strCutoffTime, strSlideDistributionLocation) {
   // Parameter Examples:
   //  strRun: First
   //  strStartTime (function call to calculate time, or datetime): funPreviousWorkDayCutoffDateTime()

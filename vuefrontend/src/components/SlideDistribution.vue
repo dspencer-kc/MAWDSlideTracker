@@ -67,7 +67,6 @@ return {
 },
 mounted() {
   this.LoadTableData()
-
 },
   sockets: {
       connect: function () {
@@ -130,7 +129,7 @@ methods: {
       //Only mark id slide tray is loaded
       if (this.blSlideTrayLoaded) {
 
-      axios.post(store.getters.getApiUrl + '/slidedistribution', {
+      axios.post(store.getters.getApiUrl + '/slideDistribution', {
       action: 'MarkSlideToBeDistributed',
       slidedistid: strSlideDistributionID,
         slidetray: this.slidetrayID,
@@ -183,7 +182,7 @@ methods: {
           // Clear Slide Distrib ID
           this.SlideDistributionID = null
           // Call API to create new slide distribution for slide tray.
-          axios.post(store.getters.getApiUrl + '/slidedistribution', {
+          axios.post(store.getters.getApiUrl + '/slideDistribution', {
           action: 'CreateNewSlideDistribution',
           userid: store.state.username,
           slidetray: this.slidetrayID,
@@ -229,7 +228,7 @@ methods: {
 
               // Get slidedistr id from slide tray and load slides
               this.loading = 'true'
-              axios.post(store.getters.getApiUrl + '/slidedistribution', {
+              axios.post(store.getters.getApiUrl + '/slideDistribution', {
               action: 'LoadSlideTray',
               userid: store.state.username,
               slidetray: this.slidetrayID,
@@ -293,7 +292,7 @@ methods: {
     MarkSlidesReadyForCourier(strLocID){
 
       if (this.blFirstSlideScanned) {
-        axios.post(store.getters.getApiUrl + '/slidedistribution', {
+        axios.post(store.getters.getApiUrl + '/slideDistribution', {
         action: 'MarkSlidesReadyForCourier',
         slidedistid: this.SlideDistributionID,
         userid: store.state.username,
@@ -331,7 +330,7 @@ methods: {
         })
       } else {
       // Slide tray scanned location without any slides, need to get slide distr id and assign location
-      axios.post(store.getters.getApiUrl + '/slidedistribution', {
+      axios.post(store.getters.getApiUrl + '/slideDistribution', {
         action: 'AssignTrayNewLocation',
         userid: store.state.username,
         slidedistrloc: strLocID,

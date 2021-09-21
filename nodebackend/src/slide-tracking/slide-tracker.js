@@ -5,6 +5,21 @@ const url = require('url')
 var dateFormat = require('dateformat')
 var fs = require('fs')
 
+module.exports = {
+  printSlides,
+  getUserInfo,
+  updateSlideToPrint,
+  pullSlides,
+  getPartBlockCurrentAndTotals,
+  histoData,
+  slideDistribution,
+  GetBlockData,
+  SetBlockData,
+  GetStatusData,
+  GetCassEngLoc,
+  GetCaseInquery
+}
+
 var lastQueryTimes=[];
 function CheckLastQueryCache(queryName,waitTime=15){
   if (lastQueryTimes[queryName]){
@@ -31,7 +46,7 @@ function  db_query(query) {
   })
 }
 
-export async function printSlides (request, response) {
+async function printSlides (request, response) {
 
   var strDate = new Date().toLocaleString()
   var strBlockID = request.body.blockID
@@ -162,7 +177,7 @@ export async function printSlides (request, response) {
   var result = db_query(strSQL).then((res)=> {return res}).catch((rej)=>{throw rej})
   response.send({info:'Slides have been sent to Slide Printer',files:currentFiles})
 }
-export async function GetCaseInquery (request, response) {
+async function GetCaseInquery (request, response) {
 
   var strStrAccessionID = request.body.ACCESSIONID
   var strSQL = `
@@ -196,7 +211,7 @@ export async function GetCaseInquery (request, response) {
       WHERE  (( ( tblSlides.AccessionID ) LIKE "${strStrAccessionID}")) order by DTPrinted DESC;`
   await db_query(strSQL).then((res)=> {response.json(res)}).catch((rej)=>{throw rej})
 }
-export async function GetStatusData(request, response) {
+async function GetStatusData(request, response) {
   var result = CheckLastQueryCache('GetStatusData')
   if (result) {
     response.json(result)
@@ -238,7 +253,7 @@ export async function GetStatusData(request, response) {
         })
   }
 }
-export async function getUserInfo (request, response) {
+async function getUserInfo (request, response) {
 
   var strUserID = request.body.userid
   var strSQL = `SELECT * FROM OPENLIS.tblUsers
@@ -247,7 +262,7 @@ export async function getUserInfo (request, response) {
   if ('error' in result) {throw result['error']}
   response.json(result)
 }
-export async function GetBlockData (request, response) {
+async function GetBlockData (request, response) {
 
   var blockID = request.body.blockID
   var strSQL = `SELECT * FROM OPENLIS.tblBlock WHERE \`BlockID\` = '` + blockID + `';`
@@ -255,7 +270,7 @@ export async function GetBlockData (request, response) {
   if ('error' in result) {throw result['error']}
   else{response.json(result)}
 }
-export async function SetBlockData (request, response) {
+async function SetBlockData (request, response) {
 
   var blockData            = request.body.blockData.data[0]
   let ScanLocation         = request.body.scanlocation
@@ -296,7 +311,7 @@ export async function SetBlockData (request, response) {
   if ('error' in result) {throw result['error']}
   else{response.send('OK')}
 }
-export async function GetCassEngLoc (request, response) {
+async function GetCassEngLoc (request, response) {
 
   var strSQL = `
 select old_value,new_value,right_left_value
@@ -309,7 +324,7 @@ from engraver_lookup;
     throw rej
   })
 }
-export async function getPartBlockCurrentAndTotals (request, response) {
+async function getPartBlockCurrentAndTotals (request, response) {
 
   var strBlockID = request.body.blockID
   var strAccessionId = null
@@ -337,7 +352,7 @@ SELECT PartDesignator FROM OPENLIS.tblBlock where SpecNumFormatted = '${strAcces
   }
   response.json(jsonResult)
 }
-export async function updateSlideToPrint (request, response) {
+async function updateSlideToPrint (request, response) {
 
   var strResponse = ''
   var strAction = request.body.action
@@ -353,7 +368,7 @@ export async function updateSlideToPrint (request, response) {
   if ('error' in result) {throw result['error']}
   response.send('OK')
 }
-export async function pullSlides (request, response) {
+async function pullSlides (request, response) {
 
   var urlParts = url.parse(request.url, true)
   var parameters = urlParts.query
@@ -384,7 +399,7 @@ WHERE  (( ( tblSlides.BlockID ) = '${strBlockID}' )); `
   })
   response.json(result)
 }
-export async function histoData (request, response) {
+async function histoData (request, response) {
   var strFromDateTime = request.body.fromdatetime
   var strToDateTime = request.body.todatetime
   var strSQL = `
@@ -398,7 +413,7 @@ SELECT qrySubBlocksPreviousDay.WhoPrinted, Count(qrySubBlocksPreviousDay.BlockID
   if ('error' in result) {throw result['error']}
   response.json(result)
 }
-export async function slideDistribution (request, response) {
+async function slideDistribution (request, response) {
   let strAction = request.body.action
   let strUser = request.body.userid
   let strScanLocation = request.body.scanlocation

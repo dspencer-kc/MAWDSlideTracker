@@ -3,13 +3,18 @@
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 
-export function init (comport) {
+module.exports = {
+    init,
+    get_comm
+}
+
+ function init (comport) {
     return new Promise((resolve) => {
         resolve(new SerialPort(comport).pipe(new Readline({ delimiter: '\r\n' })))
     })
 }
 
-export function get_comm() {
+ function get_comm() {
     return new Promise((resolve, reject) => {
         SerialPort.list(function (err, ports) {
             ports.forEach(function (port) {

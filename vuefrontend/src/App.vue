@@ -1,15 +1,11 @@
 <template>
   <div id="app">
     <b-navbar class="navbar navbar-dark bg-dark fixed-top">
-      <b-nav-item-dropdown left no-caret>
-        <template #button-content><span><b-badge>Slide Tracker</b-badge></span></template>
-        <b-dd-item href="/">Slide Tracker</b-dd-item>
-        <b-dd-item href="http://mawdcovidchart.com">Mawd Covid Chart</b-dd-item>
-      </b-nav-item-dropdown>
-      <b-item style='color: #b700ff;font-style: italic;font-size: smaller'>&nbsp bev
+      <b-badge>Slide Tracker</b-badge>
+      <b-item style='color: #b700ff;font-style: italic;font-size: smaller'>&nbsp; bev
         <badge> {{ $store.getters.GetBEVersion }}</badge>
       </b-item>
-      <b-item style='color: #007bff;font-style: italic;font-size: smaller'>&nbsp fev
+      <b-item style='color: #007bff;font-style: italic;font-size: smaller'>&nbsp; fev
         <badge> {{ $store.getters.GetFEVersion }}</badge>
       </b-item>
       <b-item style='color: #ffffff'>
