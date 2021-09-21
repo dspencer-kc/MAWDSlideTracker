@@ -370,9 +370,7 @@ async function updateSlideToPrint (request, response) {
 }
 async function pullSlides (request, response) {
 
-  var urlParts = url.parse(request.url, true)
-  var parameters = urlParts.query
-  var strBlockID = parameters.blockid
+  var strBlockID = request.body.blockID
   var strSQL = `
 SELECT tblSlides.AccessionID,
   tblSlides.PartDesignator,

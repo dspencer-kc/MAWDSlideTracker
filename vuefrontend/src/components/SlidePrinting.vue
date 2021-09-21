@@ -151,13 +151,6 @@
 import axios from 'axios'
 import store from '../store.js'
 
-
-// define the external API URL
-const API_URLWithSlideParameters = store.getters.getApiUrl + '/slidetracker/slideparameters?blockid='  //For Get Call
-// Helper function to help build urls to fetch slide details from blockid
-function buildUrl(blockID) {
-  return `${API_URLWithSlideParameters}${blockID}`
-}
 export default {
   name: 'slides', // component name
   props: {
@@ -245,7 +238,7 @@ export default {
   printSlides()
   {
 
-      axios.post(store.getters.getApiUrl + '/printslides', {
+      axios.post(store.getters.getApiUrl + '/PrintSlides', {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: store.state.username,
@@ -273,7 +266,7 @@ export default {
   },
 
     pullSlides() {
-           console.log('start pull slides');
+      console.log('start pull slides');
       //this.GetPartBlockCurrentAndTotals()
       let blockID = this.blockID
       if (!blockID) {
@@ -282,9 +275,8 @@ export default {
       }
       this.loading = true
 
-      //uses fetch as opposed to Axios
-      fetch(buildUrl(blockID))
-        //.then(response => response.json())
+
+      axios.post(store.getters.getApiUrl + '/pullSlides', {blockID: blockID,}
         .then(function(response){
           return response.json()
         })
