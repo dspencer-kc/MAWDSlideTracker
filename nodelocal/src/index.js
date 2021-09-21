@@ -8,8 +8,8 @@ let strStationName = process.env.StationName
 let socketport = process.env.WebSocketPort
 
 var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http).listen(socketport);
+var server = app.listen(socketport);
+var io = require('socket.io').listen(server);
 
 const {get_comm, init} = require("./barcode/barcode-scan");
 
