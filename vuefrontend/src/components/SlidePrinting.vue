@@ -324,7 +324,7 @@ export default {
     },
     GetPartBlockCurrentAndTotals() {
         console.log('start GetPartBlockCurrentAndTotals')
-              axios.post(store.getters.getApiUrl + '/getpartblockcurrentandtotals', {
+              axios.post(store.getters.getApiUrl + '/getPartBlockCurrentAndTotals', {
               blockID: this.blockID,
               curRoute : this.currentRouteName
             })
