@@ -276,7 +276,7 @@ export default {
       this.loading = true
 
 
-      axios.post(store.getters.getApiUrl + '/pullSlides', {blockID: blockID,}
+      axios.post(store.getters.getApiUrl + '/pullSlides', {blockID: blockID})
         .then(function(response){
           return response.json()
         })
