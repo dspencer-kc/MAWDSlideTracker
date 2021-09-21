@@ -37,6 +37,7 @@ function CheckLastQueryCache(queryName,waitTime=15){
 function  db_query(query) {
   return new Promise((resolve, reject) => {
     var now = Date.now()
+    console.log("SQL QUERY: "+query)
     var con = mysql.createConnection(mysqlConfig)
     con.query(query, function (err, result) {
       if (err) {reject(err);}
@@ -49,6 +50,7 @@ function  db_query(query) {
 async function printSlides (request, response) {
 
   var strDate = new Date().toLocaleString()
+  var currentFiles=['blank']
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
   var strSlideQueuePath = request.body.slideQueuePath
@@ -77,8 +79,8 @@ async function printSlides (request, response) {
                            and copath_p_stainprocess.orderedby_id = copath_c_d_person_1.id
                            and copath_p_stainprocess.wkdept_id = copath_c_d_department.id)
             WHERE (((tblSlides.BlockID) = '${strBlockID}') AND tblSlides.ToBePrinted = TRUE);
-  `
-  var result = await db_query(strSQL).then((res)=> {return res}).catch((rej)=>{throw rej})
+            `
+      var result = await db_query(strSQL).then((res)=> {return res}).catch((rej)=>{throw rej})
       var intRowCounter = 0
       Object.keys(result).forEach(function (key) {
         intRowCounter=intRowCounter+1
@@ -89,9 +91,9 @@ async function printSlides (request, response) {
               ? strOrderPathInitials = ''
               : strOrderPathInitials = row.OrderPathInitials.substring(0, 3)
 
-        var fileDate = new Date().toLocaleDateString().replaceall('-', '').replaceall('/', '')
+        var fileDate = new Date().toLocaleDateString().replace('-', '').replace('/', '')
 
-        var currentFiles=[]
+
         fs.readdirSync(strSlideQueuePath).forEach(file => {
           currentFiles.append(file)
         });

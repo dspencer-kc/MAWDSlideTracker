@@ -238,7 +238,7 @@ export default {
   printSlides()
   {
 
-      axios.post(store.getters.getApiUrl + '/PrintSlides', {
+      axios.post(store.getters.getApiUrl + '/printSlides', {
       action: 'PrintSlides',
       blockID: this.blockID,
       printRequestedBy: store.state.username,
@@ -277,19 +277,11 @@ export default {
 
 
       axios.post(store.getters.getApiUrl + '/pullSlides', {blockID: blockID})
-        .then(function(response){
-          return response.json()
-        })
         .then(data => {
           this.loading = false
           this.error_message = ''
-          if (data.errorcode) {
-            this.error_message = `Sorry, block with blockID '${blockID}' not found.`
-            console.log('error')
-            return
-          }
           console.log(this.currentRouteName)
-          this.slides = data;
+          this.slides = data.data;
           this.formstatus = 'readytoprint';
           document.getElementById("InputBlockID").disabled = true;
           this.formstatuslabel = 'Print Slides';
@@ -300,7 +292,7 @@ export default {
     },
     updateSlideToPrintValue(strSlideID, blChecked) {
             //Send api the following:  action: UpdateSlideToPrint slideid=? value=?
-      axios.post(store.getters.getApiUrl + '/updateslidetoprint', {
+      axios.post(store.getters.getApiUrl + '/updateSlideToPrint', {
         action: 'UpdateSlideToPrintValue',
         slideId: strSlideID,
         toPrintStatus: blChecked,
@@ -328,7 +320,7 @@ export default {
                 console.log('error')
                 return
               }
-              console.log('apidata:', apidata);
+              //console.log('apidata:', apidata);
               let temp = {}
               temp = apidata.data
               console.log(temp)
