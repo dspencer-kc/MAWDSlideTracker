@@ -50,7 +50,7 @@ function  db_query(query) {
 async function printSlides (request, response) {
 
   var strDate = new Date().toLocaleString()
-  var currentFiles=['blank']
+  var currentFiles=[]
   var strBlockID = request.body.blockID
   var strPrintRequestBy = request.body.printRequestedBy
   var strSlideQueuePath = request.body.slideQueuePath
