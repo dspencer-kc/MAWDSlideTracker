@@ -2,17 +2,17 @@ var mysql = require('mysql')
 var mysqlConfig = require('../mysqlConfig')
 
 module.exports = {
-  caseblockslidecount,
-  caseblockslidecountdetails,
-  CaseBlockSlideSQL
-}
 
+  caseblockslidecount: caseblockslidecount,
+  caseblockslidecountdetails: caseblockslidecountdetails
+}
 
 function caseblockslidecount (request, response, callback) {
   // ===========================================================================================
   //    Case Block Slide Count
   // ============================================================================================
 
+  console.log('caseblockslidecount')
   let strURLHash = null
   //  let strSlideDistributionLocation = ''
   let strSlideDistributionLocation = null
@@ -29,11 +29,13 @@ function caseblockslidecount (request, response, callback) {
     conLocnIDLookup.query(strLocnIDLookupSQL, function (errLocnID, LocnIDLookupResult) {
       if (errLocnID) {
         response.send(errLocnID)
+        console.log(errLocnID)
       // On Error, close connection
       } else {
       // if there is no error, you have the result
         // response.json(result)
-
+        // console.log('result found')
+        // console.log(LocnIDLookupResult)
         if (LocnIDLookupResult.length > 0) {
           strSlideDistributionLocation = LocnIDLookupResult[0].LocationID
         }
@@ -44,6 +46,8 @@ function caseblockslidecount (request, response, callback) {
         CaseBlockSlideSQL('Third', 'funCurrentDaySecondRunCutoff()', 'funCurrentDayThirdRunCutoff()', strSlideDistributionLocation) +
         CaseBlockSlideSQL('Fourth', 'funCurrentDayThirdRunCutoff()', 'funCurrentDayFourthRunCutoff()', strSlideDistributionLocation) +
         CaseBlockSlideSQL('Total', 'funPreviousWorkDayCutoffDateTime()', 'now()', strSlideDistributionLocation)
+        // console.log(strSQL)
+
         if (strSlideDistributionLocation !== null) {
           if (strSQL !== null) {
           // Connect to the database
@@ -51,7 +55,7 @@ function caseblockslidecount (request, response, callback) {
             con.query(strSQL, function (err, result) {
               if (err) {
                 response.send(err)
-                console.error(err)
+                console.log(err)
               // On Error, close connection
               } else {
               // if there is no error, you have the result
@@ -78,6 +82,7 @@ function caseblockslidecountdetails (request, response, callback) {
 
   strSlideDistributionLocation = request.body.SLIDEDISTLOCID
   strSlideDistributionLocation = 'LOCN' + strSlideDistributionLocation
+  console.log(strSlideDistributionLocation)
 
   strSQL = `/*qrySlideDetails*/
     SELECT DTReadyForCourier, SlideID, StainLabel, SlideTray
@@ -88,13 +93,14 @@ function caseblockslidecountdetails (request, response, callback) {
       SlideDistributionLocation = '${strSlideDistributionLocation}'
       Order By DTReadyForCourier desc;`
 
+  console.log(strSQL)
   if (strSQL !== null) {
     // Connect to the database
     var con = mysql.createConnection(mysqlConfig)
     con.query(strSQL, function (err, result) {
       if (err) {
         response.send(err)
-        console.error(err)
+        console.log(err)
       // On Error, close connection
       } else {
       // if there is no error, you have the result
@@ -104,6 +110,7 @@ function caseblockslidecountdetails (request, response, callback) {
     })
   }
 }
+
 function CaseBlockSlideSQL (strRun, strStartTime, strCutoffTime, strSlideDistributionLocation) {
   // Parameter Examples:
   //  strRun: First
