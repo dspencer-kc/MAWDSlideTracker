@@ -12,7 +12,7 @@
   "dependencies": {
     "dotenv": "^6.2.0",
     "serialport": "^7.1.5",
-    "socket.io": "^2.4.1",
+    "socket.io": "^2.5.0",
     "express": "*",
     "console-error": "0.0.4",
     "console-info": "0.0.5",
