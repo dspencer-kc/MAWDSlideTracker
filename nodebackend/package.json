@@ -29,7 +29,7 @@
     "console-error": "0.0.4",
     "console-info": "0.0.5",
     "console-warn": "0.0.4",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "fastify": "^3.20.1",
     "fastify-express": "^0.3.3",
     "nodemon": "^1.19.4"
