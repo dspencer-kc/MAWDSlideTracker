@@ -65,6 +65,7 @@ function reports (request, response, callback) {
       ActionDateTime >= funPreviousWorkDayCutoffDateTime()
       GROUP BY tblActionTracking.IDOfMaterial
       ORDER BY FirstOfActionDateTime;
+
       /*qryDailyBlockCountNumberedBySlideDistrTime*/
       SET @rownum:=0;
       SELECT @rownum:=(@rownum+1) as BlockDistSeq, subTblSlides.BlockID AS subBlockID, subTblSlideDistribution.SlideDistributionLocation, MIN(subTblSlideDistribution.DTReadyForCourier) as FirstDTReadyForCourier
@@ -72,8 +73,18 @@ function reports (request, response, callback) {
               INNER JOIN   tblSlideDistribution as subTblSlideDistribution on subTblSlides.SlideDistributionID = subTblSlideDistribution.SlideDistributionID
               WHERE subTblSlideDistribution.DTReadyForCourier >= funPreviousWorkDayCutoffDateTime()
       group by subTblSlides.BlockID, subTblSlideDistribution.SlideDistributionLocation
-      order by FirstDTReadyForCourier, BlockDistSeq;`
+      order by FirstDTReadyForCourier, BlockDistSeq;
+
+      /*qryDailyEmbeddedTime*/
+      SET @rownum:=0;
+      SELECT @rownum:=(@rownum+1) as EmbeddedSeq, tblActionTracking.IDOfMaterial, MIN(tblActionTracking.ActionDateTime) AS FirstOfEmbeddedActionDateTime
+      FROM tblActionTracking
+      WHERE tblActionTracking.Action LIKE "%Embedded%"  AND
+      ActionDateTime >= funPreviousWorkDayCutoffDateTime()
+      GROUP BY tblActionTracking.IDOfMaterial
+      ORDER BY FirstOfEmbeddedActionDateTime;`
       break
+
 
     case 'EstimatedBlockCount':
 

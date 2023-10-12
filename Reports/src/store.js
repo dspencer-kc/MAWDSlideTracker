@@ -39,10 +39,12 @@ export default new Vuex.Store({
     //  Pulled total count
     blockCountTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run', 'Total'],
     blockCountTableItems: [],
+    embeddedCountTableItems: [],
     blockCountFourRunsTableItems: [],
     blockCountFourRunsTableFields: ['First Run', 'Second Run', 'Third Run', 'Fourth Run'],
     blocksCutByTimeTableItems: [],
     blocksDistributedByTimeTableItems: [],
+    blocksEmbeddedByTimeTableItems: [],
     blocksCutByTimeTableFields: ['Time Cut']
   },
   mutations: {
@@ -64,6 +66,10 @@ export default new Vuex.Store({
     PushBlockCountTableItems (state, strTmp) {
       state.blockCountTableItems.push(strTmp)
     },
+    PushBlockEmbeddedLineTableItems(state, strTmp) {
+      state.embeddedCountTableItems.push(strTmp)
+    },
+
     PushBlockCountFourRunsTableItems (state, strTmp) {
       state.blockCountFourRunsTableItems.push(strTmp)
     },
@@ -88,6 +94,7 @@ export default new Vuex.Store({
     ClearBlocksCutByTimeTableItems (state) {
       state.blocksCutByTimeTableItems = []
       state.blocksDistributedByTimeTableItems = []
+      state.blocksEmbeddedByTimeTableItems = []
     },
     SetChartDataCollection (state, strChartLabel) {
       state.objChartDataCollection = {
@@ -115,36 +122,17 @@ export default new Vuex.Store({
       state.objPieChartTotalData = FormatPieChartDataObject(4, state.blockCountTableItems)
     },
     SetChartDataCollectionBlockCountLine (state) {
-      // For timeline, must break data down differently.
-      /*
-        Format Chart data needs to be in below:
-        datasets: [{
-        label: 'Blocks Cut',
-          data: 
-            [
-              {
-                t: new Date('2019-12-12 3:41'),
-                y: 1
-              }, 
-              {
-                t: new Date('2019-12-12 14:41'),
-                y: 10
-              }
-            ],
-        }
-      */
-      /*
-      Old way not working
-      state.objChartDataCollection = {
-        labels: state.blockCountTableFields,
-        datasets: state.blockCountTableItems
-      }
-      */
+ 
       state.objChartDataCollection = {
         datasets: [
           {
             label: 'Blocks Cut',
             data: state.blocksCutByTimeTableItems,
+            pointRadius: 0
+          },
+          {
+            label: 'Blocks Embedded',
+            data: state.blocksEmbeddedByTimeTableItems,
             pointRadius: 0
           },
           {
@@ -316,74 +304,20 @@ export default new Vuex.Store({
           action: 'LoadBlockCutsLine'
         })
           .then(function (response) {
-            console.log(response)
-            // Clear table data            
+            console.log(response)           
             
             commit('ClearBlocksCutByTimeTableItems')
-            //  for (var i = 0; i < response.data[1].length; i++) {
             for (var i = 0; i < response.data[1].length; i++) {
-              // Build Chart Data Array
-              // console.log(response.data[1][i].FirstOfActionDateTime)
-              // commit('PushBlockCutsLineTableItems', { labels: [response.data[1][i].FirstOfActionDateTime], data: [i] })
-              /*
-                Format Chart data needs to be in below:
-                datasets: [{
-                label: 'Blocks Cut',
-                  data: 
-                    [
-                      {
-                        t: new Date('2019-12-12 3:41'),
-                        y: 1
-                      }, 
-                      {
-                        t: new Date('2019-12-12 14:41'),
-                        y: 10
-                      }
-                    ],
-              }
-              */
-              
-              // console.log(new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')))
-              // commit('PushBlockCutsLineTableItems', { data: [{ x: String(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
-              
               commit('PushBlockCutsLineTableItems', { t: new Date(response.data[1][i].FirstOfActionDateTime), y: response.data[1][i].BlockCutSeq })
-              // commit('PushBlocksDistributedByTimeTableItems', { t: new Date(response.data[3][i].FirstDTReadyForCourier), y: response.data[3][i].BlockDistSeq })
-              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
-              // commit('PushBlockCutsLineTableItems', { data: [{ t: new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('MM-DD-YYYY hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
-              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
-            } // end for
+            }
+
+            for (var i = 0; i < response.data[4].length; i++) {
+              commit('PushBlockEmbeddedLineTableItems', { t: new Date(response.data[4][i].FirstOfActionDateTime), y: response.data[4][i].BlockCutSeq })
+            }
 
             for (var j = 0; j < response.data[3].length; j++) {
-              // Build Chart Data Array
-              // console.log(response.data[1][i].FirstOfActionDateTime)
-              // commit('PushBlockCutsLineTableItems', { labels: [response.data[1][i].FirstOfActionDateTime], data: [i] })
-              /*
-                Format Chart data needs to be in below:
-                datasets: [{
-                label: 'Blocks Cut',
-                  data: 
-                    [
-                      {
-                        t: new Date('2019-12-12 3:41'),
-                        y: 1
-                      }, 
-                      {
-                        t: new Date('2019-12-12 14:41'),
-                        y: 10
-                      }
-                    ],
-              }
-              */
-              
-              // console.log(new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')))
-              // commit('PushBlockCutsLineTableItems', { data: [{ x: String(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('YYYY-MM-DD hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
-            
               commit('PushBlocksDistributedByTimeTableItems', { t: new Date(response.data[3][j].FirstDTReadyForCourier), y: response.data[3][j].BlockDistSeq })
-              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
-              // commit('PushBlockCutsLineTableItems', { data: [{ t: new Date(moment(new Date(response.data[1][i].FirstOfActionDateTime)).format('MM-DD-YYYY hh:mm:ss')), y: response.data[1][i].BlockCutSeq }] })
-              // commit('PushBlockCutsLineTableItems', { data: [response.data[1][i].FirstOfActionDateTime] })
-            } //  end for
-            // Set Chart Collection Object
+            }
             
             commit('SetChartDataCollectionBlockCountLine')
             
@@ -404,6 +338,7 @@ export default new Vuex.Store({
     }
   }
 })
+
 function FormatPieChartDataObject (intArrayIndex, arTempBlockCountTableItems) {
   //  Loop through block count and pull out which run needed for chart
   let arFirstRunTableItems = []
@@ -435,16 +370,3 @@ function FormatPieChartDataObject (intArrayIndex, arTempBlockCountTableItems) {
   return objPieChartDataSet
 }
 
-// Shuffle array Not Active
-/* function ShuffleArray (array) {
-  let i = 0
-  let j = 0
-  let temp = null
-
-  for (i = array.length - 1; i > 0; i -= 1) {
-    j = Math.floor(Math.random() * (i + 1))
-    temp = array[i]
-    array[i] = array[j]
-    array[j] = temp
-  }
-} */
